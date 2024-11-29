@@ -39,7 +39,7 @@ func TestUpdateEdge(t *testing.T) {
 		},
 		{
 			clauses: []clause.Interface{clause.UpdateEdge{Edge: e21, PropsUpdate: map[string]interface{}{"name": "hayson", "age": clause.Expr{Str: "age + 1"}}}},
-			gqlWant: `UPDATE EDGE ON e2 "player100"->"team204"@2 SET name = "hayson", age = age + 1`,
+			gqlWant: `UPDATE EDGE ON e2 "player100"->"team204"@2 SET age = age + 1, name = "hayson"`,
 		},
 		{
 			clauses: []clause.Interface{clause.UpdateEdge{IsUpsert: true, Edge: e21, PropsUpdate: edge2{Rank: 3, Name: "hayson", Age: 26}}},

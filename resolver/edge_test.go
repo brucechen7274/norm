@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"strings"
 	"testing"
@@ -26,36 +27,19 @@ func TestParseEdge(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			got, err := ParseEdge(reflect.TypeOf(tt.dest))
-			if err != nil {
-				if !tt.wantErr {
-					t.Errorf("ParseEdge() error = %v, wantErr %v", err, tt.wantErr)
-				}
+			if tt.wantErr {
+				assert.Error(t, err)
 				return
 			}
-			if got.srcVIDType != tt.want.srcVIDType {
-				t.Errorf("srcVIDType = %v, want %v", got.srcVIDType, tt.want.srcVIDType)
+			if !assert.NoError(t, err) {
 				return
 			}
-			if got.srcVIDFieldIndex != tt.want.srcVIDFieldIndex {
-				t.Errorf("srcVIDFieldIndex = %v, want %v", got.srcVIDFieldIndex, tt.want.srcVIDFieldIndex)
-				return
-			}
-			if got.dstVIDType != tt.want.dstVIDType {
-				t.Errorf("dstVIDType = %v, want %v", got.dstVIDType, tt.want.dstVIDType)
-				return
-			}
-			if got.dstVIDFieldIndex != tt.want.dstVIDFieldIndex {
-				t.Errorf("dstVIDFieldIndex = %v, want %v", got.dstVIDFieldIndex, tt.want.dstVIDFieldIndex)
-				return
-			}
-			if got.edgeTypeName != tt.want.edgeTypeName {
-				t.Errorf("edgeTypeName = %v, want %v", got.edgeTypeName, tt.want.edgeTypeName)
-				return
-			}
-			if got.rankFieldIndex != tt.want.rankFieldIndex {
-				t.Errorf("rankFieldIndex = %v, want %v", got.rankFieldIndex, tt.want.rankFieldIndex)
-				return
-			}
+			assert.Equal(t, tt.want.srcVIDType, got.srcVIDType)
+			assert.Equal(t, tt.want.srcVIDFieldIndex, got.srcVIDFieldIndex)
+			assert.Equal(t, tt.want.dstVIDType, got.dstVIDType)
+			assert.Equal(t, tt.want.dstVIDFieldIndex, got.dstVIDFieldIndex)
+			assert.Equal(t, tt.want.edgeTypeName, got.edgeTypeName)
+			assert.Equal(t, tt.want.rankFieldIndex, got.rankFieldIndex)
 			propsGot := make([]prop, 0)
 			for _, p := range got.props {
 				propsGot = append(propsGot, prop{
@@ -64,9 +48,7 @@ func TestParseEdge(t *testing.T) {
 					nebulaType: p.NebulaType,
 				})
 			}
-			if !reflect.DeepEqual(propsGot, tt.wantProp) {
-				t.Errorf("propsGot = %+v, want %+v", propsGot, tt.wantProp)
-			}
+			assert.Equal(t, tt.wantProp, propsGot)
 		})
 	}
 }
@@ -115,21 +97,9 @@ func TestGetEdgeInfo(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			edgeValue := reflect.ValueOf(tt.e)
-			srcVIDExpr := edgeSchema.GetSrcVIDExpr(edgeValue)
-			if srcVIDExpr != tt.wantSrcIDExpr {
-				t.Errorf("srcVIDExpr = %v, want %v", srcVIDExpr, tt.wantSrcIDExpr)
-				return
-			}
-			dstVIDExpr := edgeSchema.GetDstVIDExpr(edgeValue)
-			if dstVIDExpr != tt.wantDstIDExpr {
-				t.Errorf("dstVIDExpr = %v, want %v", dstVIDExpr, tt.wantDstIDExpr)
-				return
-			}
-			rank := edgeSchema.GetRank(edgeValue)
-			if rank != tt.wantRank {
-				t.Errorf("rank = %v, want %v", rank, tt.wantRank)
-				return
-			}
+			assert.Equal(t, tt.wantSrcIDExpr, edgeSchema.GetSrcVIDExpr(edgeValue))
+			assert.Equal(t, tt.wantDstIDExpr, edgeSchema.GetDstVIDExpr(edgeValue))
+			assert.Equal(t, tt.wantRank, edgeSchema.GetRank(edgeValue))
 			propStr := ""
 			edgeValue = reflect.Indirect(edgeValue)
 			for _, p := range edgeSchema.GetProps() {
@@ -139,9 +109,7 @@ func TestGetEdgeInfo(t *testing.T) {
 					propStr += " " + s
 				}
 			}
-			if strings.TrimSpace(propStr) != tt.wantPropExpr {
-				t.Errorf("GetPropExpr = %v, want %v", propStr, tt.wantPropExpr)
-			}
+			assert.Equal(t, tt.wantPropExpr, strings.TrimSpace(propStr))
 		})
 	}
 }

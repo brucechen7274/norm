@@ -2,7 +2,7 @@ package resolver
 
 import (
 	"fmt"
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -21,9 +21,7 @@ func TestParseTagSetting(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
-			if got := ParseTagSetting(tt.tag); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ParseTagSetting() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, ParseTagSetting(tt.tag))
 		})
 	}
 }
@@ -39,9 +37,7 @@ func Test_camelCaseToUnderscore(t *testing.T) {
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
-			if got := camelCaseToUnderscore(tt.s); got != tt.want {
-				t.Errorf("camelCaseToUnderscore() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, camelCaseToUnderscore(tt.s))
 		})
 	}
 }

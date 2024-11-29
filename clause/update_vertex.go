@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/haysons/nebulaorm/resolver"
 	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -111,6 +112,10 @@ func getPropsUpdateSet(propsUpdate interface{}, needUpdate map[string]bool) ([][
 			}
 			propsUpdateSet = append(propsUpdateSet, [2]string{propName, propValue})
 		}
+		// sort by property name
+		sort.Slice(propsUpdateSet, func(i, j int) bool {
+			return propsUpdateSet[i][0] < propsUpdateSet[j][0]
+		})
 	default:
 		propsValue := reflect.Indirect(reflect.ValueOf(propsUpdate))
 		switch propsValue.Kind() {

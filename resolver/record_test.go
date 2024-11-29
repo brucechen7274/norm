@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -25,12 +26,12 @@ func TestParseRecord(t *testing.T) {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			recordType := reflect.TypeOf(tt.record)
 			schemaGot, err := ParseRecord(recordType)
-			if (err != nil) != tt.wangErr {
-				t.Errorf("ParseRecord() error = %v, wantErr %v", err, tt.wangErr)
+			if tt.wangErr {
+				assert.Error(t, err)
 				return
 			}
-			if !reflect.DeepEqual(schemaGot, tt.want) {
-				t.Errorf("ParseRecord() got = %#v, want %#v", schemaGot, tt.want)
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, schemaGot)
 			}
 		})
 	}

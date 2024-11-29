@@ -3,6 +3,7 @@ package statement
 import (
 	"fmt"
 	"github.com/haysons/nebulaorm/clause"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -80,21 +81,19 @@ func TestUpdate(t *testing.T) {
 			stmt: func() *Statement {
 				return New().UpsertEdge(e2{SrcID: "player668", DstID: "team200"}, map[string]interface{}{"start_year": 2000, "end_year": clause.Expr{Str: "end_year + 1"}}).Yield("start_year, end_year")
 			},
-			want: `UPSERT EDGE ON e2 "player668"->"team200" SET start_year = 2000, end_year = end_year + 1 YIELD start_year, end_year;`,
+			want: `UPSERT EDGE ON e2 "player668"->"team200" SET end_year = end_year + 1, start_year = 2000 YIELD start_year, end_year;`,
 		},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
 			s := tt.stmt()
 			ngql, err := s.NGQL()
-			if err != nil {
-				if !tt.wantErr {
-					t.Errorf("got an unexpected error: %v", err)
-				}
+			if tt.wantErr {
+				assert.Error(t, err)
 				return
 			}
-			if ngql != tt.want {
-				t.Errorf("NGQL = %v, want %v", ngql, tt.want)
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
 			}
 		})
 	}

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -15,13 +16,8 @@ func TestSliceSetElem(t *testing.T) {
 		elem.SetInt(int64(sliceInt[i]))
 		return true, nil
 	})
-	if err != nil {
-		t.Errorf("slice int set elem err: %v", err)
-		return
-	}
-	if !reflect.DeepEqual(sliceInt, sliceIntNew) {
-		t.Errorf("slice int set elem err: %v != %v", sliceInt, sliceIntNew)
-		return
+	if assert.NoError(t, err) {
+		assert.Equal(t, sliceInt, sliceIntNew)
 	}
 
 	arrayInt := [9]int{1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -33,13 +29,8 @@ func TestSliceSetElem(t *testing.T) {
 		elem.SetInt(int64(sliceInt[i]))
 		return true, nil
 	})
-	if err != nil {
-		t.Errorf("array int set elem err: %v", err)
-		return
-	}
-	if !reflect.DeepEqual(arrayInt, arrayIntNew) {
-		t.Errorf("array int set elem err: %v != %v", sliceInt, sliceIntNew)
-		return
+	if assert.NoError(t, err) {
+		assert.Equal(t, arrayInt, arrayIntNew)
 	}
 
 	arrayIntNew = [9]int{}
@@ -50,13 +41,8 @@ func TestSliceSetElem(t *testing.T) {
 		elem.SetInt(int64(i + 1))
 		return true, nil
 	})
-	if err != nil {
-		t.Errorf("array int set elem err: %v", err)
-		return
-	}
-	if !reflect.DeepEqual(arrayInt, arrayIntNew) {
-		t.Errorf("array int set elem err: %v != %v", sliceInt, sliceIntNew)
-		return
+	if assert.NoError(t, err) {
+		assert.Equal(t, arrayInt, arrayIntNew)
 	}
 
 	a, b, c := 1, 2, 3
@@ -69,13 +55,8 @@ func TestSliceSetElem(t *testing.T) {
 		elem.SetInt(int64(*slicePtr[i]))
 		return true, nil
 	})
-	if err != nil {
-		t.Errorf("slice ptr set elem err: %v", err)
-		return
-	}
-	if !reflect.DeepEqual(slicePtr, slicePtrNew) {
-		t.Errorf("slice ptr set elem err: %v != %v", slicePtr, slicePtrNew)
-		return
+	if assert.NoError(t, err) {
+		assert.Equal(t, slicePtr, slicePtrNew)
 	}
 }
 
@@ -84,26 +65,17 @@ func TestPtrValue(t *testing.T) {
 	aValue := reflect.ValueOf(&a)
 	aValue = PtrValue(aValue)
 	aValue.SetInt(1)
-	if *a != 1 {
-		t.Errorf("a int set value err: %v != %v", *a, 1)
-		return
-	}
+	assert.Equal(t, *a, 1)
 
 	var b int
 	bValue := reflect.ValueOf(&b)
 	bValue = PtrValue(bValue)
 	bValue.SetInt(1)
-	if b != 1 {
-		t.Errorf("b int set value err: %v != %v", b, 1)
-		return
-	}
+	assert.Equal(t, b, 1)
 
 	var c ***string
 	cValue := reflect.ValueOf(&c)
 	cValue = PtrValue(cValue)
 	cValue.SetString("hello")
-	if ***c != "hello" {
-		t.Errorf("c string set value err: %v != %v", ***c, "hello")
-		return
-	}
+	assert.Equal(t, ***c, "hello")
 }

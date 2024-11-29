@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"strings"
 	"testing"
@@ -57,28 +58,17 @@ func TestParseVertex(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			got, err := ParseVertex(reflect.TypeOf(tt.dest))
-			if err != nil {
-				if !tt.wantErr {
-					t.Errorf("ParseVertex() error = %v, wantErr %v", err, tt.wantErr)
-				}
+			if tt.wantErr {
+				assert.Error(t, err)
 				return
 			}
-			if got.vidType != tt.wantVIDType {
-				t.Errorf("ParseVertex().vidType = %v, want %v", got.vidType, tt.wantVIDType)
+			if !assert.NoError(t, err) {
 				return
 			}
-			if got.vidFieldIndex != tt.wantVIDIndex {
-				t.Errorf("ParseVertex().vidFieldIndex = %v, want %v", got.vidFieldIndex, tt.wantVIDIndex)
-				return
-			}
-			if got.vidMethodIndex != tt.wantVIDMethodIndex {
-				t.Errorf("ParseVertex().vidMethodIndex = %v, want %v", got.vidMethodIndex, tt.wantVIDMethodIndex)
-				return
-			}
-			if got.vidReceiverIsPtr != tt.wantVIDReceiverIsPtr {
-				t.Errorf("ParseVertex().vidReceiverIsPtr = %v, want %v", got.vidReceiverIsPtr, tt.wantVIDReceiverIsPtr)
-				return
-			}
+			assert.Equal(t, tt.wantVIDType, got.vidType)
+			assert.Equal(t, tt.wantVIDIndex, got.vidFieldIndex)
+			assert.Equal(t, tt.wantVIDMethodIndex, got.vidMethodIndex)
+			assert.Equal(t, tt.wantVIDReceiverIsPtr, got.vidReceiverIsPtr)
 			gotTag := make(map[string][]prop)
 			for _, tag := range got.tags {
 				props := make([]prop, 0)
@@ -91,9 +81,7 @@ func TestParseVertex(t *testing.T) {
 				}
 				gotTag[tag.TagName] = props
 			}
-			if !reflect.DeepEqual(gotTag, tt.wantTag) {
-				t.Errorf("ParseVertex().tags = %+v, want %+v", gotTag, tt.wantTag)
-			}
+			assert.Equal(t, tt.wantTag, gotTag)
 		})
 	}
 }
@@ -144,10 +132,7 @@ func TestGetVertexInfo(t *testing.T) {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			vertexValue := reflect.ValueOf(tt.v)
 			vidExpr := vertexSchema.GetVIDExpr(vertexValue)
-			if vidExpr != tt.wantVIDExpr {
-				t.Errorf("GetVIDExpr = %v, want %v", vidExpr, tt.wantVIDExpr)
-				return
-			}
+			assert.Equal(t, tt.wantVIDExpr, vidExpr)
 			propStr := ""
 			vertexValue = reflect.Indirect(vertexValue)
 			for _, tag := range vertexSchema.GetTags() {
@@ -159,9 +144,7 @@ func TestGetVertexInfo(t *testing.T) {
 					}
 				}
 			}
-			if strings.TrimSpace(propStr) != tt.wantPropExpr {
-				t.Errorf("GetPropExpr = %v, want %v", propStr, tt.wantPropExpr)
-			}
+			assert.Equal(t, tt.wantPropExpr, strings.TrimSpace(propStr))
 		})
 	}
 }

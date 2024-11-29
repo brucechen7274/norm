@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 	"time"
@@ -146,12 +147,12 @@ func TestFormatSimpleValue(t *testing.T) {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			for _, v := range tt.value {
 				got, err := FormatSimpleValue(tt.nebulaType, reflect.ValueOf(v))
-				if (err != nil) != tt.wantErr {
-					t.Errorf("FormatSimpleValue() error = %v, wantErr %v", err, tt.wantErr)
+				if tt.wantErr {
+					assert.Error(t, err)
 					return
 				}
-				if got != tt.want {
-					t.Errorf("FormatSimpleValue() got = %v, want %v", got, tt.want)
+				if assert.NoError(t, err) {
+					assert.Equal(t, tt.want, got)
 				}
 			}
 		})

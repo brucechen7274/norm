@@ -22,7 +22,7 @@ func TestUpdateVertex(t *testing.T) {
 		},
 		{
 			clauses: []clause.Interface{clause.UpdateVertex{IsUpsert: true, VID: "player668", TagUpdate: playerUpdate{"name": "Amber", "age": &clause.Expr{Str: "age + 1"}}}},
-			gqlWant: `UPSERT VERTEX ON player "player668" SET name = "Amber", age = age + 1`,
+			gqlWant: `UPSERT VERTEX ON player "player668" SET age = age + 1, name = "Amber"`,
 		},
 		{
 			clauses: []clause.Interface{clause.UpdateVertex{VID: 101, TagUpdate: &playerTag{Name: "hayson", Age: 26}}},

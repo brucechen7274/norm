@@ -3,6 +3,7 @@ package statement
 import (
 	"fmt"
 	"github.com/haysons/nebulaorm/clause"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -73,14 +74,12 @@ func TestDelete(t *testing.T) {
 		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
 			s := tt.stmt()
 			ngql, err := s.NGQL()
-			if err != nil {
-				if !tt.wantErr {
-					t.Errorf("got an unexpected error: %v", err)
-				}
+			if tt.wantErr {
+				assert.Error(t, err)
 				return
 			}
-			if ngql != tt.want {
-				t.Errorf("NGQL = %v, want %v", ngql, tt.want)
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
 			}
 		})
 	}

@@ -1,9 +1,9 @@
 package clause_test
 
 import (
-	"errors"
 	"github.com/haysons/nebulaorm/clause"
 	"github.com/haysons/nebulaorm/statement"
+	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 )
@@ -23,10 +23,8 @@ func testBuildClauses(t *testing.T, clauses []clause.Interface, gqlWant string, 
 	gqlBuilder := new(strings.Builder)
 	err := stmtPart.Build(gqlBuilder)
 	gql := gqlBuilder.String()
-	if !errors.Is(err, errWant) {
-		t.Errorf("clause build err exception, want: %v  got: %v", errWant, err)
-	}
-	if err == nil && gql != gqlWant {
-		t.Errorf("clause build exception, want: %s  got: %s", gqlWant, gql)
+	assert.ErrorIs(t, err, errWant)
+	if err == nil {
+		assert.Equal(t, gql, gqlWant)
 	}
 }
