@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"errors"
+	"github.com/haysons/nebulaorm/internal/utils"
 	"reflect"
 )
 
@@ -23,16 +24,11 @@ func ParseRecord(destType reflect.Type) (*RecordSchema, error) {
 		Name:          destType.Name(),
 		colFieldIndex: make(map[string][]int),
 	}
-	for i := 0; i < destType.NumField(); i++ {
-		structField := destType.Field(i)
-		if structField.Anonymous || !structField.IsExported() {
-			continue
-		}
-		if FieldIgnore(structField) {
-			continue
-		}
+	for _, structField := range getDestFields(destType) {
 		colName := getColName(structField)
-		record.colFieldIndex[colName] = []int{i}
+		if _, ok := record.colFieldIndex[colName]; !ok {
+			record.colFieldIndex[colName] = structField.Index
+		}
 	}
 	return record, nil
 }
@@ -49,4 +45,15 @@ func getColName(field reflect.StructField) string {
 		colName = camelCaseToUnderscore(field.Name)
 	}
 	return colName
+}
+
+func getDestFields(destType reflect.Type) []reflect.StructField {
+	fields := make([]reflect.StructField, 0)
+	for _, field := range utils.StructFields(destType) {
+		if !field.IsExported() || FieldIgnore(field) {
+			continue
+		}
+		fields = append(fields, field)
+	}
+	return fields
 }

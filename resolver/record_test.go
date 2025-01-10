@@ -19,7 +19,7 @@ func TestParseRecord(t *testing.T) {
 		},
 		{
 			record: record2{},
-			want:   &RecordSchema{Name: "record2", colFieldIndex: map[string][]int{"col1": {1}, "names": {2}}},
+			want:   &RecordSchema{Name: "record2", colFieldIndex: map[string][]int{"col1": {1}, "names": {2}, "name": {0, 0}, "age": {0, 1}, "c": {0, 3}}},
 		},
 	}
 	for i, tt := range tests {

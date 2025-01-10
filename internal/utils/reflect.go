@@ -51,3 +51,24 @@ func PtrValue(destValue reflect.Value) reflect.Value {
 	}
 	return destValue
 }
+
+func StructFields(t reflect.Type) []reflect.StructField {
+	return structFields(t, nil)
+}
+
+func structFields(t reflect.Type, parentIndex []int) []reflect.StructField {
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	fields := make([]reflect.StructField, 0)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		field.Index = append(parentIndex, field.Index...)
+		if field.Anonymous {
+			fields = append(fields, structFields(field.Type, field.Index)...)
+		} else {
+			fields = append(fields, field)
+		}
+	}
+	return fields
+}

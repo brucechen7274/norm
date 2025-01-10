@@ -36,7 +36,7 @@ type VertexSchema struct {
 	tags             []*VertexTag
 	tagByName        map[string]*VertexTag
 	vidType          VIDType
-	vidFieldIndex    int
+	vidFieldIndex    []int
 	vidMethodIndex   int
 	vidReceiverIsPtr bool
 }
@@ -49,23 +49,29 @@ func ParseVertex(destType reflect.Type) (*VertexSchema, error) {
 		return nil, errors.New("nebulaorm: parse vertex failed, dest should be a struct or a struct pointer")
 	}
 	vertex := &VertexSchema{
-		vidFieldIndex:  -1,
+		vidFieldIndex:  nil,
 		vidMethodIndex: -1,
 		tagByName:      make(map[string]*VertexTag),
 	}
 	if err := vertex.parseVID(destType); err != nil {
 		return nil, err
 	}
-	if err := vertex.parseTag(destType, -1); err != nil {
+	// If the 'vertex' struct itself implements tagNamer,
+	// it is considered a single-tag vertex,
+	// and no further consideration is given to whether other fields implement tagNamer.
+	isTag, err := vertex.parseTag(destType, -1)
+	if err != nil {
 		return nil, err
 	}
-	for i := 0; i < destType.NumField(); i++ {
-		field := destType.Field(i)
-		if field.Anonymous || !field.IsExported() || FieldIgnore(field) {
-			continue
-		}
-		if err := vertex.parseTag(destType.Field(i).Type, i); err != nil {
-			return nil, err
+	if !isTag {
+		for i := 0; i < destType.NumField(); i++ {
+			field := destType.Field(i)
+			if field.Anonymous || !field.IsExported() || FieldIgnore(field) {
+				continue
+			}
+			if _, err := vertex.parseTag(destType.Field(i).Type, i); err != nil {
+				return nil, err
+			}
 		}
 	}
 	if len(vertex.tags) == 0 {
@@ -93,32 +99,28 @@ func (v *VertexSchema) parseVID(vertexType reflect.Type) error {
 		return fmt.Errorf("nebulaorm: parse vertex failed, cannot get vertex_id method")
 	}
 	// if the struct contains a vid field, save it and assign it to it when scanning
-	for i := 0; i < vertexType.NumField(); i++ {
-		field := vertexType.Field(i)
-		if field.Anonymous || !field.IsExported() {
-			continue
-		}
+	for _, field := range getDestFields(vertexType) {
 		setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
 		if _, ok := setting[TagSettingVertexID]; ok {
-			v.vidFieldIndex = i
+			v.vidFieldIndex = field.Index
 			break
 		}
 	}
 	return nil
 }
 
-func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) error {
+func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, error) {
 	if destType.Kind() == reflect.Ptr {
 		destType = destType.Elem()
 	}
 	if destType.Kind() != reflect.Struct {
-		return nil
+		return false, nil
 	}
 	// if the structure implements the VertexTagNamer interface, treat the structure as a tag and get the name of its tag
 	destValue := reflect.New(destType).Interface()
 	tagNamer, ok := destValue.(VertexTagNamer)
 	if !ok {
-		return nil
+		return false, nil
 	}
 	tagName := tagNamer.VertexTagName()
 	if _, ok := v.tagByName[tagName]; !ok {
@@ -131,15 +133,8 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) error {
 		v.tags = append(v.tags, tag)
 	}
 	// parse each property of the current tag
-	for i := 0; i < destType.NumField(); i++ {
-		structField := destType.Field(i)
-		if structField.Anonymous || !structField.IsExported() {
-			continue
-		}
+	for _, structField := range getDestFields(destType) {
 		setting := ParseTagSetting(structField.Tag.Get(TagSettingKey))
-		if _, ok := setting[TagSettingIgnore]; ok {
-			continue
-		}
 		if _, ok := setting[TagSettingVertexID]; ok {
 			continue
 		}
@@ -161,7 +156,7 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) error {
 		v.tagByName[tagName].props = append(v.tagByName[tagName].props, prop)
 		v.tagByName[tagName].propByName[propName] = prop
 	}
-	return nil
+	return true, nil
 }
 
 // GetVID get the vid value of vertexValue
@@ -208,9 +203,9 @@ func (v *VertexSchema) Scan(node *nebula.Node, destValue reflect.Value) error {
 		return fmt.Errorf("nebulaorm: vertex schema scan dest value failed, %w", ErrValueCannotSet)
 	}
 	// if a vid field exists in the structure, it is assigned to it
-	if v.vidFieldIndex >= 0 {
+	if v.vidFieldIndex != nil {
 		vid := node.GetID()
-		if err := ScanSimpleValue(&vid, destValue.Field(v.vidFieldIndex)); err != nil {
+		if err := ScanSimpleValue(&vid, destValue.FieldByIndex(v.vidFieldIndex)); err != nil {
 			return err
 		}
 	}

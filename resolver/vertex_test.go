@@ -18,32 +18,32 @@ func TestParseVertex(t *testing.T) {
 	tests := []struct {
 		dest                 interface{}
 		wantVIDType          VIDType
-		wantVIDIndex         int
+		wantVIDIndex         []int
 		wantVIDMethodIndex   int
 		wantVIDReceiverIsPtr bool
 		wantTag              map[string][]prop
 		wantErr              bool
 	}{
-		{dest: vertex1{}, wantVIDType: VIDTypeString, wantVIDIndex: 2, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
+		{dest: vertex1{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{2}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag1": {
 				{"name", []int{0}, ""},
 				{"age", []int{1}, ""},
 			},
 		}},
-		{dest: vertex2{}, wantVIDType: VIDTypeString, wantVIDIndex: -1, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
+		{dest: vertex2{}, wantVIDType: VIDTypeString, wantVIDIndex: nil, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag2": {
 				{"name", []int{0}, ""},
 				{"age", []int{1}, ""},
 				{"gender", []int{2}, "string"},
 			},
 		}},
-		{dest: &vertex3{}, wantVIDType: VIDTypeInt64, wantVIDIndex: -1, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: false, wantTag: map[string][]prop{
+		{dest: &vertex3{}, wantVIDType: VIDTypeInt64, wantVIDIndex: nil, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: false, wantTag: map[string][]prop{
 			"vertex_tag3": {
 				{"name", []int{0}, ""},
 				{"age", []int{1}, ""},
 			},
 		}},
-		{dest: &vertex4{}, wantVIDType: VIDTypeString, wantVIDIndex: 4, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
+		{dest: &vertex4{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{4}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag1": {
 				{"name", []int{2, 0}, ""},
 				{"age", []int{2, 1}, ""},

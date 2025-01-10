@@ -15,10 +15,10 @@ func TestParseEdge(t *testing.T) {
 		wantProp []prop
 		wantErr  bool
 	}{
-		{dest: edge1{}, want: &EdgeSchema{srcVIDType: VIDTypeString, srcVIDFieldIndex: 2, dstVIDType: VIDTypeString, dstVIDFieldIndex: 3, rankFieldIndex: 4, edgeTypeName: "edge1"}, wantProp: []prop{
+		{dest: edge1{}, want: &EdgeSchema{srcVIDType: VIDTypeString, srcVIDFieldIndex: []int{2}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{3}, rankFieldIndex: []int{4}, edgeTypeName: "edge1"}, wantProp: []prop{
 			{name: "name", index: []int{0}}, {name: "age", index: []int{1}}, {name: "gender", index: []int{5}, nebulaType: "string"},
 		}},
-		{dest: &edge2{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: 0, dstVIDType: VIDTypeString, dstVIDFieldIndex: 1, rankFieldIndex: -1, edgeTypeName: "edge2"}, wantProp: []prop{
+		{dest: &edge2{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{1}, rankFieldIndex: nil, edgeTypeName: "edge2"}, wantProp: []prop{
 			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
 		}},
 		{dest: edge3{}, wantErr: true},
