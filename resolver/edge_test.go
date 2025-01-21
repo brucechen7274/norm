@@ -21,6 +21,15 @@ func TestParseEdge(t *testing.T) {
 		{dest: &edge2{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{1}, rankFieldIndex: nil, edgeTypeName: "edge2"}, wantProp: []prop{
 			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
 		}},
+		{dest: &edge4{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0, 0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{0, 1}, rankFieldIndex: []int{1}, edgeTypeName: "edge_base"}, wantProp: []prop{
+			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
+		}},
+		{dest: &edge5{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0, 0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{0, 1}, rankFieldIndex: nil, edgeTypeName: "edge5"}, wantProp: []prop{
+			{name: "name", index: []int{1}}, {name: "age", index: []int{2}},
+		}},
+		{dest: &edge6{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0, 0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{1}, rankFieldIndex: nil, edgeTypeName: "edge6"}, wantProp: []prop{
+			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
+		}},
 		{dest: edge3{}, wantErr: true},
 		{dest: record1{}, wantErr: true},
 	}
@@ -78,10 +87,31 @@ func TestGetEdgeInfo(t *testing.T) {
 		Rank:   3,
 		Gender: 1,
 	}
-	edgeSchema, err := ParseEdge(reflect.TypeOf(e1))
-	if err != nil {
-		t.Errorf("ParseEdge() error = %v", err)
-		return
+	e4 := &edge4{
+		edgeBase: edgeBase{
+			SrcID: 401,
+			DstID: "402",
+		},
+		Rank: 1,
+		Name: "name4",
+		Age:  18,
+	}
+	e5 := &edge5{
+		edgeBase: edgeBase{
+			SrcID: 501,
+			DstID: "502",
+		},
+		Name: "name5",
+		Age:  19,
+	}
+	e6 := &edge6{
+		edgeBase: &edgeBase{
+			SrcID: 601,
+			DstID: "602",
+		},
+		DstID: "603",
+		Name:  "name6",
+		Age:   20,
 	}
 	tests := []struct {
 		e             interface{}
@@ -93,9 +123,16 @@ func TestGetEdgeInfo(t *testing.T) {
 		{e: e1, wantSrcIDExpr: `"101"`, wantDstIDExpr: `"102"`, wantRank: 1, wantPropExpr: `"name1" 18 1`},
 		{e: e2, wantSrcIDExpr: `"201"`, wantDstIDExpr: `"202"`, wantRank: 2, wantPropExpr: `"name2" 19 1`},
 		{e: e3, wantSrcIDExpr: `"301"`, wantDstIDExpr: `"302"`, wantRank: 3, wantPropExpr: `"name3" 20 1`},
+		{e: e4, wantSrcIDExpr: `401`, wantDstIDExpr: `"402"`, wantRank: 1, wantPropExpr: `"name4" 18`},
+		{e: e5, wantSrcIDExpr: `501`, wantDstIDExpr: `"502"`, wantRank: 0, wantPropExpr: `"name5" 19`},
+		{e: e6, wantSrcIDExpr: `601`, wantDstIDExpr: `"603"`, wantRank: 0, wantPropExpr: `"name6" 20`},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
+			edgeSchema, err := ParseEdge(reflect.TypeOf(tt.e))
+			if !assert.NoError(t, err) {
+				return
+			}
 			edgeValue := reflect.ValueOf(tt.e)
 			assert.Equal(t, tt.wantSrcIDExpr, edgeSchema.GetSrcVIDExpr(edgeValue))
 			assert.Equal(t, tt.wantDstIDExpr, edgeSchema.GetDstVIDExpr(edgeValue))
@@ -147,4 +184,41 @@ type edge3 struct {
 
 func (e edge3) EdgeTypeName() string {
 	return "edge3"
+}
+
+type edgeBase struct {
+	SrcID int64  `norm:"edge_src_id"`
+	DstID string `norm:"edge_dst_id"`
+}
+
+func (e *edgeBase) EdgeTypeName() string {
+	return "edge_base"
+}
+
+type edge4 struct {
+	edgeBase
+	Rank int    `norm:"edge_rank"`
+	Name string `norm:"prop:name"`
+	Age  int    `norm:"prop:age"`
+}
+
+type edge5 struct {
+	edgeBase
+	Name string `norm:"prop:name"`
+	Age  int    `norm:"prop:age"`
+}
+
+func (e *edge5) EdgeTypeName() string {
+	return "edge5"
+}
+
+type edge6 struct {
+	*edgeBase
+	DstID string `norm:"edge_dst_id"`
+	Name  string `norm:"prop:name"`
+	Age   int    `norm:"prop:age"`
+}
+
+func (e *edge6) EdgeTypeName() string {
+	return "edge6"
 }

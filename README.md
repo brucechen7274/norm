@@ -7,8 +7,8 @@
 
 ## Introduction
 
-nebulaorm is an orm framework designed specifically for nebula graph. 
-It aims to improve the golang experience with nebula graph by chaining together nGQL statements in a more elegant and 
+nebulaorm is an orm framework designed specifically for nebula graph.
+It aims to improve the golang experience with nebula graph by chaining together nGQL statements in a more elegant and
 faster way, and parsing the returned result set and assigning it to developer-supplied variables.
 
 ## Installation
@@ -62,7 +62,6 @@ func (s Serve) EdgeTypeName() string {
     return "serve"
 }
 
-// Note: Currently there is no support for inlining other struct when declaring struct, so please keep multiple copies of duplicate fields.
 func main() {
     // initialize the db object
     conf := &nebulaorm.Config{
@@ -86,6 +85,7 @@ func main() {
     if err := db.InsertVertex(player).Exec(); err != nil {
         log.Fatalf("insert player failed: %v", err)
     }
+    
     // insert the team vertex
     team := &Team{
         VID:  "team1001",
@@ -94,6 +94,7 @@ func main() {
     if err := db.InsertVertex(team).Exec(); err != nil {
         log.Fatalf("insert team failed: %v", err)
     }
+    
     // insert the serve edge
     serve := &Serve{
         SrcID:     "player1001",
@@ -142,6 +143,7 @@ func main() {
 
 * Fast splicing of nGQL by chained calls
 * Friendly support for parsing and assigning compound types such as vertex, edge, list, map, set
+* Supports struct embedding, allowing for elegant code reuse
 * Fully unit tested
 * Developer Friendly
 

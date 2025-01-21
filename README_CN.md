@@ -61,7 +61,6 @@ func (s Serve) EdgeTypeName() string {
     return "serve"
 }
 
-// 注: 目前在声明结构体时还不支持内嵌其他结构体，重复的字段请保留多份
 func main() {
     // 初始化db对象
     conf := &nebulaorm.Config{
@@ -85,6 +84,7 @@ func main() {
     if err := db.InsertVertex(player).Exec(); err != nil {
         log.Fatalf("insert player failed: %v", err)
     }
+    
     // 写入team节点
     team := &Team{
         VID:  "team1001",
@@ -93,6 +93,7 @@ func main() {
     if err := db.InsertVertex(team).Exec(); err != nil {
         log.Fatalf("insert team failed: %v", err)
     }
+    
     // 写入serve边
     serve := &Serve{
         SrcID:     "player1001",
@@ -141,6 +142,7 @@ func main() {
 
 * 通过链式调用快速拼接nGQL语句
 * 对于复合类型的解析和赋值提供友好地支持，例如：vertex, edge, list, map, set
+* 支持结构体的内嵌，从而优雅地复用代码
 * 完善的单元测试
 * 开发者友好
 

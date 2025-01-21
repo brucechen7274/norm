@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/haysons/nebulaorm/internal/utils"
 	"reflect"
+	"sort"
 )
 
 // RecordSchema parses the record structure provided by the business layer for subsequent assignment of the Record \
@@ -55,5 +56,18 @@ func getDestFields(destType reflect.Type) []reflect.StructField {
 		}
 		fields = append(fields, field)
 	}
+	sort.Slice(fields, func(i, j int) bool {
+		if len(fields[i].Index) != len(fields[j].Index) {
+			return len(fields[i].Index) < len(fields[j].Index)
+		}
+		for k := 0; k < len(fields[i].Index); k++ {
+			if fields[i].Index[k] < fields[j].Index[k] {
+				return true
+			} else if fields[i].Index[k] > fields[j].Index[k] {
+				return false
+			}
+		}
+		return true
+	})
 	return fields
 }

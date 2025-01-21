@@ -49,34 +49,40 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 	for _, field := range getDestFields(destType) {
 		setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
 		if _, isSrcID := setting[TagSettingEdgeSrcID]; isSrcID {
-			switch field.Type.Kind() {
-			case reflect.String:
-				edge.srcVIDType = VIDTypeString
-			case reflect.Int64:
-				edge.srcVIDType = VIDTypeInt64
-			default:
-				return nil, errors.New("nebulaorm: parse edge failed, src_id field should be a string or int64")
+			if edge.srcVIDFieldIndex == nil {
+				switch field.Type.Kind() {
+				case reflect.String:
+					edge.srcVIDType = VIDTypeString
+				case reflect.Int64:
+					edge.srcVIDType = VIDTypeInt64
+				default:
+					return nil, errors.New("nebulaorm: parse edge failed, src_id field should be a string or int64")
+				}
+				edge.srcVIDFieldIndex = field.Index
 			}
-			edge.srcVIDFieldIndex = field.Index
 			continue
 		}
 		if _, isDstID := setting[TagSettingEdgeDstID]; isDstID {
-			switch field.Type.Kind() {
-			case reflect.String:
-				edge.dstVIDType = VIDTypeString
-			case reflect.Int64:
-				edge.dstVIDType = VIDTypeInt64
-			default:
-				return nil, errors.New("nebulaorm: parse edge failed, dst_id field should be a string or int64")
+			if edge.dstVIDFieldIndex == nil {
+				switch field.Type.Kind() {
+				case reflect.String:
+					edge.dstVIDType = VIDTypeString
+				case reflect.Int64:
+					edge.dstVIDType = VIDTypeInt64
+				default:
+					return nil, errors.New("nebulaorm: parse edge failed, dst_id field should be a string or int64")
+				}
+				edge.dstVIDFieldIndex = field.Index
 			}
-			edge.dstVIDFieldIndex = field.Index
 			continue
 		}
 		if _, isRank := setting[TagSettingEdgeRank]; isRank {
-			if !(field.Type.Kind() == reflect.Int64 || field.Type.Kind() == reflect.Int || field.Type.Kind() == reflect.Int32 || field.Type.Kind() == reflect.Int8 || field.Type.Kind() == reflect.Int16) {
-				return nil, errors.New("nebulaorm: parse edge failed, rank field should be int")
+			if edge.rankFieldIndex == nil {
+				if !(field.Type.Kind() == reflect.Int64 || field.Type.Kind() == reflect.Int || field.Type.Kind() == reflect.Int32 || field.Type.Kind() == reflect.Int8 || field.Type.Kind() == reflect.Int16) {
+					return nil, errors.New("nebulaorm: parse edge failed, rank field should be int")
+				}
+				edge.rankFieldIndex = field.Index
 			}
-			edge.rankFieldIndex = field.Index
 			continue
 		}
 		// parsing Edge Properties

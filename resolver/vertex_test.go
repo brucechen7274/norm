@@ -54,6 +54,29 @@ func TestParseVertex(t *testing.T) {
 				{"gender", []int{3, 2}, "string"},
 			},
 		}},
+		{dest: &vertex5{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{0, 0}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
+			"vertex_tag5": {
+				{"name", []int{1}, ""},
+				{"age", []int{2}, ""},
+			},
+		}},
+		{dest: &vertex6{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{0, 0}, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: false, wantTag: map[string][]prop{
+			"vertex_tag1": {
+				{"name", []int{1, 0}, ""},
+				{"age", []int{1, 1}, ""},
+			},
+			"vertex_tag2": {
+				{"name", []int{2, 0}, ""},
+				{"age", []int{2, 1}, ""},
+				{"gender", []int{2, 2}, "string"},
+			},
+		}},
+		{dest: &vertex7{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{0, 2}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
+			"vertex_tag1": {
+				{"name", []int{1}, ""},
+				{"age", []int{2}, ""},
+			},
+		}},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
@@ -114,10 +137,28 @@ func TestGetVertexInfo(t *testing.T) {
 		},
 		VID: "v3",
 	}
-	vertexSchema, err := ParseVertex(reflect.TypeOf(v1))
-	if err != nil {
-		t.Errorf("ParseVertex() error = %v", err)
-		return
+	v4 := &vertex5{
+		vertexBase: vertexBase{VID: "v4"},
+		Name:       "name14",
+		Age:        18,
+	}
+	v5 := &vertex6{
+		vertexBase: &vertexBase{VID: "v5"},
+		Tag1: vertex1{
+			Name: "name15",
+		},
+		Tag2: &vertex2{
+			Name: "name25",
+		},
+	}
+	v6 := &vertex7{
+		vertex1: vertex1{
+			Name: "name26",
+			Age:  18,
+			VID:  "v6",
+		},
+		Name: "name27",
+		Age:  28,
 	}
 	tests := []struct {
 		v            interface{}
@@ -127,9 +168,16 @@ func TestGetVertexInfo(t *testing.T) {
 		{v: v1, wantVIDExpr: `"v1"`, wantPropExpr: `"name11" "name21"`},
 		{v: v2, wantVIDExpr: `"v2"`, wantPropExpr: `"name12" "name22"`},
 		{v: v3, wantVIDExpr: `"v3"`, wantPropExpr: `"name13" "name23"`},
+		{v: v4, wantVIDExpr: `"v4"`, wantPropExpr: `"name14" 18`},
+		{v: v5, wantVIDExpr: `"v5"`, wantPropExpr: `"name15" "name25"`},
+		{v: v6, wantVIDExpr: `"v6"`, wantPropExpr: `"name27" 28`},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
+			vertexSchema, err := ParseVertex(reflect.TypeOf(tt.v))
+			if !assert.NoError(t, err) {
+				return
+			}
 			vertexValue := reflect.ValueOf(tt.v)
 			vidExpr := vertexSchema.GetVIDExpr(vertexValue)
 			assert.Equal(t, tt.wantVIDExpr, vidExpr)
@@ -210,4 +258,38 @@ type vertex4 struct {
 
 func (v *vertex4) VertexID() string {
 	return v.VID
+}
+
+type vertexBase struct {
+	VID string `norm:"vertex_id"`
+}
+
+func (v *vertexBase) VertexID() string {
+	return v.VID
+}
+
+type vertex5 struct {
+	vertexBase
+	Name string `norm:"prop:name"`
+	Age  int64
+}
+
+func (v vertex5) VertexTagName() string {
+	return "vertex_tag5"
+}
+
+type vertex6 struct {
+	*vertexBase
+	Tag1 vertex1
+	Tag2 *vertex2
+}
+
+func (v vertex6) A() string {
+	return v.VertexID()
+}
+
+type vertex7 struct {
+	vertex1
+	Name string `norm:"prop:name"`
+	Age  int    `norm:"prop:age"`
 }

@@ -7,14 +7,18 @@ import (
 	"time"
 )
 
-type Player struct {
-	VID  string `norm:"vertex_id"`
-	Name string `norm:"prop:name"`
-	Age  int    `norm:"prop:age"`
+type VertexBase struct {
+	VID string `norm:"vertex_id"`
 }
 
-func (p Player) VertexID() string {
+func (p VertexBase) VertexID() string {
 	return p.VID
+}
+
+type Player struct {
+	VertexBase
+	Name string `norm:"prop:name"`
+	Age  int    `norm:"prop:age"`
 }
 
 func (p Player) VertexTagName() string {
@@ -22,24 +26,24 @@ func (p Player) VertexTagName() string {
 }
 
 type Team struct {
-	VID  string `norm:"vertex_id"`
+	VertexBase
 	Name string `norm:"prop:name"`
-}
-
-func (t Team) VertexID() string {
-	return t.VID
 }
 
 func (t Team) VertexTagName() string {
 	return "team"
 }
 
+type EdgeBase struct {
+	SrcID string `norm:"edge_src_id"`
+	DstID string `norm:"edge_dst_id"`
+	Rank  int    `norm:"edge_rank"`
+}
+
 type Serve struct {
-	SrcID     string `norm:"edge_src_id"`
-	DstID     string `norm:"edge_dst_id"`
-	Rank      int    `norm:"edge_rank"`
-	StartYear int64  `norm:"prop:start_year"`
-	EndYear   int64  `norm:"prop:end_year"`
+	EdgeBase
+	StartYear int64 `norm:"prop:start_year"`
+	EndYear   int64 `norm:"prop:end_year"`
 }
 
 func (s Serve) EdgeTypeName() string {
@@ -75,23 +79,25 @@ func main() {
 
 func Insert() {
 	player := &Player{
-		VID:  "player1001",
-		Name: "Kobe Bryant",
-		Age:  33,
+		VertexBase: VertexBase{VID: "player1001"},
+		Name:       "Kobe Bryant",
+		Age:        33,
 	}
 	if err := db.InsertVertex(player).Exec(); err != nil {
 		log.Fatalf("insert player failed: %v", err)
 	}
 	team := &Team{
-		VID:  "team1001",
-		Name: "Lakers",
+		VertexBase: VertexBase{VID: "team1001"},
+		Name:       "Lakers",
 	}
 	if err := db.InsertVertex(team).Exec(); err != nil {
 		log.Fatalf("insert team failed: %v", err)
 	}
 	serve := &Serve{
-		SrcID:     "player1001",
-		DstID:     "team1001",
+		EdgeBase: EdgeBase{
+			SrcID: "player1001",
+			DstID: "team1001",
+		},
 		StartYear: time.Date(1996, 1, 1, 0, 0, 0, 0, time.Local).Unix(),
 		EndYear:   time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local).Unix(),
 	}
@@ -184,7 +190,7 @@ func Update() {
 	}
 	log.Printf("vertex prop after update: %+v", prop)
 
-	if err = db.UpdateEdge(Serve{SrcID: "player1001", DstID: "team1001"}, &Serve{StartYear: 160123456}).Exec(); err != nil {
+	if err = db.UpdateEdge(Serve{EdgeBase: EdgeBase{SrcID: "player1001", DstID: "team1001"}}, &Serve{StartYear: 160123456}).Exec(); err != nil {
 		log.Fatalf("update edge serve failed: %v", err)
 	}
 	prop = make(map[string]interface{})
@@ -209,7 +215,7 @@ func Delete() {
 		log.Printf("after delete, fetch player failed: %v", err)
 	}
 
-	if err = db.DeleteEdge("serve", Serve{SrcID: "player1001", DstID: "team1001"}).Exec(); err != nil {
+	if err = db.DeleteEdge("serve", Serve{EdgeBase: EdgeBase{SrcID: "player1001", DstID: "team1001"}}).Exec(); err != nil {
 		log.Fatalf("delete edge serve failed: %v", err)
 	}
 	serve := new(Serve)
