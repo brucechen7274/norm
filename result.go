@@ -1,8 +1,10 @@
 package nebulaorm
 
 import (
+	"context"
 	"fmt"
 	"github.com/haysons/nebulaorm/internal/utils"
+	"github.com/haysons/nebulaorm/logger"
 	"github.com/haysons/nebulaorm/resolver"
 	"github.com/haysons/nebulaorm/statement"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
@@ -21,7 +23,9 @@ func (db *DB) RawResult() (*nebula.ResultSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	return db.sessionPool.Execute(nGQL)
+	res, err := db.sessionPool.Execute(nGQL)
+	db.conf.logger.Trace(context.TODO(), &logger.TraceRecord{NGQL: nGQL, Err: err})
+	return res, err
 }
 
 // Exec the statement, but don't care about the result as long as it is used for insert, update, delete operations
@@ -31,6 +35,7 @@ func (db *DB) Exec() error {
 		return err
 	}
 	res, err := db.sessionPool.Execute(nGQL)
+	db.conf.logger.Trace(context.TODO(), &logger.TraceRecord{NGQL: nGQL, Err: err})
 	if err != nil {
 		return err
 	}

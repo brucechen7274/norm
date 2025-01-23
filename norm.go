@@ -2,6 +2,7 @@ package nebulaorm
 
 import (
 	"fmt"
+	"github.com/haysons/nebulaorm/logger"
 	"github.com/haysons/nebulaorm/resolver"
 	"github.com/haysons/nebulaorm/statement"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
@@ -39,6 +40,10 @@ func Open(conf *Config, opts ...ConfigOption) (*DB, error) {
 		conf.timezone = time.Local
 	}
 	resolver.SetTimezone(conf.timezone)
+
+	if conf.logger == nil {
+		conf.logger = logger.Default
+	}
 
 	hostAddr, err := parseServerAddr(conf.Addresses)
 	if err != nil {

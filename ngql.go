@@ -1,6 +1,9 @@
 package nebulaorm
 
-import "github.com/haysons/nebulaorm/clause"
+import (
+	"github.com/haysons/nebulaorm/clause"
+	"github.com/haysons/nebulaorm/logger"
+)
 
 // Raw exec nGQL statements natively
 // see more information on the method of the same name in statement.Statement
@@ -207,4 +210,17 @@ func (db *DB) Pipe() (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Pipe()
 	return
+}
+
+// Debug starts a new session with the log level set to debug
+func (db *DB) Debug() (tx *DB) {
+	tx = db.getInstance()
+	confNew := *tx.conf
+	confNew.logger = tx.conf.logger.LogMode(logger.DebugLevel)
+	return &DB{
+		Statement:   tx.Statement,
+		conf:        &confNew,
+		sessionPool: tx.sessionPool,
+		clone:       1,
+	}
 }

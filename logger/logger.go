@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 )
 
 type Level int
@@ -46,6 +47,11 @@ type Config struct {
 	Colorful bool
 	LogLevel Level
 }
+
+var Default = New(os.Stdout, Config{
+	Colorful: true,
+	LogLevel: WarnLevel,
+})
 
 func New(writer io.Writer, conf Config) Interface {
 	logger := &defaultLogger{

@@ -1,6 +1,7 @@
 package nebulaorm
 
 import (
+	"github.com/haysons/nebulaorm/logger"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
 	"time"
 )
@@ -39,6 +40,8 @@ type Config struct {
 	nebulaSessionOpts []nebula.SessionPoolConfOption
 
 	timezone *time.Location
+
+	logger logger.Interface
 }
 
 type ConfigOption interface {
@@ -55,5 +58,12 @@ func (f funcConfigOption) apply(conf *Config) {
 func WithNebulaSessionPoolOptions(opts []nebula.SessionPoolConfOption) ConfigOption {
 	return funcConfigOption(func(config *Config) {
 		config.nebulaSessionOpts = append(config.nebulaSessionOpts, opts...)
+	})
+}
+
+// WithLogger customizes the logger used by nebulaorm
+func WithLogger(logger logger.Interface) ConfigOption {
+	return funcConfigOption(func(config *Config) {
+		config.logger = logger
 	})
 }

@@ -14,13 +14,23 @@ func TestLogger(t *testing.T) {
 	})
 	ctx := context.Background()
 
-	logger.Debug(ctx, "hello world")
-	logger.Info(ctx, "hello world")
-	logger.Warn(ctx, "hello world")
-	logger.Error(ctx, "hello world")
-
+	logger.Debug(ctx, "debug message")
+	logger.Info(ctx, "info message")
+	logger.Warn(ctx, "warn message")
+	logger.Error(ctx, "error message")
 	logger.Trace(ctx, &TraceRecord{
 		NGQL: `GO FROM "player102" OVER serve YIELD dst(edge);`,
 		Err:  errors.New("error"),
 	})
+
+	logger = logger.LogMode(WarnLevel)
+	logger.Debug(ctx, "debug message")
+	logger.Info(ctx, "info message")
+	logger.Warn(ctx, "warn message")
+	logger.Trace(ctx, &TraceRecord{
+		NGQL: `GO FROM "player102" OVER serve YIELD dst(edge);`,
+	})
+
+	logger = logger.LogMode(SilentLevel)
+	logger.Error(ctx, "error message")
 }
