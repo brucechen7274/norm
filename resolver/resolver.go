@@ -308,7 +308,15 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 		default:
 		}
 	case NebulaDataTypeTime:
-		// todo: about conversion of time types
+		vTimeW, _ := nebulaValue.AsTime()
+		vTime, _ := vTimeW.GetLocalTimeWithTimezoneName(timezoneDefault.String())
+		switch destValue.Kind() {
+		case reflect.String:
+			dateObj := time.Date(2020, 1, 1, int(vTime.GetHour()), int(vTime.GetMinute()), int(vTime.GetSec()), int(vTime.GetMicrosec()*1000), timezoneDefault)
+			destValue.SetString(dateObj.Format("15:04:05.000000"))
+			return nil
+		default:
+		}
 	case NebulaDataTypeDatetime:
 		vDateTimeW, _ := nebulaValue.AsDateTime()
 		vDateTime, _ := vDateTimeW.GetLocalDateTimeWithTimezoneName(timezoneDefault.String())
@@ -522,7 +530,10 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 		date := dateUTC.In(timezoneDefault)
 		return date, nil
 	case NebulaDataTypeTime:
-		// todo: about conversion of time types
+		nTimeW, _ := nebulaValue.AsTime()
+		nTime, _ := nTimeW.GetLocalTimeWithTimezoneName(timezoneDefault.String())
+		dateObj := time.Date(2020, 1, 1, int(nTime.GetHour()), int(nTime.GetMinute()), int(nTime.GetSec()), int(nTime.GetMicrosec()*1000), timezoneDefault)
+		return dateObj.Format("15:04:05.000000"), nil
 	case NebulaDataTypeDatetime:
 		nDatetimeW, _ := nebulaValue.AsDateTime()
 		nDatetime, _ := nDatetimeW.GetLocalDateTimeWithTimezoneName(timezoneDefault.String())
