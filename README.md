@@ -5,19 +5,32 @@
 [![go report card](https://goreportcard.com/badge/haysons/norm)](https://goreportcard.com/report/github.com/haysons/norm)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-## Introduction
+## 🚀 Introduction
 
-norm is an orm framework designed specifically for nebula graph.
-It aims to improve the golang experience with nebula graph by chaining together nGQL statements in a more elegant and
-faster way, and parsing the returned result set and assigning it to developer-supplied variables.
+**norm** is a lightweight, developer-friendly ORM framework designed specifically
+for [nebula graph](https://nebula-graph.io).  
+It aims to simplify the Go development experience by enabling elegant, chainable `nGQL` query construction and seamless
+result mapping.
 
-## Installation
+Whether you're building a graph-based social network or a knowledge graph platform, `norm` helps you move fast without
+sacrificing readability or maintainability.
 
-```
+## 📦 Installation
+
+```bash
 go get github.com/haysons/norm
 ```
 
-## Quick Start
+## ✨ Features
+
+- 🔗 **Chainable nGQL builder**: Write readable, elegant queries with fluent chaining.
+- 📦 **Struct-based mapping**: Map query results directly into Go structs.
+- 🧠 **Smart parsing**: Supports nested types — vertex, edge, list, map, set — with ease.
+- 📚 **Struct embedding support**: Maximize code reuse and maintain clarity.
+- 🧪 **Fully unit tested**: Confidently build production-grade apps.
+- 💡 **Developer-first design**: Less boilerplate, more productivity.
+
+## ⚡ Quick Start
 
 ``` go
 // Player vertex player
@@ -139,28 +152,22 @@ func main() {
 }
 ```
 
-## Features
+## 🤝 Contributing
 
-* Fast splicing of nGQL by chained calls
-* Friendly support for parsing and assigning compound types such as vertex, edge, list, map, set
-* Supports struct embedding, allowing for elegant code reuse
-* Fully unit tested
-* Developer Friendly
+We welcome contributions from the community!
 
-## Contributing
+- 🍴 Fork the repo
+- 🔧 Create a feature branch
+- ✅ Submit a pull request
 
-Contributions are welcome! Please submit a pull request.
+## 🙏 Acknowledgements
 
-## Acknowledgements
+Special thanks to the following projects that inspired and supported `norm`:
 
-This project was inspired and helped by the following open source projects during the development process:
+- [**gorm**](https://gorm.io): The beloved ORM for Golang — simple, powerful, elegant.
 
-* **gorm**: The fantastic ORM library for Golang, aims to be developer friendly.
+## 📄 License
 
-Thanks to the authors of these projects for their contributions to the open source community!
-
-## License
-
-2024-NOW hayson
+© 2024–NOW [@hayson](https://github.com/haysons)
 
 Released under the [MIT License](./LICENSE)

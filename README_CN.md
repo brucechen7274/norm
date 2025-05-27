@@ -5,18 +5,29 @@
 [![go report card](https://goreportcard.com/badge/haysons/norm)](https://goreportcard.com/report/github.com/haysons/norm)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-## 简介
+## 🚀 介绍
 
-norm 是一个专为 nebula graph 设计的 orm 框架，通过链式调用以更优雅、快速的方式拼接 nGQL 语句，并解析返回的结果集，
-将其赋值给开发者提供的变量，旨在提高golang对于nebula graph的使用体验。
+**norm** 是一个轻量且开发者友好的 ORM 框架，专为 [nebula graph](https://nebula-graph.io) 设计。  
+它旨在简化 Go 语言下的 nebula graph 开发体验，实现优雅且链式的 `nGQL` 查询构建，并支持无缝的结果映射。
 
-## 安装
+无论你是在构建基于图的社交网络，还是知识图谱平台，`norm` 都能帮助你快速开发，同时保证代码的可读性和可维护性。
 
-```
+## 📦 安装
+
+```bash
 go get github.com/haysons/norm
 ```
 
-## 快速开始
+## ✨ 特性
+
+- 🔗 **链式 nGQL 构建器**：通过流畅的链式调用书写可读且优雅的查询语句。
+- 📦 **基于结构体的映射**：查询结果可直接映射到 Go 结构体。
+- 🧠 **智能解析**：轻松支持嵌套类型 — 顶点（vertex）、边（edge）、列表（list）、映射（map）、集合（set）等。
+- 📚 **支持结构体内嵌**：最大化代码复用，同时保持代码清晰。
+- 🧪 **单元测试覆盖完善**：放心构建生产级应用。
+- 💡 **开发者优先设计**：减少样板代码，提高开发效率。
+
+## ⚡ 快速开始
 
 ``` go
 // Player 节点
@@ -138,28 +149,22 @@ func main() {
 }
 ```
 
-## 特性
+## 🤝 贡献
 
-* 通过链式调用快速拼接nGQL语句
-* 对于复合类型的解析和赋值提供友好地支持，例如：vertex, edge, list, map, set
-* 支持结构体的内嵌，从而优雅地复用代码
-* 完善的单元测试
-* 开发者友好
+欢迎社区的贡献！
 
-## 贡献
+- 🍴 Fork 本仓库
+- 🔧 创建功能分支
+- ✅ 提交 Pull Request
 
-欢迎您做贡献! 请提交 pull request.
+## 🙏 致谢
 
-## 致谢
+特别感谢以下项目对 `norm` 的启发和支持：
 
-本项目在开发过程中得到了以下开源项目的启发和帮助：
+- [**gorm**](https://gorm.io)：广受喜爱的 Golang ORM，简单、强大且优雅。
 
-* **gorm**: 适用于 Golang 的梦幻般的 ORM 库，旨在为开发人员提供方便。
+## 📄 许可证
 
-感谢这些项目的作者为开源社区做出的贡献！
+© 2024–至今 [@hayson](https://github.com/haysons)
 
-## 许可证
-
-2024-NOW hayson
-
-使用 [MIT License](./LICENSE)
+基于 [MIT 许可证](./LICENSE) 发行
