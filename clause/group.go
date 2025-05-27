@@ -18,7 +18,7 @@ func (group Group) MergeIn(clause *Clause) {
 
 func (group Group) Build(nGQL Builder) error {
 	if group.Expr == "" {
-		return fmt.Errorf("nebulaorm: %w, group by expr is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, group by expr is empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("GROUP BY ")
 	nGQL.WriteString(group.Expr)

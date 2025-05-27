@@ -1,8 +1,8 @@
 package clause_test
 
 import (
-	"github.com/haysons/nebulaorm/clause"
-	"github.com/haysons/nebulaorm/statement"
+	"github.com/haysons/norm/clause"
+	"github.com/haysons/norm/statement"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"

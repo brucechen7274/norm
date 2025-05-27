@@ -1,10 +1,10 @@
-package nebulaorm
+package norm
 
 import (
 	"fmt"
-	"github.com/haysons/nebulaorm/logger"
-	"github.com/haysons/nebulaorm/resolver"
-	"github.com/haysons/nebulaorm/statement"
+	"github.com/haysons/norm/logger"
+	"github.com/haysons/norm/resolver"
+	"github.com/haysons/norm/statement"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
 	"net"
 	"strconv"
@@ -33,7 +33,7 @@ func Open(conf *Config, opts ...ConfigOption) (*DB, error) {
 	if conf.TimezoneName != "" {
 		loc, err := time.LoadLocation(conf.TimezoneName)
 		if err != nil {
-			return nil, fmt.Errorf("nebulaorm: load timezone failed: %v", err)
+			return nil, fmt.Errorf("norm: load timezone failed: %v", err)
 		}
 		conf.timezone = loc
 	} else {
@@ -51,11 +51,11 @@ func Open(conf *Config, opts ...ConfigOption) (*DB, error) {
 	}
 	poolConf, err := nebula.NewSessionPoolConf(conf.Username, conf.Password, hostAddr, conf.SpaceName, parseSessionOptions(conf)...)
 	if err != nil {
-		return nil, fmt.Errorf("nebulaorm: build session pool conf failed: %v", err)
+		return nil, fmt.Errorf("norm: build session pool conf failed: %v", err)
 	}
 	pool, err := nebula.NewSessionPool(*poolConf, nebula.DefaultLogger{})
 	if err != nil {
-		return nil, fmt.Errorf("nebulaorm: create session pool failed: %v", err)
+		return nil, fmt.Errorf("norm: create session pool failed: %v", err)
 	}
 
 	db := &DB{
@@ -72,11 +72,11 @@ func parseServerAddr(addrList []string) ([]nebula.HostAddress, error) {
 	for _, addr := range addrList {
 		host, portTmp, err := net.SplitHostPort(addr)
 		if err != nil {
-			return nil, fmt.Errorf("nebulaorm: parse server addr failed: %w", err)
+			return nil, fmt.Errorf("norm: parse server addr failed: %w", err)
 		}
 		port, err := strconv.Atoi(portTmp)
 		if err != nil {
-			return nil, fmt.Errorf("nebulaorm: convert server addr port failed: %w", err)
+			return nil, fmt.Errorf("norm: convert server addr port failed: %w", err)
 		}
 		hostAddr = append(hostAddr, nebula.HostAddress{
 			Host: host,

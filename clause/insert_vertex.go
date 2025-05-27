@@ -2,7 +2,7 @@ package clause
 
 import (
 	"fmt"
-	"github.com/haysons/nebulaorm/resolver"
+	"github.com/haysons/norm/resolver"
 	"reflect"
 )
 
@@ -63,7 +63,7 @@ func (iv InsertVertex) Build(nGQL Builder) error {
 		}
 		return nil
 	default:
-		return fmt.Errorf("nebulaorm: %w, build insert vertex clause failed, dest must be struct, slice, array or pointer", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build insert vertex clause failed, dest must be struct, slice, array or pointer", ErrInvalidClauseParams)
 	}
 }
 

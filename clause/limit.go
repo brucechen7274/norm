@@ -22,7 +22,7 @@ func (limit Limit) MergeIn(clause *Clause) {
 
 func (limit Limit) Build(nGQL Builder) error {
 	if limit.Limit < 0 {
-		return fmt.Errorf("nebulaorm: %w, limit can't be negative", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, limit can't be negative", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("LIMIT ")
 	if limit.Offset > 0 {

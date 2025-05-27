@@ -21,7 +21,7 @@ func (sample Sample) MergeIn(clause *Clause) {
 
 func (sample Sample) Build(nGQL Builder) error {
 	if len(sample.SampleList) == 0 {
-		return fmt.Errorf("nebulaorm: %w, sample list must have at least one item", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, sample list must have at least one item", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("SAMPLE [")
 	for i, s := range sample.SampleList {

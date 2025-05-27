@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/haysons/nebulaorm"
-	"github.com/haysons/nebulaorm/clause"
+	"github.com/haysons/norm"
+	"github.com/haysons/norm/clause"
 	"log"
 	"time"
 )
@@ -46,13 +46,13 @@ func (s Serve) EdgeTypeName() string {
 	return "serve"
 }
 
-// Nebulaorm.DB is concurrency-safe and internally uses the connection pool provided by the nebula graph official SDK.
+// norm.DB is concurrency-safe and internally uses the connection pool provided by the nebula graph official SDK.
 // Therefore, in general, only a single instance needs to be defined.
-var db *nebulaorm.DB
+var db *norm.DB
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	conf := &nebulaorm.Config{
+	conf := &norm.Config{
 		Username:    "root",
 		Password:    "nebula",
 		SpaceName:   "demo_basketballplayer",
@@ -60,7 +60,7 @@ func main() {
 		ConnTimeout: 10 * time.Second,
 	}
 	var err error
-	db, err = nebulaorm.Open(conf)
+	db, err = norm.Open(conf)
 	if err != nil {
 		log.Fatal(err)
 	}

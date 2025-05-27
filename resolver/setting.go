@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	TagSettingKey       = "norm"        // nebulaorm struct tag key
+	TagSettingKey       = "norm"        // norm struct tag key
 	TagSettingColName   = "col"         // name of the field in the record
 	TagSettingVertexID  = "vertex_id"   // annotate that the field is a vertex id
 	TagSettingEdgeSrcID = "edge_src_id" // annotate that the field is an edge source id
@@ -16,7 +16,7 @@ const (
 	TagSettingEdgeRank  = "edge_rank"   // annotate that the field is an edge rank
 	TagSettingPropName  = "prop"        // property name, vertex or edge
 	TagSettingDataType  = "datatype"    // specify the data type (in this case the data type specified in github.com/vesoft-inc/nebula-go/v3)
-	TagSettingIgnore    = "-"           // nebulaorm will ignore this field
+	TagSettingIgnore    = "-"           // norm will ignore this field
 )
 
 func ParseTagSetting(s string) map[string]string {

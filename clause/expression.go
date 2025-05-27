@@ -2,7 +2,7 @@ package clause
 
 import (
 	"errors"
-	"github.com/haysons/nebulaorm/resolver"
+	"github.com/haysons/norm/resolver"
 	"reflect"
 	"strconv"
 	"strings"

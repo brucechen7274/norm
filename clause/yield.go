@@ -32,7 +32,7 @@ func (y Yield) Build(nGQL Builder) error {
 		}
 	}
 	if len(exprList) == 0 {
-		return fmt.Errorf("nebulaorm: %w, yield expr is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, yield expr is empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("YIELD ")
 	if y.Distinct {

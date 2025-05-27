@@ -2,7 +2,7 @@ package resolver
 
 import (
 	"errors"
-	"github.com/haysons/nebulaorm/internal/utils"
+	"github.com/haysons/norm/internal/utils"
 	"reflect"
 	"sort"
 )
@@ -19,7 +19,7 @@ func ParseRecord(destType reflect.Type) (*RecordSchema, error) {
 		destType = destType.Elem()
 	}
 	if destType.Kind() != reflect.Struct {
-		return nil, errors.New("nebulaorm: parse record schema failed, dest should be a struct or struct pointer")
+		return nil, errors.New("norm: parse record schema failed, dest should be a struct or struct pointer")
 	}
 	record := &RecordSchema{
 		Name:          destType.Name(),

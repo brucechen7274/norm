@@ -18,7 +18,7 @@ func (lookup Lookup) MergeIn(clause *Clause) {
 
 func (lookup Lookup) Build(nGQL Builder) error {
 	if lookup.TypeName == "" {
-		return fmt.Errorf("nebulaorm: %w, the vertex tag or edge type in lookup clause is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, the vertex tag or edge type in lookup clause is empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("LOOKUP ON ")
 	nGQL.WriteString(lookup.TypeName)

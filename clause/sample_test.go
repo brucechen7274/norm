@@ -2,7 +2,7 @@ package clause_test
 
 import (
 	"fmt"
-	"github.com/haysons/nebulaorm/clause"
+	"github.com/haysons/norm/clause"
 	"testing"
 )
 

@@ -30,7 +30,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		destType = destType.Elem()
 	}
 	if destType.Kind() != reflect.Struct {
-		return nil, errors.New("nebulaorm: parse edge failed, dest should be a struct or a struct pointer")
+		return nil, errors.New("norm: parse edge failed, dest should be a struct or a struct pointer")
 	}
 	edge := &EdgeSchema{
 		srcVIDFieldIndex: nil,
@@ -43,7 +43,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 	destValue := reflect.New(destType).Interface()
 	edgeTypeNamer, ok := destValue.(EdgeTypeNamer)
 	if !ok {
-		return nil, errors.New("nebulaorm: parse edge failed, need to implement interface resolver.EdgeTypeNamer")
+		return nil, errors.New("norm: parse edge failed, need to implement interface resolver.EdgeTypeNamer")
 	}
 	edge.edgeTypeName = edgeTypeNamer.EdgeTypeName()
 	for _, field := range getDestFields(destType) {
@@ -56,7 +56,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 				case reflect.Int64:
 					edge.srcVIDType = VIDTypeInt64
 				default:
-					return nil, errors.New("nebulaorm: parse edge failed, src_id field should be a string or int64")
+					return nil, errors.New("norm: parse edge failed, src_id field should be a string or int64")
 				}
 				edge.srcVIDFieldIndex = field.Index
 			}
@@ -70,7 +70,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 				case reflect.Int64:
 					edge.dstVIDType = VIDTypeInt64
 				default:
-					return nil, errors.New("nebulaorm: parse edge failed, dst_id field should be a string or int64")
+					return nil, errors.New("norm: parse edge failed, dst_id field should be a string or int64")
 				}
 				edge.dstVIDFieldIndex = field.Index
 			}
@@ -79,7 +79,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		if _, isRank := setting[TagSettingEdgeRank]; isRank {
 			if edge.rankFieldIndex == nil {
 				if !(field.Type.Kind() == reflect.Int64 || field.Type.Kind() == reflect.Int || field.Type.Kind() == reflect.Int32 || field.Type.Kind() == reflect.Int8 || field.Type.Kind() == reflect.Int16) {
-					return nil, errors.New("nebulaorm: parse edge failed, rank field should be int")
+					return nil, errors.New("norm: parse edge failed, rank field should be int")
 				}
 				edge.rankFieldIndex = field.Index
 			}
@@ -101,7 +101,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		edge.propByName[propName] = prop
 	}
 	if edge.srcVIDFieldIndex == nil || edge.dstVIDFieldIndex == nil {
-		return nil, errors.New("nebulaorm: parse edge failed, edge must contains src_id field and dst_id field")
+		return nil, errors.New("norm: parse edge failed, edge must contains src_id field and dst_id field")
 	}
 	return edge, nil
 }
@@ -177,7 +177,7 @@ func (e *EdgeSchema) GetProps() []*Prop {
 func (e *EdgeSchema) Scan(rl *nebula.Relationship, destValue reflect.Value) error {
 	destValue = reflect.Indirect(destValue)
 	if !destValue.CanSet() {
-		return fmt.Errorf("nebulaorm: edge schema scan dest value failed, %w", ErrValueCannotSet)
+		return fmt.Errorf("norm: edge schema scan dest value failed, %w", ErrValueCannotSet)
 	}
 	if e.srcVIDFieldIndex != nil {
 		srcID := rl.GetSrcVertexID()

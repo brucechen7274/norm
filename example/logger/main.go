@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/haysons/nebulaorm"
-	"github.com/haysons/nebulaorm/logger"
+	"github.com/haysons/norm"
+	"github.com/haysons/norm/logger"
 	"log"
 	"time"
 )
@@ -28,14 +28,14 @@ func main() {
 
 func queryWithLoggerDebug() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	conf := &nebulaorm.Config{
+	conf := &norm.Config{
 		Username:    "root",
 		Password:    "nebula",
 		SpaceName:   "demo_basketballplayer",
 		Addresses:   []string{"127.0.0.1:9669"},
 		ConnTimeout: 10 * time.Second,
 	}
-	db, err := nebulaorm.Open(conf, nebulaorm.WithLogger(logger.Default.LogMode(logger.DebugLevel)))
+	db, err := norm.Open(conf, norm.WithLogger(logger.Default.LogMode(logger.DebugLevel)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,14 +62,14 @@ func queryWithLoggerDebug() {
 
 func queryWithLoggerWarn() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	conf := &nebulaorm.Config{
+	conf := &norm.Config{
 		Username:    "root",
 		Password:    "nebula",
 		SpaceName:   "demo_basketballplayer",
 		Addresses:   []string{"127.0.0.1:9669"},
 		ConnTimeout: 10 * time.Second,
 	}
-	db, err := nebulaorm.Open(conf)
+	db, err := norm.Open(conf)
 	if err != nil {
 		log.Fatal(err)
 	}

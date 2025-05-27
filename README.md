@@ -1,20 +1,20 @@
-# nebulaorm
+# norm
 
 [中文](README_CN.md)
 
-[![go report card](https://goreportcard.com/badge/haysons/nebulaorm)](https://goreportcard.com/report/github.com/haysons/nebulaorm)
+[![go report card](https://goreportcard.com/badge/haysons/norm)](https://goreportcard.com/report/github.com/haysons/norm)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 ## Introduction
 
-nebulaorm is an orm framework designed specifically for nebula graph.
+norm is an orm framework designed specifically for nebula graph.
 It aims to improve the golang experience with nebula graph by chaining together nGQL statements in a more elegant and
 faster way, and parsing the returned result set and assigning it to developer-supplied variables.
 
 ## Installation
 
 ```
-go get github.com/haysons/nebulaorm
+go get github.com/haysons/norm
 ```
 
 ## Quick Start
@@ -64,13 +64,13 @@ func (s Serve) EdgeTypeName() string {
 
 func main() {
     // initialize the db object
-    conf := &nebulaorm.Config{
+    conf := &norm.Config{
         Username:    "root",
         Password:    "nebula",
         SpaceName:   "demo_basketballplayer",
         Addresses:   []string{"127.0.0.1:9669"},
     }
-    db, err := nebulaorm.Open(conf)
+    db, err := norm.Open(conf)
     if err != nil {
         log.Fatal(err)
     }

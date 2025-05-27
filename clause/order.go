@@ -18,7 +18,7 @@ func (order Order) MergeIn(clause *Clause) {
 
 func (order Order) Build(nGQL Builder) error {
 	if order.Expr == "" {
-		return fmt.Errorf("nebulaorm: %w, order by expr is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, order by expr is empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("ORDER BY ")
 	nGQL.WriteString(order.Expr)

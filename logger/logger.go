@@ -15,7 +15,7 @@ const (
 	InfoLevel
 	WarnLevel
 	ErrorLevel
-	SilentLevel // Below this level, nebulaorm will not print any logs or trace information.
+	SilentLevel // Below this level, norm will not print any logs or trace information.
 )
 
 type TraceRecord struct {
@@ -105,8 +105,8 @@ func (l *defaultLogger) Trace(ctx context.Context, record *TraceRecord) {
 		return
 	}
 	if record.Err == nil {
-		l.message(ctx, DebugLevel, l.debugStr+"[nebulaorm] nGQL: %s", record.NGQL)
+		l.message(ctx, DebugLevel, l.debugStr+"[norm] nGQL: %s", record.NGQL)
 	} else {
-		l.message(ctx, DebugLevel, l.debugStr+"[nebulaorm] nGQL: %s err: %v", record.NGQL, record.Err)
+		l.message(ctx, DebugLevel, l.debugStr+"[norm] nGQL: %s err: %v", record.NGQL, record.Err)
 	}
 }

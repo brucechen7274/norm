@@ -1,7 +1,7 @@
-package nebulaorm
+package norm
 
 import (
-	"github.com/haysons/nebulaorm/logger"
+	"github.com/haysons/norm/logger"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
 	"time"
 )
@@ -61,7 +61,7 @@ func WithNebulaSessionPoolOptions(opts []nebula.SessionPoolConfOption) ConfigOpt
 	})
 }
 
-// WithLogger customizes the logger used by nebulaorm
+// WithLogger customizes the logger used by norm
 func WithLogger(logger logger.Interface) ConfigOption {
 	return funcConfigOption(func(config *Config) {
 		config.logger = logger

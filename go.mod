@@ -1,4 +1,4 @@
-module github.com/haysons/nebulaorm
+module github.com/haysons/norm
 
 go 1.18
 

@@ -43,13 +43,13 @@ func (over Over) Build(nGQL Builder) error {
 		}
 	}
 	if len(edgeTypeList) == 0 {
-		return fmt.Errorf("nebulaorm: %w, edge type list is empty in over clause", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, edge type list is empty in over clause", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("OVER ")
 	nGQL.WriteString(strings.Join(edgeTypeList, ", "))
 	if over.Direction != "" {
 		if over.Direction != OverDirectReversely && over.Direction != OverDirectBidirect {
-			return fmt.Errorf("nebulaorm: %w, over direction must be %s or %s", ErrInvalidClauseParams, OverDirectReversely, OverDirectBidirect)
+			return fmt.Errorf("norm: %w, over direction must be %s or %s", ErrInvalidClauseParams, OverDirectReversely, OverDirectBidirect)
 		}
 		nGQL.WriteByte(' ')
 		nGQL.WriteString(over.Direction)

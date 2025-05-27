@@ -3,7 +3,7 @@ package clause
 import (
 	"errors"
 	"fmt"
-	"github.com/haysons/nebulaorm/resolver"
+	"github.com/haysons/norm/resolver"
 	"reflect"
 	"sort"
 	"strings"
@@ -34,7 +34,7 @@ func (uv UpdateVertex) Build(nGQL Builder) error {
 	}
 	vidExpr, err := vertexIDExpr(uv.VID)
 	if err != nil {
-		return fmt.Errorf("nebulaorm: %w, build update vertex clause failed, %v", ErrInvalidClauseParams, err)
+		return fmt.Errorf("norm: %w, build update vertex clause failed, %v", ErrInvalidClauseParams, err)
 	}
 	// name of the tag to be updated
 	var tagName string
@@ -52,16 +52,16 @@ func (uv UpdateVertex) Build(nGQL Builder) error {
 	}
 	propsUpdate, err := getPropsUpdateSet(uv.TagUpdate, propsName)
 	if err != nil {
-		return fmt.Errorf("nebulaorm: %w, build update vertex clause failed, %v", ErrInvalidClauseParams, err)
+		return fmt.Errorf("norm: %w, build update vertex clause failed, %v", ErrInvalidClauseParams, err)
 	}
 	if vidExpr == "" {
-		return fmt.Errorf("nebulaorm: %w, build update vertex clause failed, vid is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build update vertex clause failed, vid is empty", ErrInvalidClauseParams)
 	}
 	if tagName == "" {
-		return fmt.Errorf("nebulaorm: %w, build update vertex clause failed, tag name is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build update vertex clause failed, tag name is empty", ErrInvalidClauseParams)
 	}
 	if len(propsUpdate) == 0 {
-		return fmt.Errorf("nebulaorm: %w, build update vertex clause failed, the values want to update empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build update vertex clause failed, the values want to update empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString(tagName)
 	nGQL.WriteByte(' ')

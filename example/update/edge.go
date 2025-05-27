@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/haysons/nebulaorm/clause"
+	"github.com/haysons/norm/clause"
 	"log"
 )
 

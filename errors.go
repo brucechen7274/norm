@@ -1,9 +1,9 @@
-package nebulaorm
+package norm
 
 import (
 	"errors"
-	"github.com/haysons/nebulaorm/clause"
-	"github.com/haysons/nebulaorm/resolver"
+	"github.com/haysons/norm/clause"
+	"github.com/haysons/norm/resolver"
 )
 
 var (

@@ -2,7 +2,7 @@ package clause
 
 import (
 	"fmt"
-	"github.com/haysons/nebulaorm/resolver"
+	"github.com/haysons/norm/resolver"
 	"reflect"
 	"strconv"
 )
@@ -25,7 +25,7 @@ func (de DeleteEdge) MergeIn(clause *Clause) {
 func (de DeleteEdge) Build(nGQL Builder) error {
 	nGQL.WriteString("DELETE EDGE ")
 	if de.EdgeTypeName == "" {
-		return fmt.Errorf("nebulaorm: %w, build delete_edge clause failed, edge type name is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build delete_edge clause failed, edge type name is empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString(de.EdgeTypeName)
 	nGQL.WriteByte(' ')
@@ -38,7 +38,7 @@ func (de DeleteEdge) Build(nGQL Builder) error {
 	default:
 		edgeValue := reflect.Indirect(reflect.ValueOf(edge))
 		if !edgeValue.IsValid() {
-			return fmt.Errorf("nebulaorm: %w, build delete_edge clause failed, edge must be a string, []string, edge, edge slice or edge array", ErrInvalidClauseParams)
+			return fmt.Errorf("norm: %w, build delete_edge clause failed, edge must be a string, []string, edge, edge slice or edge array", ErrInvalidClauseParams)
 		}
 		edgeType := edgeValue.Type()
 		switch edgeType.Kind() {
@@ -63,14 +63,14 @@ func (de DeleteEdge) Build(nGQL Builder) error {
 					edgeList = append(edgeList, edgeIDExpr(edgeSchema, curValue))
 				}
 			} else {
-				return fmt.Errorf("nebulaorm: %w, build delete_edge clause failed, slice element must be a struct or a struct pointer", ErrInvalidClauseParams)
+				return fmt.Errorf("norm: %w, build delete_edge clause failed, slice element must be a struct or a struct pointer", ErrInvalidClauseParams)
 			}
 		default:
-			return fmt.Errorf("nebulaorm: %w, build delete_edge clause failed, edge must be a string, []string, edge, edge slice or edge array", ErrInvalidClauseParams)
+			return fmt.Errorf("norm: %w, build delete_edge clause failed, edge must be a string, []string, edge, edge slice or edge array", ErrInvalidClauseParams)
 		}
 	}
 	if len(edgeList) == 0 {
-		return fmt.Errorf("nebulaorm: %w, build delete_edge clause failed, edge list is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build delete_edge clause failed, edge list is empty", ErrInvalidClauseParams)
 	}
 	for i, e := range edgeList {
 		nGQL.WriteString(e)

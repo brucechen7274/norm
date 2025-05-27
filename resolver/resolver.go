@@ -3,7 +3,7 @@ package resolver
 import (
 	"errors"
 	"fmt"
-	"github.com/haysons/nebulaorm/internal/utils"
+	"github.com/haysons/norm/internal/utils"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
 	"reflect"
 	"strconv"
@@ -49,7 +49,7 @@ func NewResolver() *Resolver {
 // ScanValue scan nebula graph value into dest value.
 func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) error {
 	if !destValue.CanSet() && destValue.Kind() != reflect.Map {
-		return fmt.Errorf("nebulaorm: scan dest value failed, %w", ErrValueCannotSet)
+		return fmt.Errorf("norm: scan dest value failed, %w", ErrValueCannotSet)
 	}
 	switch nebulaValue.GetType() {
 	case NebulaDataTypeVertex:
@@ -101,7 +101,7 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 		case reflect.Map:
 			destType := destValue.Type()
 			if destType.Key().Kind() != reflect.String {
-				return errors.New("nebulaorm: scan dest value failed, map key must be string")
+				return errors.New("norm: scan dest value failed, map key must be string")
 			}
 			elemType := destType.Elem()
 			if destValue.IsNil() && destValue.CanSet() {
@@ -147,14 +147,14 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 	default:
 		return ScanSimpleValue(nebulaValue, destValue)
 	}
-	return fmt.Errorf("nebulaorm: can not scan nebula type %s into golang type %v", nebulaValue.GetType(), destValue.Type())
+	return fmt.Errorf("norm: can not scan nebula type %s into golang type %v", nebulaValue.GetType(), destValue.Type())
 }
 
 // ScanRecord scan the record value into a struct.
 func (r *Resolver) ScanRecord(record *nebula.Record, colNames []string, destValue reflect.Value) error {
 	destValue = reflect.Indirect(destValue)
 	if destValue.Kind() != reflect.Struct {
-		return errors.New("nebulaorm: scan record failed, dest should be a struct or a struct pointer")
+		return errors.New("norm: scan record failed, dest should be a struct or a struct pointer")
 	}
 	destType := destValue.Type()
 	recordSchema, err := r.getRecordSchema(destType)
@@ -224,7 +224,7 @@ func (r *Resolver) getSchemaKey(destType reflect.Type) string {
 // ScanSimpleValue assign values to simple data types
 func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) error {
 	if !destValue.CanSet() {
-		return fmt.Errorf("nebulaorm: scan dest value failed, %w", ErrValueCannotSet)
+		return fmt.Errorf("norm: scan dest value failed, %w", ErrValueCannotSet)
 	}
 	if nebulaValue.GetType() == NebulaDataTypeNull {
 		destValue.SetZero()
@@ -335,7 +335,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 		default:
 		}
 	}
-	return fmt.Errorf("nebulaorm: can not set value, nebula type %s into golang type %v", nebulaValue.GetType(), destValue.Type())
+	return fmt.Errorf("norm: can not set value, nebula type %s into golang type %v", nebulaValue.GetType(), destValue.Type())
 }
 
 // FormatSimpleValue format variable values to nebula graph data format
@@ -459,7 +459,7 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 				i++
 				k := mapIter.Key()
 				if k.Kind() != reflect.String {
-					return "", fmt.Errorf("nebulaorm: format value failed, can not convert map key to string")
+					return "", fmt.Errorf("norm: format value failed, can not convert map key to string")
 				}
 				v := mapIter.Value()
 				mapStr.WriteString(k.String())
@@ -505,10 +505,10 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 			}
 		}
 	case reflect.Invalid:
-		return "", errors.New("nebulaorm: format value failed, invalid type, eg: the undefined type nil")
+		return "", errors.New("norm: format value failed, invalid type, eg: the undefined type nil")
 	default:
 	}
-	return "", fmt.Errorf("nebulaorm: format value failed, golang type: %s, nebula type: %s", value.Type(), nebulaType)
+	return "", fmt.Errorf("norm: format value failed, golang type: %s, nebula type: %s", value.Type(), nebulaType)
 }
 
 // GetValueIface get the nebula graph return value
@@ -580,5 +580,5 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 	case "geography":
 		return nebulaValue.AsGeography()
 	}
-	return nil, fmt.Errorf("nebulaorm: can not get nebula type %s interface value", nebulaValue.GetType())
+	return nil, fmt.Errorf("norm: can not get nebula type %s interface value", nebulaValue.GetType())
 }

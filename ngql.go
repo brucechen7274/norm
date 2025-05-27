@@ -1,8 +1,8 @@
-package nebulaorm
+package norm
 
 import (
-	"github.com/haysons/nebulaorm/clause"
-	"github.com/haysons/nebulaorm/logger"
+	"github.com/haysons/norm/clause"
+	"github.com/haysons/norm/logger"
 )
 
 // Raw exec nGQL statements natively

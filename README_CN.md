@@ -1,19 +1,19 @@
-# nebulaorm
+# norm
 
 [English](README.md)
 
-[![go report card](https://goreportcard.com/badge/haysons/nebulaorm)](https://goreportcard.com/report/github.com/haysons/nebulaorm)
+[![go report card](https://goreportcard.com/badge/haysons/norm)](https://goreportcard.com/report/github.com/haysons/norm)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 ## 简介
 
-nebulaorm 是一个专为 nebula graph 设计的 orm 框架，通过链式调用以更优雅、快速的方式拼接 nGQL 语句，并解析返回的结果集，
+norm 是一个专为 nebula graph 设计的 orm 框架，通过链式调用以更优雅、快速的方式拼接 nGQL 语句，并解析返回的结果集，
 将其赋值给开发者提供的变量，旨在提高golang对于nebula graph的使用体验。
 
 ## 安装
 
 ```
-go get github.com/haysons/nebulaorm
+go get github.com/haysons/norm
 ```
 
 ## 快速开始
@@ -63,13 +63,13 @@ func (s Serve) EdgeTypeName() string {
 
 func main() {
     // 初始化db对象
-    conf := &nebulaorm.Config{
+    conf := &norm.Config{
         Username:    "root",
         Password:    "nebula",
         SpaceName:   "demo_basketballplayer",
         Addresses:   []string{"127.0.0.1:9669"},
     }
-    db, err := nebulaorm.Open(conf)
+    db, err := norm.Open(conf)
     if err != nil {
         log.Fatal(err)
     }

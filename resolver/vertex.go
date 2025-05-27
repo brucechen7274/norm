@@ -46,7 +46,7 @@ func ParseVertex(destType reflect.Type) (*VertexSchema, error) {
 		destType = destType.Elem()
 	}
 	if destType.Kind() != reflect.Struct {
-		return nil, errors.New("nebulaorm: parse vertex failed, dest should be a struct or a struct pointer")
+		return nil, errors.New("norm: parse vertex failed, dest should be a struct or a struct pointer")
 	}
 	vertex := &VertexSchema{
 		vidFieldIndex:  nil,
@@ -75,7 +75,7 @@ func ParseVertex(destType reflect.Type) (*VertexSchema, error) {
 		}
 	}
 	if len(vertex.tags) == 0 {
-		return nil, errors.New("nebulaorm: parse vertex failed, vertex has no tags")
+		return nil, errors.New("norm: parse vertex failed, vertex has no tags")
 	}
 	return vertex, nil
 }
@@ -87,7 +87,7 @@ func (v *VertexSchema) parseVID(vertexType reflect.Type) error {
 	} else if _, ok := vertexIface.(VertexIDInt64); ok {
 		v.vidType = VIDTypeInt64
 	} else {
-		return fmt.Errorf("nebulaorm: parse vertex failed, need to implement interface resolver.VertexIDStr or resolver.VertexIDInt64")
+		return fmt.Errorf("norm: parse vertex failed, need to implement interface resolver.VertexIDStr or resolver.VertexIDInt64")
 	}
 	if vidMethod, ok := vertexType.MethodByName("VertexID"); ok {
 		v.vidMethodIndex = vidMethod.Index
@@ -96,7 +96,7 @@ func (v *VertexSchema) parseVID(vertexType reflect.Type) error {
 		v.vidMethodIndex = vidMethod.Index
 		v.vidReceiverIsPtr = true
 	} else {
-		return fmt.Errorf("nebulaorm: parse vertex failed, cannot get vertex_id method")
+		return fmt.Errorf("norm: parse vertex failed, cannot get vertex_id method")
 	}
 	// if the struct contains a vid field, save it and assign it to it when scanning
 	for _, field := range getDestFields(vertexType) {
@@ -200,7 +200,7 @@ func (v *VertexSchema) Scan(node *nebula.Node, destValue reflect.Value) error {
 	// schema parsing and assignment can support structs or struct pointers
 	destValue = reflect.Indirect(destValue)
 	if !destValue.CanSet() {
-		return fmt.Errorf("nebulaorm: vertex schema scan dest value failed, %w", ErrValueCannotSet)
+		return fmt.Errorf("norm: vertex schema scan dest value failed, %w", ErrValueCannotSet)
 	}
 	// if a vid field exists in the structure, it is assigned to it
 	if v.vidFieldIndex != nil {

@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
-	"github.com/haysons/nebulaorm"
-	"github.com/haysons/nebulaorm/clause"
+	"github.com/haysons/norm"
+	"github.com/haysons/norm/clause"
 	"log"
 )
 
@@ -22,13 +22,13 @@ func fetch() {
 
 	// It is also possible to get all the information about a vertex directly, which requires the struct to implement the VertexID
 	// and VertexTagNamer interfaces to indicate that it is a vertex. Query based on the vid, expect to get and only get one row,
-	// then use the Take related methods, then return nebulaorm.ErrRecordNotFound if you can't find it.
+	// then use the Take related methods, then return norm.ErrRecordNotFound if you can't find it.
 	player := new(Player)
 	err = db.
 		Fetch("player", "player100").
 		Yield("vertex as v").
 		TakeCol("v", player)
-	if err != nil && !errors.Is(err, nebulaorm.ErrRecordNotFound) {
+	if err != nil && !errors.Is(err, norm.ErrRecordNotFound) {
 		log.Fatal(err)
 	}
 	log.Printf("player: %+v", player)
@@ -41,7 +41,7 @@ func fetch() {
 		Fetch("player", "player100").
 		Yield("properties(vertex).name AS name").
 		TakeCol("name", &playerName)
-	if err != nil && !errors.Is(err, nebulaorm.ErrRecordNotFound) {
+	if err != nil && !errors.Is(err, norm.ErrRecordNotFound) {
 		log.Fatal(err)
 	}
 	log.Printf("playerName: %+v", playerName)
@@ -72,7 +72,7 @@ func fetch() {
 		FetchMulti([]string{"player", "t1"}, "player100").
 		Yield("vertex AS v").
 		TakeCol("v", vPlayer)
-	if err != nil && !errors.Is(err, nebulaorm.ErrRecordNotFound) {
+	if err != nil && !errors.Is(err, norm.ErrRecordNotFound) {
 		log.Fatal(err)
 	}
 	log.Printf("vPlayer: %+v", vPlayer)

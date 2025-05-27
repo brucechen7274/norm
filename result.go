@@ -1,12 +1,12 @@
-package nebulaorm
+package norm
 
 import (
 	"context"
 	"fmt"
-	"github.com/haysons/nebulaorm/internal/utils"
-	"github.com/haysons/nebulaorm/logger"
-	"github.com/haysons/nebulaorm/resolver"
-	"github.com/haysons/nebulaorm/statement"
+	"github.com/haysons/norm/internal/utils"
+	"github.com/haysons/norm/logger"
+	"github.com/haysons/norm/resolver"
+	"github.com/haysons/norm/statement"
 	nebula "github.com/vesoft-inc/nebula-go/v3"
 	"reflect"
 )
@@ -40,7 +40,7 @@ func (db *DB) Exec() error {
 		return err
 	}
 	if !res.IsSucceed() {
-		return fmt.Errorf("nebulaorm: result is not succeed, err code: %d, msg: %s", res.GetErrorCode(), res.GetErrorMsg())
+		return fmt.Errorf("norm: result is not succeed, err code: %d, msg: %s", res.GetErrorCode(), res.GetErrorMsg())
 	}
 	return nil
 }
@@ -108,7 +108,7 @@ func Scan(rawRes *nebula.ResultSet, dest interface{}) error {
 
 func scan(rawRes *nebula.ResultSet, dest interface{}, raiseNotFound bool) error {
 	if !rawRes.IsSucceed() {
-		return fmt.Errorf("nebulaorm: result is not succeed, err code: %d, msg: %s", rawRes.GetErrorCode(), rawRes.GetErrorMsg())
+		return fmt.Errorf("norm: result is not succeed, err code: %d, msg: %s", rawRes.GetErrorCode(), rawRes.GetErrorMsg())
 	}
 	if rawRes.GetRowSize() == 0 {
 		if raiseNotFound {
@@ -149,11 +149,11 @@ func scan(rawRes *nebula.ResultSet, dest interface{}, raiseNotFound bool) error 
 	default:
 		destValue := reflect.ValueOf(dest)
 		if destValue.Kind() != reflect.Ptr {
-			return fmt.Errorf("nebulaorm: %w, scan dest should be pointer to struct, slice or array", ErrInvalidValue)
+			return fmt.Errorf("norm: %w, scan dest should be pointer to struct, slice or array", ErrInvalidValue)
 		}
 		destValue = utils.PtrValue(destValue)
 		if !destValue.IsValid() {
-			return fmt.Errorf("nebulaorm: %w, scan dest should be pointer to struct, slice or array", ErrInvalidValue)
+			return fmt.Errorf("norm: %w, scan dest should be pointer to struct, slice or array", ErrInvalidValue)
 		}
 		rv := resolver.NewResolver()
 		switch destValue.Kind() {
@@ -176,7 +176,7 @@ func scan(rawRes *nebula.ResultSet, dest interface{}, raiseNotFound bool) error 
 			}
 			return rv.ScanRecord(record, colNames, destValue)
 		default:
-			return fmt.Errorf("nebulaorm: %w, scan dest should be pointer to struct, slice or array", ErrInvalidValue)
+			return fmt.Errorf("norm: %w, scan dest should be pointer to struct, slice or array", ErrInvalidValue)
 		}
 	}
 }
@@ -203,7 +203,7 @@ func Pluck(rawRes *nebula.ResultSet, col string, dest interface{}) error {
 
 func pluck(rawRes *nebula.ResultSet, col string, dest interface{}, raiseNotFound bool) error {
 	if !rawRes.IsSucceed() {
-		return fmt.Errorf("nebulaorm: result is not succeed, err code: %d, msg: %s", rawRes.GetErrorCode(), rawRes.GetErrorMsg())
+		return fmt.Errorf("norm: result is not succeed, err code: %d, msg: %s", rawRes.GetErrorCode(), rawRes.GetErrorMsg())
 	}
 	if rawRes.GetRowSize() == 0 {
 		if raiseNotFound {
@@ -214,15 +214,15 @@ func pluck(rawRes *nebula.ResultSet, col string, dest interface{}, raiseNotFound
 	}
 	values, err := rawRes.GetValuesByColName(col)
 	if err != nil {
-		return fmt.Errorf("nebulaorm: get values by col name failed: %w", err)
+		return fmt.Errorf("norm: get values by col name failed: %w", err)
 	}
 	destValue := reflect.ValueOf(dest)
 	if destValue.Kind() != reflect.Ptr && destValue.Kind() != reflect.Map {
-		return fmt.Errorf("nebulaorm: %w, dest must be able to assign, such as pointers for each type or map", ErrInvalidValue)
+		return fmt.Errorf("norm: %w, dest must be able to assign, such as pointers for each type or map", ErrInvalidValue)
 	}
 	destValue = utils.PtrValue(destValue)
 	if !destValue.IsValid() {
-		return fmt.Errorf("nebulaorm: %w, dest must be able to assign, such as pointers for each type or map", ErrInvalidValue)
+		return fmt.Errorf("norm: %w, dest must be able to assign, such as pointers for each type or map", ErrInvalidValue)
 	}
 	rv := resolver.NewResolver()
 	switch destValue.Kind() {

@@ -1,6 +1,6 @@
 package statement
 
-import "github.com/haysons/nebulaorm/clause"
+import "github.com/haysons/norm/clause"
 
 // DeleteVertex generate delete vertex clause
 //

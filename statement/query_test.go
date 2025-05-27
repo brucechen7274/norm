@@ -2,7 +2,7 @@ package statement
 
 import (
 	"fmt"
-	"github.com/haysons/nebulaorm/clause"
+	"github.com/haysons/norm/clause"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

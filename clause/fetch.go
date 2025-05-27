@@ -38,7 +38,7 @@ func (fetch Fetch) MergeIn(clause *Clause) {
 
 func (fetch Fetch) Build(nGQL Builder) error {
 	if len(fetch.Names) == 0 {
-		return fmt.Errorf("nebulaorm: %w, the names in fetch clause is empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, the names in fetch clause is empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString("FETCH PROP ON ")
 	for i, name := range fetch.Names {
@@ -50,7 +50,7 @@ func (fetch Fetch) Build(nGQL Builder) error {
 	nGQL.WriteByte(' ')
 	vidExpr, err := vertexIDExpr(fetch.VID)
 	if err != nil {
-		return fmt.Errorf("nebulaorm: %w, build fetch clause failed, %v", ErrInvalidClauseParams, err)
+		return fmt.Errorf("norm: %w, build fetch clause failed, %v", ErrInvalidClauseParams, err)
 	}
 	nGQL.WriteString(vidExpr)
 	return nil

@@ -23,7 +23,7 @@ func (dv DeleteVertex) Build(nGQL Builder) error {
 	nGQL.WriteString("DELETE VERTEX ")
 	vidExpr, err := vertexIDExpr(dv.VID)
 	if err != nil {
-		return fmt.Errorf("nebulaorm: %w, build delete_vertex clause failed, %v", ErrInvalidClauseParams, err)
+		return fmt.Errorf("norm: %w, build delete_vertex clause failed, %v", ErrInvalidClauseParams, err)
 	}
 	nGQL.WriteString(vidExpr)
 	if dv.WithEdge {

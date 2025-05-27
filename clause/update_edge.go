@@ -2,7 +2,7 @@ package clause
 
 import (
 	"fmt"
-	"github.com/haysons/nebulaorm/resolver"
+	"github.com/haysons/norm/resolver"
 	"reflect"
 )
 
@@ -44,7 +44,7 @@ func (ue UpdateEdge) Build(nGQL Builder) error {
 			}
 			edgeStr = edgeSchema.GetTypeName() + " " + edgeIDExpr(edgeSchema, edgeValue)
 		default:
-			return fmt.Errorf("nebulaorm: %w, build update edge clause failed, dest edge must be struct or struct pointer", ErrInvalidClauseParams)
+			return fmt.Errorf("norm: %w, build update edge clause failed, dest edge must be struct or struct pointer", ErrInvalidClauseParams)
 		}
 	}
 	// manually specify the name of the property to be updated
@@ -54,13 +54,13 @@ func (ue UpdateEdge) Build(nGQL Builder) error {
 	}
 	propsUpdate, err := getPropsUpdateSet(ue.PropsUpdate, propsName)
 	if err != nil {
-		return fmt.Errorf("nebulaorm: %w, build update edge clause failed, %v", ErrInvalidClauseParams, err)
+		return fmt.Errorf("norm: %w, build update edge clause failed, %v", ErrInvalidClauseParams, err)
 	}
 	if edgeStr == "" {
-		return fmt.Errorf("nebulaorm: %w, build update edge clause failed, the edge want to update empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build update edge clause failed, the edge want to update empty", ErrInvalidClauseParams)
 	}
 	if len(propsUpdate) == 0 {
-		return fmt.Errorf("nebulaorm: %w, build update edge clause failed, the values want to update empty", ErrInvalidClauseParams)
+		return fmt.Errorf("norm: %w, build update edge clause failed, the values want to update empty", ErrInvalidClauseParams)
 	}
 	nGQL.WriteString(edgeStr)
 	nGQL.WriteString(" SET ")
