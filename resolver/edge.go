@@ -88,11 +88,19 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		// parsing Edge Properties
 		propName := GetPropName(field)
 		nebulaType := GetValueNebulaType(field)
+		notNull := IsFieldNotNull(field)
+		propDefault := GetFieldDefault(field)
+		comment := GetFieldComment(field)
+		ttl := GetFieldTTL(field)
 		prop := &Prop{
 			Name:        propName,
 			StructField: field,
 			Type:        field.Type,
 			NebulaType:  nebulaType,
+			NotNull:     notNull,
+			Default:     propDefault,
+			Comment:     comment,
+			TTL:         ttl,
 		}
 		if _, ok = edge.propByName[propName]; ok {
 			continue

@@ -140,6 +140,10 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 		}
 		propName := GetPropName(structField)
 		nebulaType := GetValueNebulaType(structField)
+		notNull := IsFieldNotNull(structField)
+		propDefault := GetFieldDefault(structField)
+		comment := GetFieldComment(structField)
+		ttl := GetFieldTTL(structField)
 		// tag may exist in a multi-level structure, the index value of the field needs to be added to the index value of the parent field
 		if superIndex >= 0 {
 			structField.Index = append([]int{superIndex}, structField.Index...)
@@ -149,6 +153,10 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 			StructField: structField,
 			Type:        structField.Type,
 			NebulaType:  nebulaType,
+			NotNull:     notNull,
+			Default:     propDefault,
+			Comment:     comment,
+			TTL:         ttl,
 		}
 		if _, ok := v.tagByName[tagName].propByName[propName]; ok {
 			continue
@@ -238,6 +246,10 @@ type Prop struct {
 	StructField reflect.StructField
 	Type        reflect.Type
 	NebulaType  string
+	NotNull     bool
+	Default     string
+	Comment     string
+	TTL         string
 }
 
 // GetProps get all attributes of the tag

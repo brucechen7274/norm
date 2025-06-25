@@ -15,7 +15,11 @@ const (
 	TagSettingEdgeDstID = "edge_dst_id" // annotate that the field is an edge dest id
 	TagSettingEdgeRank  = "edge_rank"   // annotate that the field is an edge rank
 	TagSettingPropName  = "prop"        // property name, vertex or edge
-	TagSettingDataType  = "datatype"    // specify the data type (in this case the data type specified in github.com/vesoft-inc/nebula-go/v3)
+	TagSettingDataType  = "type"        // specify the data type (in this case the data type specified in github.com/vesoft-inc/nebula-go/v3)
+	TagSettingNotNull   = "not_null"    // 声明字段不允许为空
+	TagSettingDefault   = "default"     // 声明字段默认值
+	TagSettingComment   = "comment"     // 声明字段描述信息
+	TagSettingTTL       = "ttl"         // 声明依据此字段进行过期
 	TagSettingIgnore    = "-"           // norm will ignore this field
 )
 
@@ -49,6 +53,27 @@ func GetPropName(field reflect.StructField) string {
 func GetValueNebulaType(field reflect.StructField) string {
 	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
 	return setting[TagSettingDataType]
+}
+
+func IsFieldNotNull(field reflect.StructField) bool {
+	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
+	notNull := setting[TagSettingNotNull]
+	return notNull != ""
+}
+
+func GetFieldDefault(field reflect.StructField) string {
+	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
+	return setting[TagSettingDefault]
+}
+
+func GetFieldComment(field reflect.StructField) string {
+	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
+	return setting[TagSettingComment]
+}
+
+func GetFieldTTL(field reflect.StructField) string {
+	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
+	return setting[TagSettingTTL]
 }
 
 func FieldIgnore(field reflect.StructField) bool {

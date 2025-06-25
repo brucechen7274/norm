@@ -157,7 +157,7 @@ type edge1 struct {
 	SrcID    string `norm:"edge_src_id"`
 	DstID    string `norm:"edge_dst_id"`
 	Rank     int    `norm:"edge_rank"`
-	Gender   int    `norm:"datatype:string"`
+	Gender   int    `norm:"type:string"`
 	Pleasure string `norm:"-"`
 }
 

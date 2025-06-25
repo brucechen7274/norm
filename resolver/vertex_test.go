@@ -216,7 +216,7 @@ func (v *vertex1) VertexTagName() string {
 type vertex2 struct {
 	Name   string `norm:"prop:name"`
 	Age    int
-	Gender int `norm:"datatype:string"`
+	Gender int `norm:"type:string"`
 }
 
 func (v *vertex2) A() string {
