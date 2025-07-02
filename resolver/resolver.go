@@ -12,19 +12,19 @@ import (
 )
 
 const (
-	NebulaDataTypeNull     = "null"
-	NebulaDataTypeBool     = "bool"
-	NebulaDataTypeInt      = "int"
-	NebulaDataTypeFloat    = "float"
-	NebulaDataTypeString   = "string"
-	NebulaDataTypeDate     = "date"
-	NebulaDataTypeTime     = "time"
-	NebulaDataTypeDatetime = "datetime"
-	NebulaDataTypeVertex   = "vertex"
-	NebulaDataTypeEdge     = "edge"
-	NebulaDataTypeList     = "list"
-	NebulaDataTypeMap      = "map"
-	NebulaDataTypeSet      = "set"
+	NebulaSdkTypeNull     = "null"
+	NebulaSdkTypeBool     = "bool"
+	NebulaSdkTypeInt      = "int"
+	NebulaSdkTypeFloat    = "float"
+	NebulaSdkTypeString   = "string"
+	NebulaSdkTypeDate     = "date"
+	NebulaSdkTypeTime     = "time"
+	NebulaSdkTypeDatetime = "datetime"
+	NebulaSdkTypeVertex   = "vertex"
+	NebulaSdkTypeEdge     = "edge"
+	NebulaSdkTypeList     = "list"
+	NebulaSdkTypeMap      = "map"
+	NebulaSdkTypeSet      = "set"
 )
 
 var (
@@ -52,7 +52,7 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 		return fmt.Errorf("norm: scan dest value failed, %w", ErrValueCannotSet)
 	}
 	switch nebulaValue.GetType() {
-	case NebulaDataTypeVertex:
+	case NebulaSdkTypeVertex:
 		vNode, _ := nebulaValue.AsNode()
 		destValue = utils.PtrValue(destValue)
 		switch destValue.Kind() {
@@ -65,7 +65,7 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 			return vertexSchema.Scan(vNode, destValue)
 		default:
 		}
-	case NebulaDataTypeEdge:
+	case NebulaSdkTypeEdge:
 		vRelationShip, _ := nebulaValue.AsRelationship()
 		destValue = utils.PtrValue(destValue)
 		switch destValue.Kind() {
@@ -78,7 +78,7 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 			return edgeSchema.Scan(vRelationShip, destValue)
 		default:
 		}
-	case NebulaDataTypeList:
+	case NebulaSdkTypeList:
 		vList, _ := nebulaValue.AsList()
 		destValue = utils.PtrValue(destValue)
 		switch destValue.Kind() {
@@ -94,7 +94,7 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 			})
 		default:
 		}
-	case NebulaDataTypeMap:
+	case NebulaSdkTypeMap:
 		vMap, _ := nebulaValue.AsMap()
 		destValue = utils.PtrValue(destValue)
 		switch destValue.Kind() {
@@ -117,7 +117,7 @@ func (r *Resolver) ScanValue(nebulaValue *nebula.ValueWrapper, destValue reflect
 			return nil
 		default:
 		}
-	case NebulaDataTypeSet:
+	case NebulaSdkTypeSet:
 		vSet, _ := nebulaValue.AsDedupList()
 		destValue = utils.PtrValue(destValue)
 		switch destValue.Kind() {
@@ -226,7 +226,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 	if !destValue.CanSet() {
 		return fmt.Errorf("norm: scan dest value failed, %w", ErrValueCannotSet)
 	}
-	if nebulaValue.GetType() == NebulaDataTypeNull {
+	if nebulaValue.GetType() == NebulaSdkTypeNull {
 		destValue.SetZero()
 		return nil
 	}
@@ -240,7 +240,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 		return nil
 	}
 	switch nebulaValue.GetType() {
-	case NebulaDataTypeBool:
+	case NebulaSdkTypeBool:
 		switch destValue.Kind() {
 		case reflect.Bool:
 			vBool, _ := nebulaValue.AsBool()
@@ -248,7 +248,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			return nil
 		default:
 		}
-	case NebulaDataTypeInt:
+	case NebulaSdkTypeInt:
 		switch destValue.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			vInt, _ := nebulaValue.AsInt()
@@ -264,7 +264,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			return nil
 		default:
 		}
-	case NebulaDataTypeFloat:
+	case NebulaSdkTypeFloat:
 		switch destValue.Kind() {
 		case reflect.Float32, reflect.Float64:
 			vFloat, _ := nebulaValue.AsFloat()
@@ -280,7 +280,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			return nil
 		default:
 		}
-	case NebulaDataTypeString:
+	case NebulaSdkTypeString:
 		switch destValue.Kind() {
 		case reflect.String:
 			vString, _ := nebulaValue.AsString()
@@ -288,7 +288,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			return nil
 		default:
 		}
-	case NebulaDataTypeDate:
+	case NebulaSdkTypeDate:
 		switch destValue.Kind() {
 		case reflect.String:
 			vDate, _ := nebulaValue.AsDate()
@@ -307,7 +307,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			}
 		default:
 		}
-	case NebulaDataTypeTime:
+	case NebulaSdkTypeTime:
 		vTimeW, _ := nebulaValue.AsTime()
 		vTime, _ := vTimeW.GetLocalTimeWithTimezoneName(timezoneDefault.String())
 		switch destValue.Kind() {
@@ -317,7 +317,7 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			return nil
 		default:
 		}
-	case NebulaDataTypeDatetime:
+	case NebulaSdkTypeDatetime:
 		vDateTimeW, _ := nebulaValue.AsDateTime()
 		vDateTime, _ := vDateTimeW.GetLocalDateTimeWithTimezoneName(timezoneDefault.String())
 		switch destValue.Kind() {
@@ -339,11 +339,11 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 }
 
 // FormatSimpleValue format variable values to nebula graph data format
-func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
+func FormatSimpleValue(sdkType string, value reflect.Value) (string, error) {
 	switch value.Kind() {
 	case reflect.Bool:
-		switch nebulaType {
-		case NebulaDataTypeBool, "":
+		switch sdkType {
+		case NebulaSdkTypeBool, "":
 			if value.Bool() {
 				return "true", nil
 			} else {
@@ -351,50 +351,50 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 			}
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		switch nebulaType {
-		case NebulaDataTypeInt, NebulaDataTypeFloat, "":
+		switch sdkType {
+		case NebulaSdkTypeInt, NebulaSdkTypeFloat, "":
 			return strconv.FormatInt(value.Int(), 10), nil
 		}
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		switch nebulaType {
-		case NebulaDataTypeInt, NebulaDataTypeFloat, "":
+		switch sdkType {
+		case NebulaSdkTypeInt, NebulaSdkTypeFloat, "":
 			return strconv.FormatUint(value.Uint(), 10), nil
 		}
 	case reflect.Float32:
-		switch nebulaType {
-		case NebulaDataTypeFloat, "":
+		switch sdkType {
+		case NebulaSdkTypeFloat, "":
 			return strconv.FormatFloat(value.Float(), 'g', -1, 32), nil
-		case NebulaDataTypeInt:
+		case NebulaSdkTypeInt:
 			valueF := value.Float()
 			return strconv.Itoa(int(valueF)), nil
 		}
 	case reflect.Float64:
-		switch nebulaType {
-		case NebulaDataTypeFloat, "":
+		switch sdkType {
+		case NebulaSdkTypeFloat, "":
 			return strconv.FormatFloat(value.Float(), 'g', -1, 64), nil
-		case NebulaDataTypeInt:
+		case NebulaSdkTypeInt:
 			valueF := value.Float()
 			return strconv.Itoa(int(valueF)), nil
 		}
 	case reflect.String:
-		switch nebulaType {
-		case NebulaDataTypeString, "":
+		switch sdkType {
+		case NebulaSdkTypeString, "":
 			str := value.String()
 			str = strconv.Quote(str)
 			return str, nil
-		case NebulaDataTypeDatetime:
+		case NebulaSdkTypeDatetime:
 			datetimeStr := `datetime("` + value.String() + `")`
 			return datetimeStr, nil
-		case NebulaDataTypeDate:
+		case NebulaSdkTypeDate:
 			dateStr := `date("` + value.String() + `")`
 			return dateStr, nil
-		case NebulaDataTypeTime:
+		case NebulaSdkTypeTime:
 			timeStr := `time("` + value.String() + `")`
 			return timeStr, nil
 		}
 	case reflect.Struct:
-		switch nebulaType {
-		case NebulaDataTypeDatetime, "":
+		switch sdkType {
+		case NebulaSdkTypeDatetime, "":
 			t, ok := value.Interface().(time.Time)
 			if ok {
 				if t.Nanosecond() == 0 {
@@ -403,20 +403,20 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 					return t.Format(`datetime("2006-01-02T15:04:05.000000")`), nil
 				}
 			}
-		case NebulaDataTypeDate:
+		case NebulaSdkTypeDate:
 			t, ok := value.Interface().(time.Time)
 			if ok {
 				return t.Format(`date("2006-01-02")`), nil
 			}
-		case NebulaDataTypeTime:
+		case NebulaSdkTypeTime:
 			t, ok := value.Interface().(time.Time)
 			if ok {
 				return t.Format(`time("15:04:05.000000")`), nil
 			}
 		}
 	case reflect.Slice, reflect.Array:
-		switch nebulaType {
-		case NebulaDataTypeList, "":
+		switch sdkType {
+		case NebulaSdkTypeList, "":
 			listStr := strings.Builder{}
 			listStr.WriteString("[")
 			for i := 0; i < value.Len(); i++ {
@@ -431,7 +431,7 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 			}
 			listStr.WriteString("]")
 			return listStr.String(), nil
-		case NebulaDataTypeSet:
+		case NebulaSdkTypeSet:
 			setStr := strings.Builder{}
 			setStr.WriteString("set{")
 			for i := 0; i < value.Len(); i++ {
@@ -448,8 +448,8 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 			return setStr.String(), nil
 		}
 	case reflect.Map:
-		switch nebulaType {
-		case NebulaDataTypeMap, "":
+		switch sdkType {
+		case NebulaSdkTypeMap, "":
 			mapStr := strings.Builder{}
 			mapStr.WriteString("map{")
 			mapLen := value.Len()
@@ -475,7 +475,7 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 			}
 			mapStr.WriteString("}")
 			return mapStr.String(), nil
-		case NebulaDataTypeSet:
+		case NebulaSdkTypeSet:
 			setStr := strings.Builder{}
 			setStr.WriteString("set{")
 			mapLen := value.Len()
@@ -499,8 +499,8 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 		if !value.IsNil() {
 			return FormatSimpleValue("", value.Elem())
 		} else {
-			switch nebulaType {
-			case NebulaDataTypeNull, "":
+			switch sdkType {
+			case NebulaSdkTypeNull, "":
 				return "NULL", nil
 			}
 		}
@@ -508,41 +508,41 @@ func FormatSimpleValue(nebulaType string, value reflect.Value) (string, error) {
 		return "", errors.New("norm: format value failed, invalid type, eg: the undefined type nil")
 	default:
 	}
-	return "", fmt.Errorf("norm: format value failed, golang type: %s, nebula type: %s", value.Type(), nebulaType)
+	return "", fmt.Errorf("norm: format value failed, golang type: %s, nebula type: %s", value.Type(), sdkType)
 }
 
 // GetValueIface get the nebula graph return value
 func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 	switch nebulaValue.GetType() {
-	case NebulaDataTypeNull:
+	case NebulaSdkTypeNull:
 		return nil, nil
-	case NebulaDataTypeBool:
+	case NebulaSdkTypeBool:
 		return nebulaValue.AsBool()
-	case NebulaDataTypeInt:
+	case NebulaSdkTypeInt:
 		return nebulaValue.AsInt()
-	case NebulaDataTypeFloat:
+	case NebulaSdkTypeFloat:
 		return nebulaValue.AsFloat()
-	case NebulaDataTypeString:
+	case NebulaSdkTypeString:
 		return nebulaValue.AsString()
-	case NebulaDataTypeDate:
+	case NebulaSdkTypeDate:
 		nDate, _ := nebulaValue.AsDate()
 		dateUTC := time.Date(int(nDate.GetYear()), time.Month(nDate.GetMonth()), int(nDate.GetDay()), 0, 0, 0, 0, time.UTC)
 		date := dateUTC.In(timezoneDefault)
 		return date, nil
-	case NebulaDataTypeTime:
+	case NebulaSdkTypeTime:
 		nTimeW, _ := nebulaValue.AsTime()
 		nTime, _ := nTimeW.GetLocalTimeWithTimezoneName(timezoneDefault.String())
 		dateObj := time.Date(2020, 1, 1, int(nTime.GetHour()), int(nTime.GetMinute()), int(nTime.GetSec()), int(nTime.GetMicrosec()*1000), timezoneDefault)
 		return dateObj.Format("15:04:05.000000"), nil
-	case NebulaDataTypeDatetime:
+	case NebulaSdkTypeDatetime:
 		nDatetimeW, _ := nebulaValue.AsDateTime()
 		nDatetime, _ := nDatetimeW.GetLocalDateTimeWithTimezoneName(timezoneDefault.String())
 		return time.Date(int(nDatetime.GetYear()), time.Month(nDatetime.GetMonth()), int(nDatetime.GetDay()), int(nDatetime.GetHour()), int(nDatetime.GetMinute()), int(nDatetime.GetSec()), int(nDatetime.GetMicrosec()*1000), timezoneDefault), nil
-	case NebulaDataTypeVertex:
+	case NebulaSdkTypeVertex:
 		return nebulaValue.AsNode()
-	case NebulaDataTypeEdge:
+	case NebulaSdkTypeEdge:
 		return nebulaValue.AsRelationship()
-	case NebulaDataTypeList:
+	case NebulaSdkTypeList:
 		nList, _ := nebulaValue.AsList()
 		res := make([]interface{}, 0, len(nList))
 		for _, v := range nList {
@@ -553,7 +553,7 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 			res = append(res, vIface)
 		}
 		return res, nil
-	case NebulaDataTypeMap:
+	case NebulaSdkTypeMap:
 		nMap, _ := nebulaValue.AsMap()
 		res := make(map[string]interface{}, len(nMap))
 		for k, v := range nMap {
@@ -564,7 +564,7 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 			res[k] = vIface
 		}
 		return res, nil
-	case NebulaDataTypeSet:
+	case NebulaSdkTypeSet:
 		nList, _ := nebulaValue.AsDedupList()
 		res := make([]interface{}, 0, len(nList))
 		for _, v := range nList {

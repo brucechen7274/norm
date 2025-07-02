@@ -84,7 +84,7 @@ func (ie InsertEdge) buildPropValues(curValue reflect.Value, nGQL Builder) error
 	nGQL.WriteString(":(")
 	props := ie.edgeSchema.GetProps()
 	for i, prop := range props {
-		valueFmt, err := resolver.FormatSimpleValue(prop.NebulaType, curValue.FieldByIndex(prop.StructField.Index))
+		valueFmt, err := resolver.FormatSimpleValue(prop.SdkType, curValue.FieldByIndex(prop.StructField.Index))
 		if err != nil {
 			return err
 		}

@@ -139,7 +139,8 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 			continue
 		}
 		propName := GetPropName(structField)
-		nebulaType := GetValueNebulaType(structField)
+		sdkType := GetValueSdkType(structField)
+		dataType := GetFieldDataType(structField)
 		notNull := IsFieldNotNull(structField)
 		propDefault := GetFieldDefault(structField)
 		comment := GetFieldComment(structField)
@@ -152,7 +153,8 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 			Name:        propName,
 			StructField: structField,
 			Type:        structField.Type,
-			NebulaType:  nebulaType,
+			SdkType:     sdkType,
+			DataType:    dataType,
 			NotNull:     notNull,
 			Default:     propDefault,
 			Comment:     comment,
@@ -161,8 +163,7 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 		if _, ok := v.tagByName[tagName].propByName[propName]; ok {
 			continue
 		}
-		v.tagByName[tagName].props = append(v.tagByName[tagName].props, prop)
-		v.tagByName[tagName].propByName[propName] = prop
+		v.tagByName[tagName].SetProps(prop)
 	}
 	return true, nil
 }
@@ -245,7 +246,8 @@ type Prop struct {
 	Name        string
 	StructField reflect.StructField
 	Type        reflect.Type
-	NebulaType  string
+	SdkType     string
+	DataType    string
 	NotNull     bool
 	Default     string
 	Comment     string
@@ -255,4 +257,15 @@ type Prop struct {
 // GetProps get all attributes of the tag
 func (t *VertexTag) GetProps() []*Prop {
 	return t.props
+}
+
+// SetProps 设置标签属性
+func (t *VertexTag) SetProps(props ...*Prop) {
+	if t.propByName == nil {
+		t.propByName = make(map[string]*Prop)
+	}
+	for _, prop := range props {
+		t.props = append(t.props, prop)
+		t.propByName[prop.Name] = prop
+	}
 }

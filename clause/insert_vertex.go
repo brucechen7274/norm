@@ -94,7 +94,7 @@ func (iv InsertVertex) buildPropValue(curValue reflect.Value, nGQL Builder) erro
 	for j, t := range tags {
 		props := t.GetProps()
 		for k, p := range props {
-			valueFmt, err := resolver.FormatSimpleValue(p.NebulaType, curValue.FieldByIndex(p.StructField.Index))
+			valueFmt, err := resolver.FormatSimpleValue(p.SdkType, curValue.FieldByIndex(p.StructField.Index))
 			if err != nil {
 				return err
 			}

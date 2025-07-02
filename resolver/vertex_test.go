@@ -26,55 +26,55 @@ func TestParseVertex(t *testing.T) {
 	}{
 		{dest: vertex1{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{2}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag1": {
-				{"name", []int{0}, ""},
-				{"age", []int{1}, ""},
+				{"name", []int{0}, "string"},
+				{"age", []int{1}, "int"},
 			},
 		}},
 		{dest: vertex2{}, wantVIDType: VIDTypeString, wantVIDIndex: nil, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag2": {
-				{"name", []int{0}, ""},
-				{"age", []int{1}, ""},
+				{"name", []int{0}, "string"},
+				{"age", []int{1}, "int"},
 				{"gender", []int{2}, "string"},
 			},
 		}},
 		{dest: &vertex3{}, wantVIDType: VIDTypeInt64, wantVIDIndex: nil, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: false, wantTag: map[string][]prop{
 			"vertex_tag3": {
-				{"name", []int{0}, ""},
-				{"age", []int{1}, ""},
+				{"name", []int{0}, "string"},
+				{"age", []int{1}, "int"},
 			},
 		}},
 		{dest: &vertex4{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{4}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag1": {
-				{"name", []int{2, 0}, ""},
-				{"age", []int{2, 1}, ""},
+				{"name", []int{2, 0}, "string"},
+				{"age", []int{2, 1}, "int"},
 			},
 			"vertex_tag2": {
-				{"name", []int{3, 0}, ""},
-				{"age", []int{3, 1}, ""},
+				{"name", []int{3, 0}, "string"},
+				{"age", []int{3, 1}, "int"},
 				{"gender", []int{3, 2}, "string"},
 			},
 		}},
 		{dest: &vertex5{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{0, 0}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag5": {
-				{"name", []int{1}, ""},
-				{"age", []int{2}, ""},
+				{"name", []int{1}, "string"},
+				{"age", []int{2}, "int"},
 			},
 		}},
 		{dest: &vertex6{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{0, 0}, wantVIDMethodIndex: 1, wantVIDReceiverIsPtr: false, wantTag: map[string][]prop{
 			"vertex_tag1": {
-				{"name", []int{1, 0}, ""},
-				{"age", []int{1, 1}, ""},
+				{"name", []int{1, 0}, "string"},
+				{"age", []int{1, 1}, "int"},
 			},
 			"vertex_tag2": {
-				{"name", []int{2, 0}, ""},
-				{"age", []int{2, 1}, ""},
+				{"name", []int{2, 0}, "string"},
+				{"age", []int{2, 1}, "int"},
 				{"gender", []int{2, 2}, "string"},
 			},
 		}},
 		{dest: &vertex7{}, wantVIDType: VIDTypeString, wantVIDIndex: []int{0, 2}, wantVIDMethodIndex: 0, wantVIDReceiverIsPtr: true, wantTag: map[string][]prop{
 			"vertex_tag1": {
-				{"name", []int{1}, ""},
-				{"age", []int{2}, ""},
+				{"name", []int{1}, "string"},
+				{"age", []int{2}, "int"},
 			},
 		}},
 	}
@@ -99,7 +99,7 @@ func TestParseVertex(t *testing.T) {
 					props = append(props, prop{
 						name:       p.Name,
 						index:      p.StructField.Index,
-						nebulaType: p.NebulaType,
+						nebulaType: p.SdkType,
 					})
 				}
 				gotTag[tag.TagName] = props

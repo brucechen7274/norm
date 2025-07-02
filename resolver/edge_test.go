@@ -16,19 +16,19 @@ func TestParseEdge(t *testing.T) {
 		wantErr  bool
 	}{
 		{dest: edge1{}, want: &EdgeSchema{srcVIDType: VIDTypeString, srcVIDFieldIndex: []int{2}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{3}, rankFieldIndex: []int{4}, edgeTypeName: "edge1"}, wantProp: []prop{
-			{name: "name", index: []int{0}}, {name: "age", index: []int{1}}, {name: "gender", index: []int{5}, nebulaType: "string"},
+			{name: "name", index: []int{0}, nebulaType: "string"}, {name: "age", index: []int{1}, nebulaType: "int"}, {name: "gender", index: []int{5}, nebulaType: "string"},
 		}},
 		{dest: &edge2{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{1}, rankFieldIndex: nil, edgeTypeName: "edge2"}, wantProp: []prop{
-			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
+			{name: "name", index: []int{2}, nebulaType: "string"}, {name: "age", index: []int{3}, nebulaType: "int"},
 		}},
 		{dest: &edge4{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0, 0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{0, 1}, rankFieldIndex: []int{1}, edgeTypeName: "edge_base"}, wantProp: []prop{
-			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
+			{name: "name", index: []int{2}, nebulaType: "string"}, {name: "age", index: []int{3}, nebulaType: "int"},
 		}},
 		{dest: &edge5{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0, 0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{0, 1}, rankFieldIndex: nil, edgeTypeName: "edge5"}, wantProp: []prop{
-			{name: "name", index: []int{1}}, {name: "age", index: []int{2}},
+			{name: "name", index: []int{1}, nebulaType: "string"}, {name: "age", index: []int{2}, nebulaType: "int"},
 		}},
 		{dest: &edge6{}, want: &EdgeSchema{srcVIDType: VIDTypeInt64, srcVIDFieldIndex: []int{0, 0}, dstVIDType: VIDTypeString, dstVIDFieldIndex: []int{1}, rankFieldIndex: nil, edgeTypeName: "edge6"}, wantProp: []prop{
-			{name: "name", index: []int{2}}, {name: "age", index: []int{3}},
+			{name: "name", index: []int{2}, nebulaType: "string"}, {name: "age", index: []int{3}, nebulaType: "int"},
 		}},
 		{dest: edge3{}, wantErr: true},
 		{dest: record1{}, wantErr: true},
@@ -54,7 +54,7 @@ func TestParseEdge(t *testing.T) {
 				propsGot = append(propsGot, prop{
 					name:       p.Name,
 					index:      p.StructField.Index,
-					nebulaType: p.NebulaType,
+					nebulaType: p.SdkType,
 				})
 			}
 			assert.Equal(t, tt.wantProp, propsGot)

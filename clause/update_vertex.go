@@ -127,10 +127,10 @@ func getPropsUpdateSet(propsUpdate interface{}, needUpdate map[string]bool) ([][
 					continue
 				}
 				propName := resolver.GetPropName(structField)
-				nebulaType := resolver.GetValueNebulaType(structField)
+				sdkType := resolver.GetValueSdkType(structField)
 				fieldValue := propsValue.Field(i)
 				if len(needUpdate) > 0 && needUpdate[propName] {
-					propValue, err := resolver.FormatSimpleValue(nebulaType, fieldValue)
+					propValue, err := resolver.FormatSimpleValue(sdkType, fieldValue)
 					if err != nil {
 						return nil, err
 					}
@@ -145,7 +145,7 @@ func getPropsUpdateSet(propsUpdate interface{}, needUpdate map[string]bool) ([][
 					if setting[resolver.TagSettingIgnore] != "" || setting[resolver.TagSettingEdgeSrcID] != "" || setting[resolver.TagSettingEdgeDstID] != "" || setting[resolver.TagSettingEdgeRank] != "" || setting[resolver.TagSettingVertexID] != "" {
 						continue
 					}
-					propValue, err := resolver.FormatSimpleValue(nebulaType, fieldValue)
+					propValue, err := resolver.FormatSimpleValue(sdkType, fieldValue)
 					if err != nil {
 						return nil, err
 					}

@@ -33,12 +33,12 @@ func TestFormatSimpleValue(t *testing.T) {
 			want:  "-1000.234",
 		},
 		{
-			nebulaType: NebulaDataTypeFloat,
+			nebulaType: NebulaSdkTypeFloat,
 			value:      []interface{}{100},
 			want:       "100",
 		},
 		{
-			nebulaType: NebulaDataTypeInt,
+			nebulaType: NebulaSdkTypeInt,
 			value:      []interface{}{100.1234},
 			want:       "100",
 		},
@@ -63,17 +63,17 @@ func TestFormatSimpleValue(t *testing.T) {
 			want:  `"Hello \\ world 你好 \" t 世界"`,
 		},
 		{
-			nebulaType: NebulaDataTypeDatetime,
+			nebulaType: NebulaSdkTypeDatetime,
 			value:      []interface{}{`2024-08-01T00:00:00`},
 			want:       `datetime("2024-08-01T00:00:00")`,
 		},
 		{
-			nebulaType: NebulaDataTypeDate,
+			nebulaType: NebulaSdkTypeDate,
 			value:      []interface{}{`2023-12-12`},
 			want:       `date("2023-12-12")`,
 		},
 		{
-			nebulaType: NebulaDataTypeTime,
+			nebulaType: NebulaSdkTypeTime,
 			value:      []interface{}{`11:00:51.457000`},
 			want:       `time("11:00:51.457000")`,
 		},
@@ -82,12 +82,12 @@ func TestFormatSimpleValue(t *testing.T) {
 			want:  `datetime("2024-08-20T11:16:30.000010")`,
 		},
 		{
-			nebulaType: NebulaDataTypeDate,
+			nebulaType: NebulaSdkTypeDate,
 			value:      []interface{}{time.Date(2024, 8, 20, 11, 16, 30, 10000, time.Local)},
 			want:       `date("2024-08-20")`,
 		},
 		{
-			nebulaType: NebulaDataTypeTime,
+			nebulaType: NebulaSdkTypeTime,
 			value:      []interface{}{time.Date(2024, 8, 20, 11, 16, 30, 10000, time.Local)},
 			want:       `time("11:16:30.000010")`,
 		},
@@ -112,12 +112,12 @@ func TestFormatSimpleValue(t *testing.T) {
 			want:  `["h", "e", "l", "l", "o"]`,
 		},
 		{
-			nebulaType: NebulaDataTypeSet,
+			nebulaType: NebulaSdkTypeSet,
 			value:      []interface{}{[]int{1, -1, 2, -2, 0}, []int64{1, -1, 2, -2, 0}},
 			want:       "set{1, -1, 2, -2, 0}",
 		},
 		{
-			nebulaType: NebulaDataTypeSet,
+			nebulaType: NebulaSdkTypeSet,
 			value:      []interface{}{[]int(nil)},
 			want:       "set{}",
 		},
@@ -130,7 +130,7 @@ func TestFormatSimpleValue(t *testing.T) {
 			want:  `map{d: map{age: 18}}`,
 		},
 		{
-			nebulaType: NebulaDataTypeSet,
+			nebulaType: NebulaSdkTypeSet,
 			value:      []interface{}{map[int]struct{}{1: {}}},
 			want:       `set{1}`,
 		},

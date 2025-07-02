@@ -81,6 +81,8 @@ func (stmt *Statement) Build() error {
 			switch part.compType {
 			case CompositeTypePipe:
 				stmt.nGQL.WriteString(" | ")
+			case CompositeTypeMulti:
+				stmt.nGQL.WriteString("; ")
 			}
 		}
 		firstPartBuilt = true
@@ -116,6 +118,7 @@ type Part struct {
 
 func NewPart() *Part {
 	return &Part{
+		compType:     CompositeTypeMulti,
 		clauses:      make(map[string]clause.Clause),
 		clausesBuild: make([]string, 0),
 	}
@@ -180,6 +183,7 @@ type CompositeType int
 
 const (
 	CompositeTypePipe CompositeType = iota + 1
+	CompositeTypeMulti
 )
 
 type PartType int
@@ -197,6 +201,7 @@ const (
 	PartTypeInsertEdge
 	PartTypeUpdateEdge
 	PartTypeDeleteEdge
+	PartTypeCreateTag
 )
 
 func (p *Part) getClausesBuild() []string {
@@ -228,6 +233,8 @@ func (p *Part) getClausesBuild() []string {
 		return []string{clause.UpdateEdgeName, clause.WhenName, clause.YieldName}
 	case PartTypeDeleteEdge:
 		return []string{clause.DeleteEdgeName}
+	case PartTypeCreateTag:
+		return []string{clause.CreateTagName}
 	default:
 		// The following clauses may not belong to a specific type of statement and can be used separately
 		return []string{clause.GroupName, clause.YieldName, clause.OrderName, clause.LimitName}

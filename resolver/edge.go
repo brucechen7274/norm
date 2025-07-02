@@ -87,7 +87,8 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		}
 		// parsing Edge Properties
 		propName := GetPropName(field)
-		nebulaType := GetValueNebulaType(field)
+		sdkType := GetValueSdkType(field)
+		dataType := GetFieldDataType(field)
 		notNull := IsFieldNotNull(field)
 		propDefault := GetFieldDefault(field)
 		comment := GetFieldComment(field)
@@ -96,7 +97,8 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 			Name:        propName,
 			StructField: field,
 			Type:        field.Type,
-			NebulaType:  nebulaType,
+			SdkType:     sdkType,
+			DataType:    dataType,
 			NotNull:     notNull,
 			Default:     propDefault,
 			Comment:     comment,

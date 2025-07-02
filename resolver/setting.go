@@ -15,7 +15,7 @@ const (
 	TagSettingEdgeDstID = "edge_dst_id" // annotate that the field is an edge dest id
 	TagSettingEdgeRank  = "edge_rank"   // annotate that the field is an edge rank
 	TagSettingPropName  = "prop"        // property name, vertex or edge
-	TagSettingDataType  = "type"        // specify the data type (in this case the data type specified in github.com/vesoft-inc/nebula-go/v3)
+	TagSettingDataType  = "type"        // specify the data type (https://docs.nebula-graph.com.cn/3.6.0/3.ngql-guide/3.data-types/1.numeric/)
 	TagSettingNotNull   = "not_null"    // 声明字段不允许为空
 	TagSettingDefault   = "default"     // 声明字段默认值
 	TagSettingComment   = "comment"     // 声明字段描述信息
@@ -50,9 +50,66 @@ func GetPropName(field reflect.StructField) string {
 	return propName
 }
 
-func GetValueNebulaType(field reflect.StructField) string {
+func GetValueSdkType(field reflect.StructField) string {
+	dataTypeRaw := GetFieldDataType(field)
+	dataTypeLower := strings.ToLower(dataTypeRaw)
+	switch dataTypeLower {
+	case "int", "int64", "int32", "int16", "int8":
+		return NebulaSdkTypeInt
+	case "float", "double":
+		return NebulaSdkTypeFloat
+	case "bool":
+		return NebulaSdkTypeBool
+	case "string":
+		return NebulaSdkTypeString
+	case "date":
+		return NebulaSdkTypeDate
+	case "time":
+		return NebulaSdkTypeTime
+	case "datetime", "timestamp":
+		return NebulaSdkTypeDatetime
+	default:
+		if strings.HasPrefix(dataTypeLower, "fixed_string") {
+			return NebulaSdkTypeString
+		}
+		return dataTypeRaw
+	}
+}
+
+func GetFieldDataType(field reflect.StructField) string {
 	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
-	return setting[TagSettingDataType]
+	dataType := setting[TagSettingDataType]
+	if dataType != "" {
+		return dataType
+	}
+	fieldType := field.Type
+	switch fieldType.Kind() {
+	case reflect.Bool:
+		return "bool"
+	case reflect.Int, reflect.Uint:
+		return "int"
+	case reflect.Int64, reflect.Uint64:
+		return "int64"
+	case reflect.Int32, reflect.Uint32:
+		return "int32"
+	case reflect.Int16, reflect.Uint16:
+		return "int16"
+	case reflect.Int8, reflect.Uint8:
+		return "int8"
+	case reflect.Float32:
+		return "float"
+	case reflect.Float64:
+		return "double"
+	case reflect.String:
+		return "string"
+	case reflect.Struct:
+		if fieldType.PkgPath() == "time" && fieldType.Name() == "Time" {
+			return "datetime"
+		}
+	default:
+		return ""
+	}
+	return ""
 }
 
 func IsFieldNotNull(field reflect.StructField) bool {
