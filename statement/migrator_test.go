@@ -59,6 +59,40 @@ func TestCreateVertexTags(t *testing.T) {
 	}
 }
 
+func TestDropTag(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().DropTag("test")
+			},
+			want: `DROP TAG test;`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().DropTag("test", true)
+			},
+			want: `DROP TAG IF EXISTS test;`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
 type vm1 struct {
 	VID  string `norm:"vertex_id"`
 	Name string

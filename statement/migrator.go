@@ -29,3 +29,19 @@ func (stmt *Statement) CreateVertexTags(vertex any, ifNotExist ...bool) *Stateme
 	}
 	return stmt
 }
+
+func (stmt *Statement) DropTag(tagName string, ifExist ...bool) *Statement {
+	if tagName == "" {
+		return stmt
+	}
+	var existOpt bool
+	if len(ifExist) > 0 {
+		existOpt = ifExist[0]
+	}
+	stmt.AddClause(&clause.DropTag{
+		TagName: tagName,
+		IfExist: existOpt,
+	})
+	stmt.SetPartType(PartTypeDropTag)
+	return stmt
+}

@@ -202,6 +202,7 @@ const (
 	PartTypeUpdateEdge
 	PartTypeDeleteEdge
 	PartTypeCreateTag
+	PartTypeDropTag
 )
 
 func (p *Part) getClausesBuild() []string {
@@ -235,6 +236,8 @@ func (p *Part) getClausesBuild() []string {
 		return []string{clause.DeleteEdgeName}
 	case PartTypeCreateTag:
 		return []string{clause.CreateTagName}
+	case PartTypeDropTag:
+		return []string{clause.DropTagName}
 	default:
 		// The following clauses may not belong to a specific type of statement and can be used separately
 		return []string{clause.GroupName, clause.YieldName, clause.OrderName, clause.LimitName}
