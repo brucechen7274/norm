@@ -29,7 +29,7 @@ func TestCreateVertexTags(t *testing.T) {
 			stmt: func() *Statement {
 				return New().CreateVertexTags(&vm3{}, true)
 			},
-			want: `CREATE TAG IF NOT EXISTS player_with_default(name string, age int DEFAULT 20);`,
+			want: `CREATE TAG IF NOT EXISTS player_with_default(name string DEFAULT "", age int DEFAULT 20);`,
 		},
 		{
 			stmt: func() *Statement {
@@ -67,13 +67,13 @@ func TestDropTag(t *testing.T) {
 	}{
 		{
 			stmt: func() *Statement {
-				return New().DropTag("test")
+				return New().DropVertexTag("test")
 			},
 			want: `DROP TAG test;`,
 		},
 		{
 			stmt: func() *Statement {
-				return New().DropTag("test", true)
+				return New().DropVertexTag("test", true)
 			},
 			want: `DROP TAG IF EXISTS test;`,
 		},
@@ -91,6 +91,10 @@ func TestDropTag(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAlterTag(t *testing.T) {
+
 }
 
 type vm1 struct {
@@ -121,7 +125,7 @@ func (t vm2) VertexTagName() string {
 
 type vm3 struct {
 	VID  string `norm:"vertex_id"`
-	Name string `norm:"prop:name;type:string"`
+	Name string `norm:"prop:name;type:string;default:''"`
 	Age  int    `norm:"prop:age;type:int;default:20"`
 }
 
