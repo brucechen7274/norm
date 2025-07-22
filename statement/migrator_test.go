@@ -2,6 +2,7 @@ package statement
 
 import (
 	"fmt"
+	"github.com/haysons/norm/clause"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -94,7 +95,76 @@ func TestDropTag(t *testing.T) {
 }
 
 func TestAlterTag(t *testing.T) {
-
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().AlterVertexTag(&vm1{}, clause.AlterTagOperate{
+					AddProps: []string{"name", "age"},
+				})
+			},
+			want: `ALTER TAG player ADD (name string, age int);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().AlterVertexTag(&vm2{}, clause.AlterTagOperate{
+					DropProps: []string{"name", "age"},
+				})
+			},
+			want: `ALTER TAG no_property DROP (name, age);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().AlterVertexTag(&vm3{}, clause.AlterTagOperate{
+					ChangeProps: []string{"name", "age"},
+				})
+			},
+			want: `ALTER TAG player_with_default CHANGE (name string DEFAULT "", age int DEFAULT 20);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().AlterVertexTag(&vm4{}, clause.AlterTagOperate{
+					AddProps:    []string{"name", "age"},
+					DropProps:   []string{"salary"},
+					ChangeProps: []string{"create_time"},
+					UpdateTTL:   true,
+				})
+			},
+			want: `ALTER TAG woman ADD (name string, age int), DROP (salary), CHANGE (create_time timestamp) TTL_DURATION = 100, TTL_COL = "create_time";`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().AlterVertexTag(v1{}, clause.AlterTagOperate{
+					AddProps: []string{"p1"},
+				})
+			},
+			want: `ALTER TAG t3 ADD (p1 int);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().AlterVertexTag(v1{}, clause.AlterTagOperate{
+					AddProps: []string{"p2"},
+				}, "t4")
+			},
+			want: `ALTER TAG t4 ADD (p2 string);`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
 }
 
 type vm1 struct {
