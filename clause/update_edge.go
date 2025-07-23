@@ -48,8 +48,8 @@ func (ue UpdateEdge) Build(nGQL Builder) error {
 		}
 	}
 	// manually specify the name of the property to be updated
-	propsName := make(map[string]bool, len(ue.Opts.propNames))
-	for _, propName := range ue.Opts.propNames {
+	propsName := make(map[string]bool, len(ue.Opts.PropNames))
+	for _, propName := range ue.Opts.PropNames {
 		propsName[propName] = true
 	}
 	propsUpdate, err := getPropsUpdateSet(ue.PropsUpdate, propsName)

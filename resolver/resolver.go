@@ -25,6 +25,7 @@ const (
 	NebulaSdkTypeList     = "list"
 	NebulaSdkTypeMap      = "map"
 	NebulaSdkTypeSet      = "set"
+	NebulaSdkTypeEmpty    = "empty"
 )
 
 var (
@@ -240,6 +241,13 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 		return nil
 	}
 	switch nebulaValue.GetType() {
+	case NebulaSdkTypeEmpty:
+		switch destValue.Kind() {
+		case reflect.String:
+			destValue.SetString("_EMPTY_")
+			return nil
+		default:
+		}
 	case NebulaSdkTypeBool:
 		switch destValue.Kind() {
 		case reflect.Bool:
@@ -502,6 +510,8 @@ func FormatSimpleValue(sdkType string, value reflect.Value) (string, error) {
 			switch sdkType {
 			case NebulaSdkTypeNull, "":
 				return "NULL", nil
+			case NebulaSdkTypeEmpty:
+				return "_EMPTY_", nil
 			}
 		}
 	case reflect.Invalid:
@@ -514,7 +524,7 @@ func FormatSimpleValue(sdkType string, value reflect.Value) (string, error) {
 // GetValueIface get the nebula graph return value
 func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 	switch nebulaValue.GetType() {
-	case NebulaSdkTypeNull:
+	case NebulaSdkTypeNull, NebulaSdkTypeEmpty:
 		return nil, nil
 	case NebulaSdkTypeBool:
 		return nebulaValue.AsBool()

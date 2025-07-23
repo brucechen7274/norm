@@ -9,17 +9,17 @@ var (
 
 // Interface clause interface
 type Interface interface {
-	// Name 子句的名称
+	// Name returns the name of the clause
 	Name() string
 
-	// MergeIn 合并相同子句至Clause对象之中
+	// MergeIn merges the same clause into the Clause object
 	MergeIn(clause *Clause)
 
-	// Build 构造nGQL语句
+	// Build constructs the nGQL statement
 	Build(nGQL Builder) error
 }
 
-// Clause 子句的通用结构，子句均包含名称以及表达式
+// Clause is the general structure of a clause, containing a name and an expression
 type Clause struct {
 	Name       string
 	Expression Expression
@@ -30,23 +30,24 @@ func (c Clause) Build(nGQL Builder) error {
 	return c.Expression.Build(nGQL)
 }
 
-// Options 子句配置项
+// Options represents configuration options for a clause
 type Options struct {
-	propNames []string // 指定属性列表
-	tagName   string   // 指定tag名称
+	PropNames []string // list of specified properties
+	TagName   string   // specified tag name
 }
 
 type Option func(*Options)
 
-// WithPropNames 指定属性字段名
+// WithPropNames sets the specified property field names
 func WithPropNames(propNames []string) Option {
 	return func(o *Options) {
-		o.propNames = propNames
+		o.PropNames = propNames
 	}
 }
 
+// WithTagName sets the tag name used in the clause
 func WithTagName(tagName string) Option {
 	return func(o *Options) {
-		o.tagName = tagName
+		o.TagName = tagName
 	}
 }

@@ -147,7 +147,7 @@ func TestAlterTag(t *testing.T) {
 			stmt: func() *Statement {
 				return New().AlterVertexTag(v1{}, clause.AlterTagOperate{
 					AddProps: []string{"p2"},
-				}, "t4")
+				}, clause.WithTagName("t4"))
 			},
 			want: `ALTER TAG t4 ADD (p2 string);`,
 		},

@@ -42,12 +42,12 @@ func (uv UpdateVertex) Build(nGQL Builder) error {
 	if ok {
 		tagName = tagNamer.VertexTagName()
 	}
-	if uv.Opts.tagName != "" {
-		tagName = uv.Opts.tagName
+	if uv.Opts.TagName != "" {
+		tagName = uv.Opts.TagName
 	}
 	// list of properties to be updated
-	propsName := make(map[string]bool, len(uv.Opts.propNames))
-	for _, propName := range uv.Opts.propNames {
+	propsName := make(map[string]bool, len(uv.Opts.PropNames))
+	for _, propName := range uv.Opts.PropNames {
 		propsName[propName] = true
 	}
 	propsUpdate, err := getPropsUpdateSet(uv.TagUpdate, propsName)

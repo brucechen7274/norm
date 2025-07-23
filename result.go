@@ -76,6 +76,7 @@ func (db *DB) Take(dest interface{}) error {
 		return err
 	}
 	rawRes, err := db.sessionPool.Execute(nGQL)
+	db.conf.logger.Trace(context.TODO(), &logger.TraceRecord{NGQL: nGQL, Err: err})
 	if err != nil {
 		return err
 	}
@@ -95,6 +96,7 @@ func (db *DB) TakeCol(col string, dest interface{}) error {
 		return err
 	}
 	rawRes, err := db.sessionPool.Execute(nGQL)
+	db.conf.logger.Trace(context.TODO(), &logger.TraceRecord{NGQL: nGQL, Err: err})
 	if err != nil {
 		return err
 	}
