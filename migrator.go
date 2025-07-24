@@ -68,7 +68,7 @@ func (m *Migrator) autoAlterVertexTags(tag *resolver.VertexTag) error {
 	if err != nil {
 		return err
 	}
-	propsExist := make(map[string]*VertexTagPropDesc)
+	propsExist := make(map[string]*PropDesc)
 	for _, tagProp := range tagProps {
 		propsExist[tagProp.Field] = tagProp
 	}
@@ -93,7 +93,7 @@ func (m *Migrator) autoAlterVertexTags(tag *resolver.VertexTag) error {
 
 // isPropChanged determines whether a property definition has changed
 // by comparing type, nullability, and default value.
-func (m *Migrator) isPropChanged(propExist *VertexTagPropDesc, propNew *resolver.Prop) bool {
+func (m *Migrator) isPropChanged(propExist *PropDesc, propNew *resolver.Prop) bool {
 	propType := func(t string) string {
 		t = strings.ToLower(t)
 		// "int" is treated as an alias for "int64"
@@ -146,7 +146,7 @@ func (m *Migrator) HasVertexTag(tagName string) (bool, error) {
 	return false, nil
 }
 
-type VertexTagPropDesc struct {
+type PropDesc struct {
 	Field   string `norm:"col:Field"`
 	Type    string `norm:"col:Type"`
 	Null    string `norm:"col:Null"`
@@ -156,10 +156,10 @@ type VertexTagPropDesc struct {
 
 // DescVertexTag retrieves detailed information about a vertex tag,
 // including field names, data types, and other metadata.
-func (m *Migrator) DescVertexTag(tagName string) ([]*VertexTagPropDesc, error) {
-	tagProps := make([]*VertexTagPropDesc, 0)
+func (m *Migrator) DescVertexTag(tagName string) ([]*PropDesc, error) {
+	tagProps := make([]*PropDesc, 0)
 	err := m.db.Raw("DESCRIBE TAG " + tagName).
-		Take(&tagProps)
+		Find(&tagProps)
 	if err != nil {
 		return nil, err
 	}
@@ -187,5 +187,56 @@ func (m *Migrator) DropVertexTag(tagName string, ifExists ...bool) error {
 func (m *Migrator) AlterVertexTag(vertex any, op clause.AlterOperate, opts ...clause.Option) error {
 	tx := m.db.getInstance()
 	tx.Statement.AlterVertexTag(vertex, op, opts...)
+	return tx.Exec()
+}
+
+// HasEdge checks whether the specified edge exists in the current graph space.
+func (m *Migrator) HasEdge(edgeTypeName string) (bool, error) {
+	edges := make([]string, 0)
+	err := m.db.Raw("SHOW EDGES").
+		FindCol("Name", &edges)
+	if err != nil {
+		return false, err
+	}
+	for _, edge := range edges {
+		if edge == edgeTypeName {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// DescEdge returns the detailed property description of the specified edge.
+func (m *Migrator) DescEdge(edgeTypeName string) ([]*PropDesc, error) {
+	edgeProps := make([]*PropDesc, 0)
+	err := m.db.Raw("DESCRIBE EDGE " + edgeTypeName).
+		Find(&edgeProps)
+	if err != nil {
+		return nil, err
+	}
+	return edgeProps, nil
+}
+
+// CreateEdge creates an edge schema in the space.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) CreateEdge(edge any, ifNotExists ...bool) error {
+	tx := m.db.getInstance()
+	tx.Statement.CreateEdge(edge, ifNotExists...)
+	return tx.Exec()
+}
+
+// DropEdge drops an edge schema by its type name.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) DropEdge(edgeTypeName string, ifExists ...bool) error {
+	tx := m.db.getInstance()
+	tx.Statement.DropEdge(edgeTypeName, ifExists...)
+	return tx.Exec()
+}
+
+// AlterEdge alters the definition of an existing edge type.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) AlterEdge(edge any, op clause.AlterOperate) error {
+	tx := m.db.getInstance()
+	tx.Statement.AlterEdge(edge, op)
 	return tx.Exec()
 }

@@ -150,3 +150,101 @@ func (stmt *Statement) alterVertexTag(tags []*resolver.VertexTag, op clause.Alte
 	})
 	stmt.SetPartType(PartTypeAlterTag)
 }
+
+// CreateEdge creates an edge schema in the space.
+//
+//	type follow struct {
+//		SrcID  string `norm:"edge_src_id"`
+//		DstID  string `norm:"edge_dst_id"`
+//		Degree int
+//	}
+//
+//	func (e follow) EdgeTypeName() string {
+//		return "follow"
+//	}
+//
+// stmt.CreateEdge(&follow{}, true)
+// CREATE EDGE IF NOT EXISTS follow(degree int)
+func (stmt *Statement) CreateEdge(edge any, ifNotExists ...bool) *Statement {
+	var notExistsOpt bool
+	if len(ifNotExists) > 0 {
+		notExistsOpt = ifNotExists[0]
+	}
+	var edgeSchema *resolver.EdgeSchema
+	switch e := edge.(type) {
+	case *resolver.EdgeSchema:
+		edgeSchema = e
+	default:
+		edgeType := reflect.TypeOf(edge)
+		var err error
+		edgeSchema, err = resolver.ParseEdge(edgeType)
+		if err != nil {
+			stmt.err = err
+			return stmt
+		}
+	}
+	stmt.AddClause(&clause.CreateEdge{
+		IfNotExists: notExistsOpt,
+		Edge:        edgeSchema,
+	})
+	stmt.SetPartType(PartTypeCreateEdge)
+	return stmt
+}
+
+// DropEdge drops an edge schema by its type name.
+//
+// stmt.DropEdge("e1", true)
+// DROP EDGE IF EXISTS e1
+func (stmt *Statement) DropEdge(edgeTypeName string, ifExists ...bool) *Statement {
+	if edgeTypeName == "" {
+		return stmt
+	}
+	var existsOpt bool
+	if len(ifExists) > 0 {
+		existsOpt = ifExists[0]
+	}
+	stmt.AddClause(&clause.DropEdge{
+		EdgeTypeName: edgeTypeName,
+		IfExists:     existsOpt,
+	})
+	stmt.SetPartType(PartTypeDropEdge)
+	return stmt
+}
+
+// AlterEdge alters the definition of an existing edge type.
+//
+//	type e2 struct {
+//		SrcID string `norm:"edge_src_id"`
+//		DstID string `norm:"edge_dst_id"`
+//		Rank  int    `norm:"edge_rank"`
+//		Name  string `norm:"prop:name"`
+//		Age   int    `norm:"prop:age"`
+//	}
+//
+//	func (e *e2) EdgeTypeName() string {
+//		return "e2"
+//	}
+//
+// stmt.AlterEdge(&e2{}, clause.AlterOperate{AddProps: []string{"name", "age"}})
+// ALTER EDGE e2 ADD (name string, age int)
+func (stmt *Statement) AlterEdge(edge any, op clause.AlterOperate) *Statement {
+	var edgeSchema *resolver.EdgeSchema
+	switch e := edge.(type) {
+	case *resolver.EdgeSchema:
+		edgeSchema = e
+	default:
+		edgeType := reflect.TypeOf(edge)
+		var err error
+		edgeSchema, err = resolver.ParseEdge(edgeType)
+		if err != nil {
+			stmt.err = err
+			return stmt
+		}
+	}
+	stmt.AddClause(&clause.AlterEdge{
+		Edge:         edgeSchema,
+		AlterOperate: op,
+	})
+	stmt.SetPartType(PartTypeAlterEdge)
+	return stmt
+}
