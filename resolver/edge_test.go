@@ -10,7 +10,7 @@ import (
 
 func TestParseEdge(t *testing.T) {
 	tests := []struct {
-		dest     interface{}
+		dest     any
 		want     *EdgeSchema
 		wantProp []prop
 		wantErr  bool
@@ -114,7 +114,7 @@ func TestGetEdgeInfo(t *testing.T) {
 		Age:   20,
 	}
 	tests := []struct {
-		e             interface{}
+		e             any
 		wantSrcIDExpr string
 		wantDstIDExpr string
 		wantRank      int64

@@ -37,7 +37,7 @@ func TestFetch(t *testing.T) {
 			errWant: clause.ErrInvalidClauseParams,
 		},
 		{
-			clauses: []clause.Interface{clause.Fetch{VID: []interface{}{"player100"}}},
+			clauses: []clause.Interface{clause.Fetch{VID: []any{"player100"}}},
 			errWant: clause.ErrInvalidClauseParams,
 		},
 	}

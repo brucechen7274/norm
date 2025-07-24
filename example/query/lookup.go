@@ -54,10 +54,10 @@ func lookup() {
 	}
 	log.Printf("Steve Nash name and age: %+v", r)
 
-	// If you want to retrieve all attribute values at once, you can use map[string]interface{} to receive the result.
+	// If you want to retrieve all attribute values at once, you can use map[string]any to receive the result.
 	// In this case, you're only focusing on one field, but since there might be multiple rows,
-	// you should use []map[string]interface{} to handle the response.
-	curProp := make([]map[string]interface{}, 0)
+	// you should use []map[string]any to handle the response.
+	curProp := make([]map[string]any, 0)
 	err = db.Lookup("player").
 		Where("player.name == ?", "Steve Nash").
 		Yield("properties(vertex) as properties").

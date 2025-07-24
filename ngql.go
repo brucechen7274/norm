@@ -23,7 +23,7 @@ func (db *DB) Go(step ...int) (tx *DB) {
 
 // From generate from clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) From(vid interface{}) (tx *DB) {
+func (db *DB) From(vid any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.From(vid)
 	return
@@ -39,7 +39,7 @@ func (db *DB) Over(edgeType ...string) (tx *DB) {
 
 // Where generate where clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) Where(query string, args ...interface{}) (tx *DB) {
+func (db *DB) Where(query string, args ...any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Where(query, args...)
 	return
@@ -47,7 +47,7 @@ func (db *DB) Where(query string, args ...interface{}) (tx *DB) {
 
 // Or generate or clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) Or(query string, args ...interface{}) (tx *DB) {
+func (db *DB) Or(query string, args ...any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Or(query, args...)
 	return
@@ -55,7 +55,7 @@ func (db *DB) Or(query string, args ...interface{}) (tx *DB) {
 
 // Not generate not clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) Not(query string, args ...interface{}) (tx *DB) {
+func (db *DB) Not(query string, args ...any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Not(query, args...)
 	return
@@ -63,7 +63,7 @@ func (db *DB) Not(query string, args ...interface{}) (tx *DB) {
 
 // Xor generate xor clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) Xor(query string, args ...interface{}) (tx *DB) {
+func (db *DB) Xor(query string, args ...any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Xor(query, args...)
 	return
@@ -79,7 +79,7 @@ func (db *DB) Sample(sampleList ...int) (tx *DB) {
 
 // Fetch generate fetch clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) Fetch(name string, vid interface{}) (tx *DB) {
+func (db *DB) Fetch(name string, vid any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Fetch(name, vid)
 	return
@@ -87,7 +87,7 @@ func (db *DB) Fetch(name string, vid interface{}) (tx *DB) {
 
 // FetchMulti generate fetch clause，multiple tag or edge types
 // see more information on the method of the same name in statement.Statement
-func (db *DB) FetchMulti(names []string, vid interface{}) (tx *DB) {
+func (db *DB) FetchMulti(names []string, vid any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.FetchMulti(names, vid)
 	return
@@ -135,15 +135,15 @@ func (db *DB) Limit(limit int, offset ...int) (tx *DB) {
 
 // InsertVertex generate insert vertex clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) InsertVertex(vertexes interface{}, ifNotExist ...bool) (tx *DB) {
+func (db *DB) InsertVertex(vertexes any, ifNotExists ...bool) (tx *DB) {
 	tx = db.getInstance()
-	tx.Statement.InsertVertex(vertexes, ifNotExist...)
+	tx.Statement.InsertVertex(vertexes, ifNotExists...)
 	return
 }
 
 // UpdateVertex generate update vertex clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) UpdateVertex(vid interface{}, propsUpdate interface{}, opts ...clause.Option) (tx *DB) {
+func (db *DB) UpdateVertex(vid any, propsUpdate any, opts ...clause.Option) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.UpdateVertex(vid, propsUpdate, opts...)
 	return
@@ -151,7 +151,7 @@ func (db *DB) UpdateVertex(vid interface{}, propsUpdate interface{}, opts ...cla
 
 // UpsertVertex generate upsert vertex clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) UpsertVertex(vid interface{}, propsUpdate interface{}, opts ...clause.Option) (tx *DB) {
+func (db *DB) UpsertVertex(vid any, propsUpdate any, opts ...clause.Option) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.UpsertVertex(vid, propsUpdate, opts...)
 	return
@@ -159,7 +159,7 @@ func (db *DB) UpsertVertex(vid interface{}, propsUpdate interface{}, opts ...cla
 
 // DeleteVertex generate delete vertex clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) DeleteVertex(vid interface{}, withEdge ...bool) (tx *DB) {
+func (db *DB) DeleteVertex(vid any, withEdge ...bool) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.DeleteVertex(vid, withEdge...)
 	return
@@ -167,15 +167,15 @@ func (db *DB) DeleteVertex(vid interface{}, withEdge ...bool) (tx *DB) {
 
 // InsertEdge generate insert edge clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) InsertEdge(edges interface{}, ifNotExist ...bool) (tx *DB) {
+func (db *DB) InsertEdge(edges any, ifNotExists ...bool) (tx *DB) {
 	tx = db.getInstance()
-	tx.Statement.InsertEdge(edges, ifNotExist...)
+	tx.Statement.InsertEdge(edges, ifNotExists...)
 	return
 }
 
 // UpdateEdge generate update edge clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) UpdateEdge(edge interface{}, propsUpdate interface{}, opts ...clause.Option) (tx *DB) {
+func (db *DB) UpdateEdge(edge any, propsUpdate any, opts ...clause.Option) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.UpdateEdge(edge, propsUpdate, opts...)
 	return
@@ -183,7 +183,7 @@ func (db *DB) UpdateEdge(edge interface{}, propsUpdate interface{}, opts ...clau
 
 // UpsertEdge generate upsert edge clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) UpsertEdge(edge interface{}, propsUpdate interface{}, opts ...clause.Option) (tx *DB) {
+func (db *DB) UpsertEdge(edge any, propsUpdate any, opts ...clause.Option) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.UpsertEdge(edge, propsUpdate, opts...)
 	return
@@ -191,7 +191,7 @@ func (db *DB) UpsertEdge(edge interface{}, propsUpdate interface{}, opts ...clau
 
 // DeleteEdge generate delete edge clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) DeleteEdge(edgeTypeName string, edge interface{}) (tx *DB) {
+func (db *DB) DeleteEdge(edgeTypeName string, edge any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.DeleteEdge(edgeTypeName, edge)
 	return
@@ -199,7 +199,7 @@ func (db *DB) DeleteEdge(edgeTypeName string, edge interface{}) (tx *DB) {
 
 // When generate when edge clause
 // see more information on the method of the same name in statement.Statement
-func (db *DB) When(query string, args ...interface{}) (tx *DB) {
+func (db *DB) When(query string, args ...any) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.When(query, args...)
 	return

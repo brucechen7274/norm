@@ -57,15 +57,15 @@ func TestInsertEdge(t *testing.T) {
 			gqlWant: `INSERT EDGE e2(name, age) VALUES "12"->"13":("n1", 1), "13"->"14":("n2", 2)`,
 		},
 		{
-			clauses: []clause.Interface{clause.InsertEdge{IfNotExist: true, Edges: reflect.ValueOf([]edge2{e22, e23})}},
+			clauses: []clause.Interface{clause.InsertEdge{IfNotExists: true, Edges: reflect.ValueOf([]edge2{e22, e23})}},
 			gqlWant: `INSERT EDGE IF NOT EXISTS e2(name, age) VALUES "12"->"13":("n1", 1), "13"->"14":("n2", 2)`,
 		},
 		{
-			clauses: []clause.Interface{clause.InsertEdge{IfNotExist: true, Edges: reflect.ValueOf([]*edge2{&e22, &e23})}},
+			clauses: []clause.Interface{clause.InsertEdge{IfNotExists: true, Edges: reflect.ValueOf([]*edge2{&e22, &e23})}},
 			gqlWant: `INSERT EDGE IF NOT EXISTS e2(name, age) VALUES "12"->"13":("n1", 1), "13"->"14":("n2", 2)`,
 		},
 		{
-			clauses: []clause.Interface{clause.InsertEdge{IfNotExist: true}},
+			clauses: []clause.Interface{clause.InsertEdge{IfNotExists: true}},
 			errWant: clause.ErrInvalidClauseParams,
 		},
 	}

@@ -15,7 +15,7 @@ func (p Player) VertexTagName() string {
 }
 
 // // You can also express the desired tag names for updating by implementing the VertexTagName method on a map
-type playerUpdate map[string]interface{}
+type playerUpdate map[string]any
 
 func (m playerUpdate) VertexTagName() string {
 	return "player"
@@ -28,14 +28,14 @@ func updateVertex() {
 	}
 	log.Printf("after update, player101 attributes: %v", getProp("player101"))
 
-	// You can also use map[string]interface{} for updates, but you will need to explicitly inform the framework
+	// You can also use map[string]any for updates, but you will need to explicitly inform the framework
 	// of the tag names that need to be updated
-	if err := db.UpdateVertex("player101", map[string]interface{}{"age": 36}, clause.WithTagName("player")).Exec(); err != nil {
+	if err := db.UpdateVertex("player101", map[string]any{"age": 36}, clause.WithTagName("player")).Exec(); err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("after update, player101 attributes: %v", getProp("player101"))
 
-	// Use a map[string]interface{} with tag names for updates
+	// Use a map[string]any with tag names for updates
 	if err := db.UpdateVertex("player101", playerUpdate{"age": 37}).Exec(); err != nil {
 		log.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func updateVertex() {
 	// SET age = age - 1 \
 	// WHEN name == "Tony Parker" \
 	// YIELD name AS Name, age AS Age;
-	prop := make(map[string]interface{})
+	prop := make(map[string]any)
 	err := db.UpdateVertex("player101", playerUpdate{"age": clause.Expr{Str: "age - 1"}}).
 		When("name == ?", "Tony Parker").
 		Yield("name AS Name, age AS Age").
@@ -63,7 +63,7 @@ func upsertVertex() {
 	// SET age = 30 \
 	// WHEN name == "Joe" \
 	// YIELD name AS Name, age AS Age;
-	prop := make(map[string]interface{})
+	prop := make(map[string]any)
 	err := db.UpsertVertex("player666", &Player{Age: 30}).
 		When("name == ?", "Joe").
 		Yield("name AS Name, age AS Age").
@@ -83,9 +83,9 @@ func upsertVertex() {
 	log.Printf("after the second upsert, player666 attributes: %v", prop)
 }
 
-func getProp(vid interface{}) map[string]interface{} {
+func getProp(vid any) map[string]any {
 	// FETCH PROP ON player "player101" YIELD properties(vertex);
-	prop := make(map[string]interface{})
+	prop := make(map[string]any)
 	err := db.Fetch("player", vid).
 		Yield("properties(vertex) as p").
 		TakeCol("p", prop)

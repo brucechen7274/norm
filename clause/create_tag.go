@@ -8,8 +8,8 @@ import (
 )
 
 type CreateTag struct {
-	IfNotExist bool
-	Tag        *resolver.VertexTag
+	IfNotExists bool
+	Tag         *resolver.VertexTag
 }
 
 const CreateTagName = "CREATE_TAG"
@@ -24,7 +24,7 @@ func (ct CreateTag) MergeIn(clause *Clause) {
 
 func (ct CreateTag) Build(nGQL Builder) error {
 	nGQL.WriteString("CREATE TAG ")
-	if ct.IfNotExist {
+	if ct.IfNotExists {
 		nGQL.WriteString("IF NOT EXISTS ")
 	}
 	nGQL.WriteString(ct.Tag.TagName)

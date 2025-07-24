@@ -6,7 +6,7 @@ import (
 
 type Fetch struct {
 	Names []string
-	VID   interface{}
+	VID   any
 }
 
 const FetchName = "FETCH"

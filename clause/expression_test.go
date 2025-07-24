@@ -7,7 +7,7 @@ import (
 
 func Test_vertexIDExpr(t *testing.T) {
 	tests := []struct {
-		vid     interface{}
+		vid     any
 		want    string
 		wantErr bool
 	}{

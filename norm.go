@@ -11,13 +11,18 @@ import (
 	"time"
 )
 
-// DB will use statement.Statement to construct the nGQL statement, and then hand it over to nebula.SessionPool to execute
-// the statement, and you can eventually get the result of the execution through methods such as Find Exec Pluck.  DB is
-// concurrency-safe, and multiple statements can be executed by a single DB object at the same time. The nebula graph
-// officially provides a SessionPool, which eliminates the need for the application layer to implement a connection pool.
-// So in most cases, the application layer only needs to use a single DB instance.
-// However, statement.Statement is not concurrency-safe, so don't concurrently build nGQL statements.
-// NOTE: No embedded field is supported for struct, so do not use embedded field when declaring struct.
+// DB uses statement.Statement to construct nGQL statements,
+// and then executes them through nebula.SessionPool.
+// You can retrieve the results via methods such as Find, Exec, or Pluck.
+// DB is concurrency-safe: multiple statements can be executed concurrently using a single DB instance.
+//
+// Note:
+//   - nebula-graph officially provides a SessionPool, so there's no need to manage a custom connection pool.
+//     In most cases, a single DB instance is sufficient for the application.
+//   - statement.Statement is NOT concurrency-safe.
+//     Do not build nGQL statements concurrently using the same Statement instance.
+//   - Embedded fields in struct definitions are NOT supported.
+//     Avoid using embedded fields when defining vertex/edge structs.
 type DB struct {
 	Statement   *statement.Statement
 	conf        *Config
@@ -25,6 +30,11 @@ type DB struct {
 	clone       int
 }
 
+// Open creates a new DB instance.
+//
+// It initializes configuration options, resolves timezone, sets logger,
+// parses the server address, and creates the session pool.
+// The returned DB instance is ready to execute nGQL statements.
 func Open(conf *Config, opts ...ConfigOption) (*DB, error) {
 	for _, o := range opts {
 		o.apply(conf)

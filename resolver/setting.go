@@ -10,16 +10,16 @@ import (
 const (
 	TagSettingKey       = "norm"        // norm struct tag key
 	TagSettingColName   = "col"         // name of the field in the record
-	TagSettingVertexID  = "vertex_id"   // annotate that the field is a vertex id
-	TagSettingEdgeSrcID = "edge_src_id" // annotate that the field is an edge source id
-	TagSettingEdgeDstID = "edge_dst_id" // annotate that the field is an edge dest id
-	TagSettingEdgeRank  = "edge_rank"   // annotate that the field is an edge rank
-	TagSettingPropName  = "prop"        // property name, vertex or edge
-	TagSettingDataType  = "type"        // specify the data type (https://docs.nebula-graph.com.cn/3.6.0/3.ngql-guide/3.data-types/1.numeric/)
-	TagSettingNotNull   = "not_null"    // 声明字段不允许为空
-	TagSettingDefault   = "default"     // 声明字段默认值
-	TagSettingComment   = "comment"     // 声明字段描述信息
-	TagSettingTTL       = "ttl"         // 声明依据此字段进行过期
+	TagSettingVertexID  = "vertex_id"   // marks the field as a vertex ID
+	TagSettingEdgeSrcID = "edge_src_id" // marks the field as an edge source ID
+	TagSettingEdgeDstID = "edge_dst_id" // marks the field as an edge destination ID
+	TagSettingEdgeRank  = "edge_rank"   // marks the field as an edge rank
+	TagSettingPropName  = "prop"        // property name for a vertex or edge
+	TagSettingDataType  = "type"        // specifies the data type (see: https://docs.nebula-graph.com.cn/3.6.0/3.ngql-guide/3.data-types/1.numeric/)
+	TagSettingNotNull   = "not_null"    // declares the field as NOT NULL
+	TagSettingDefault   = "default"     // declares a default value for the field
+	TagSettingComment   = "comment"     // declares a comment/description for the field
+	TagSettingTTL       = "ttl"         // marks the field as TTL (time-to-live) for expiration
 	TagSettingIgnore    = "-"           // norm will ignore this field
 )
 

@@ -51,7 +51,7 @@ func (stmt *Statement) Go(step ...int) *Statement {
 //
 // FROM $-.id
 // stmt.From(clause.Expr{Str:"$-.id"}) or stmt.From(&clause.Expr{Str:"$-.id"})
-func (stmt *Statement) From(vid interface{}) *Statement {
+func (stmt *Statement) From(vid any) *Statement {
 	stmt.AddClause(&clause.From{
 		VID: vid,
 	})
@@ -106,7 +106,7 @@ func (stmt *Statement) Over(edgeType ...string) *Statement {
 //
 // WHERE v.player.name == "Tim Duncan" AND v.player.age > 30
 // stmt.Where("v.player.name == ?", "Tim Duncan").Where("v.player.age > ?", 30)
-func (stmt *Statement) Where(query string, args ...interface{}) *Statement {
+func (stmt *Statement) Where(query string, args ...any) *Statement {
 	stmt.AddClause(&clause.Where{
 		Conditions: []clause.Condition{stmt.buildCondition(clause.OperatorAnd, query, args...)},
 	})
@@ -117,7 +117,7 @@ func (stmt *Statement) Where(query string, args ...interface{}) *Statement {
 //
 // WHERE properties(edge).degree > 90 OR properties($$).age != 33
 // stmt.Where("properties(edge).degree > ?", 90).Or("properties($$).age != ?", 33)
-func (stmt *Statement) Or(query string, args ...interface{}) *Statement {
+func (stmt *Statement) Or(query string, args ...any) *Statement {
 	stmt.AddClause(&clause.Where{
 		Conditions: []clause.Condition{stmt.buildCondition(clause.OperatorOr, query, args...)},
 	})
@@ -128,7 +128,7 @@ func (stmt *Statement) Or(query string, args ...interface{}) *Statement {
 //
 // WHERE NOT (v)-[e]->(t:team)
 // stmt.Where("NOT (v)-[e]->(t:team)")
-func (stmt *Statement) Not(query string, args ...interface{}) *Statement {
+func (stmt *Statement) Not(query string, args ...any) *Statement {
 	stmt.AddClause(&clause.Where{
 		Conditions: []clause.Condition{stmt.buildCondition(clause.OperatorNot, query, args...)},
 	})
@@ -139,14 +139,14 @@ func (stmt *Statement) Not(query string, args ...interface{}) *Statement {
 //
 // WHERE v.player.name == "Tim Duncan" XOR (v.player.age < 30 AND v.player.name == "Yao Ming")
 // stmt.Where("v.player.name == ?", "Tim Duncan").Xor("v.player.age < ? AND v.player.name == ?", 30, "Yao Ming")
-func (stmt *Statement) Xor(query string, args ...interface{}) *Statement {
+func (stmt *Statement) Xor(query string, args ...any) *Statement {
 	stmt.AddClause(&clause.Where{
 		Conditions: []clause.Condition{stmt.buildCondition(clause.OperatorXor, query, args...)},
 	})
 	return stmt
 }
 
-func (stmt *Statement) buildCondition(op string, query string, args ...interface{}) clause.Condition {
+func (stmt *Statement) buildCondition(op string, query string, args ...any) clause.Condition {
 	return clause.Condition{
 		Operator: op,
 		Expr: clause.Expr{
@@ -183,7 +183,7 @@ func (stmt *Statement) Sample(sampleList ...int) *Statement {
 //
 // FETCH PROP ON serve "player100" -> "team204", "player133" -> "team202"
 // stmt.Fetch("serve", []*clause.Expr{{Str: `"player100" -> "team204"`}, {Str: `"player133" -> "team202"`}})
-func (stmt *Statement) Fetch(name string, vid interface{}) *Statement {
+func (stmt *Statement) Fetch(name string, vid any) *Statement {
 	if name == "" || vid == nil {
 		return stmt
 	}
@@ -199,7 +199,7 @@ func (stmt *Statement) Fetch(name string, vid interface{}) *Statement {
 //
 // FETCH PROP ON player, serve "player101", "player102", "player103"
 // stmt.FetchMulti([]string{"player", "serve"}, []string{"player101", "player102", "player103"})
-func (stmt *Statement) FetchMulti(names []string, vid interface{}) *Statement {
+func (stmt *Statement) FetchMulti(names []string, vid any) *Statement {
 	if len(names) == 0 || vid == nil {
 		return stmt
 	}

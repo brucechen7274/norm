@@ -16,7 +16,7 @@ type prop struct {
 
 func TestParseVertex(t *testing.T) {
 	tests := []struct {
-		dest                 interface{}
+		dest                 any
 		wantVIDType          VIDType
 		wantVIDIndex         []int
 		wantVIDMethodIndex   int
@@ -161,7 +161,7 @@ func TestGetVertexInfo(t *testing.T) {
 		Age:  28,
 	}
 	tests := []struct {
-		v            interface{}
+		v            any
 		wantVIDExpr  string
 		wantPropExpr string
 	}{

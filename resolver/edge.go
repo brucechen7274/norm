@@ -122,7 +122,7 @@ func (e *EdgeSchema) GetTypeName() string {
 }
 
 // GetSrcVID get the src_id of the edge
-func (e *EdgeSchema) GetSrcVID(edgeValue reflect.Value) interface{} {
+func (e *EdgeSchema) GetSrcVID(edgeValue reflect.Value) any {
 	if e.srcVIDFieldIndex != nil {
 		edgeValue = reflect.Indirect(edgeValue)
 		return edgeValue.FieldByIndex(e.srcVIDFieldIndex).Interface()
@@ -146,7 +146,7 @@ func (e *EdgeSchema) GetSrcVIDExpr(edgeValue reflect.Value) string {
 }
 
 // GetDstVID get the dst_id of the edge
-func (e *EdgeSchema) GetDstVID(edgeValue reflect.Value) interface{} {
+func (e *EdgeSchema) GetDstVID(edgeValue reflect.Value) any {
 	if e.dstVIDFieldIndex != nil {
 		edgeValue = reflect.Indirect(edgeValue)
 		return edgeValue.FieldByIndex(e.dstVIDFieldIndex).Interface()

@@ -21,7 +21,7 @@ type Builder interface {
 // Expr raw expression
 type Expr struct {
 	Str  string
-	Vars []interface{}
+	Vars []any
 }
 
 // Build raw expression
@@ -51,7 +51,7 @@ func (expr Expr) Build(builder Builder) error {
 	return nil
 }
 
-func (expr Expr) formatValue(value interface{}) (string, error) {
+func (expr Expr) formatValue(value any) (string, error) {
 	switch v := value.(type) {
 	case Expr:
 		exprBuilder := new(strings.Builder)
@@ -72,7 +72,7 @@ func (expr Expr) formatValue(value interface{}) (string, error) {
 	}
 }
 
-func vertexIDExpr(vid interface{}) (string, error) {
+func vertexIDExpr(vid any) (string, error) {
 	vidList := make([]string, 0)
 	switch id := vid.(type) {
 	case int:

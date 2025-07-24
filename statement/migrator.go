@@ -30,17 +30,17 @@ import (
 //
 // Usage:
 // stmt.CreateVertexTags(&player{}, true)
-func (stmt *Statement) CreateVertexTags(vertex any, ifNotExist ...bool) *Statement {
-	var notExistOpt bool
-	if len(ifNotExist) > 0 {
-		notExistOpt = ifNotExist[0]
+func (stmt *Statement) CreateVertexTags(vertex any, ifNotExists ...bool) *Statement {
+	var notExistsOpt bool
+	if len(ifNotExists) > 0 {
+		notExistsOpt = ifNotExists[0]
 	}
 
 	switch v := vertex.(type) {
 	case *resolver.VertexSchema:
-		stmt.createVertexTags(v.GetTags(), notExistOpt)
+		stmt.createVertexTags(v.GetTags(), notExistsOpt)
 	case *resolver.VertexTag:
-		stmt.createVertexTags([]*resolver.VertexTag{v}, notExistOpt)
+		stmt.createVertexTags([]*resolver.VertexTag{v}, notExistsOpt)
 	default:
 		vertexType := reflect.TypeOf(vertex)
 		vertexSchema, err := resolver.ParseVertex(vertexType)
@@ -48,7 +48,7 @@ func (stmt *Statement) CreateVertexTags(vertex any, ifNotExist ...bool) *Stateme
 			stmt.err = err
 			return stmt
 		}
-		stmt.createVertexTags(vertexSchema.GetTags(), notExistOpt)
+		stmt.createVertexTags(vertexSchema.GetTags(), notExistsOpt)
 	}
 	return stmt
 }
@@ -59,8 +59,8 @@ func (stmt *Statement) createVertexTags(tags []*resolver.VertexTag, ifNotExists 
 			stmt.AddPart(NewPart())
 		}
 		stmt.AddClause(&clause.CreateTag{
-			IfNotExist: ifNotExists,
-			Tag:        tag,
+			IfNotExists: ifNotExists,
+			Tag:         tag,
 		})
 		stmt.SetPartType(PartTypeCreateTag)
 	}
@@ -69,17 +69,17 @@ func (stmt *Statement) createVertexTags(tags []*resolver.VertexTag, ifNotExists 
 // DropVertexTag drops a vertex tag by its name.
 // If the tag name is empty, the operation is skipped.
 // Optionally, you can specify whether to include the IF EXISTS clause.
-func (stmt *Statement) DropVertexTag(tagName string, ifExist ...bool) *Statement {
+func (stmt *Statement) DropVertexTag(tagName string, ifExists ...bool) *Statement {
 	if tagName == "" {
 		return stmt
 	}
-	var existOpt bool
-	if len(ifExist) > 0 {
-		existOpt = ifExist[0]
+	var existsOpt bool
+	if len(ifExists) > 0 {
+		existsOpt = ifExists[0]
 	}
 	stmt.AddClause(&clause.DropTag{
-		TagName: tagName,
-		IfExist: existOpt,
+		TagName:  tagName,
+		IfExists: existsOpt,
 	})
 	stmt.SetPartType(PartTypeDropTag)
 	return stmt

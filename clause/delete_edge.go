@@ -9,7 +9,7 @@ import (
 
 type DeleteEdge struct {
 	EdgeTypeName string
-	Edges        interface{}
+	Edges        any
 }
 
 const DeleteEdgeName = "DELETE_EDGE"

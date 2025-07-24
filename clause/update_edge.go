@@ -8,8 +8,8 @@ import (
 
 type UpdateEdge struct {
 	IsUpsert    bool
-	Edge        interface{}
-	PropsUpdate interface{}
+	Edge        any
+	PropsUpdate any
 	Opts        Options
 }
 

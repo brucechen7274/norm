@@ -169,7 +169,7 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 }
 
 // GetVID get the vid value of vertexValue
-func (v *VertexSchema) GetVID(vertexValue reflect.Value) interface{} {
+func (v *VertexSchema) GetVID(vertexValue reflect.Value) any {
 	if v.vidReceiverIsPtr && vertexValue.Kind() != reflect.Ptr {
 		vertexNew := reflect.New(vertexValue.Type())
 		vertexNew.Elem().Set(vertexValue)

@@ -32,8 +32,8 @@ func updateEdge() {
 	}
 	log.Printf("after update, player100 serve edge attributes: %v", getServeProp("player100"))
 
-	// You can also use map[string]interface{} to specify the attributes to be updated
-	if err := db.UpdateEdge(Serve{SrcID: "player100", DstID: "team204"}, map[string]interface{}{"end_year": 2017}).Exec(); err != nil {
+	// You can also use map[string]any to specify the attributes to be updated
+	if err := db.UpdateEdge(Serve{SrcID: "player100", DstID: "team204"}, map[string]any{"end_year": 2017}).Exec(); err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("after update, player100 serve edge attributes: %v", getServeProp("player100"))
@@ -43,8 +43,8 @@ func updateEdge() {
 	// SET end_year = end_year - 1 \
 	// WHEN end_year > 2010 \
 	// YIELD start_year, end_year;
-	prop := make(map[string]interface{})
-	err := db.UpdateEdge(&Serve{SrcID: "player100", DstID: "team204"}, map[string]interface{}{"end_year": clause.Expr{Str: "end_year - 1"}}).
+	prop := make(map[string]any)
+	err := db.UpdateEdge(&Serve{SrcID: "player100", DstID: "team204"}, map[string]any{"end_year": clause.Expr{Str: "end_year - 1"}}).
 		When("end_year > ?", 2010).
 		Yield("start_year, end_year").
 		Find(prop)
@@ -56,7 +56,7 @@ func updateEdge() {
 
 func upsertEdge() {
 	// If the edge does not exist, a new edge will be written
-	prop := make(map[string]interface{})
+	prop := make(map[string]any)
 	err := db.UpsertEdge(Serve{SrcID: "player666", DstID: "team200"}, &Serve{EndYear: 2021}).
 		When("end_year == ?", 2010).
 		Yield("start_year, end_year").
@@ -76,11 +76,11 @@ func upsertEdge() {
 	log.Printf("after the second upsert, serve edge attributes: %v", prop)
 }
 
-func getServeProp(vid interface{}) map[string]interface{} {
+func getServeProp(vid any) map[string]any {
 	// GO FROM "player100" \
 	// OVER serve \
 	// YIELD properties(edge).start_year, properties(edge).end_year;
-	prop := make(map[string]interface{})
+	prop := make(map[string]any)
 	err := db.Go().
 		From(vid).
 		Over("serve").

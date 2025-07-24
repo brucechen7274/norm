@@ -175,7 +175,7 @@ func Update() {
 	if err := db.UpdateVertex("player1001", &Player{Age: 23}).Exec(); err != nil {
 		log.Fatalf("update player failed: %v", err)
 	}
-	prop := make(map[string]interface{})
+	prop := make(map[string]any)
 	err := db.Fetch("player", "player1001").
 		Yield("properties(vertex) as p").
 		FindCol("p", &prop)
@@ -187,7 +187,7 @@ func Update() {
 	if err = db.UpdateEdge(Serve{SrcID: "player1001", DstID: "team1001"}, &Serve{StartYear: 160123456}).Exec(); err != nil {
 		log.Fatalf("update edge serve failed: %v", err)
 	}
-	prop = make(map[string]interface{})
+	prop = make(map[string]any)
 	err = db.Fetch("serve", clause.Expr{Str: `"player1001"->"team1001"`}).
 		Yield("properties(edge) as p").
 		FindCol("p", &prop)

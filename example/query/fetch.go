@@ -9,8 +9,8 @@ import (
 
 func fetch() {
 	// FETCH PROP ON player "player100" YIELD properties(vertex);
-	// for the full attributes of a vertex, you can use map[string]interface{} to receive
-	prop := make(map[string]interface{})
+	// for the full attributes of a vertex, you can use map[string]any to receive
+	prop := make(map[string]any)
 	err := db.
 		Fetch("player", "player100").
 		Yield("properties(vertex) as p").
@@ -47,7 +47,7 @@ func fetch() {
 	log.Printf("playerName: %+v", playerName)
 
 	// FETCH PROP ON player "player101", "player102", "player103" YIELD properties(vertex);
-	props := make([]map[string]interface{}, 0)
+	props := make([]map[string]any, 0)
 	err = db.
 		Fetch("player", []string{"player101", "player102", "player103"}).
 		Yield("properties(vertex) as p").
@@ -79,7 +79,7 @@ func fetch() {
 
 	// FETCH PROP ON serve "player100"->"team204" YIELD properties(edge);
 	// The current fetch processing logic is mainly designed for vertexes, so querying the properties of edges is a bit tricky.
-	prop = make(map[string]interface{})
+	prop = make(map[string]any)
 	err = db.
 		Fetch("serve", clause.Expr{Str: `"player100" -> "team204"`}).
 		Yield("properties(edge) as p").

@@ -17,7 +17,7 @@ func TestDropTag(t *testing.T) {
 			gqlWant: `DROP TAG test`,
 		},
 		{
-			clauses: []clause.Interface{clause.DropTag{TagName: "test", IfExist: true}},
+			clauses: []clause.Interface{clause.DropTag{TagName: "test", IfExists: true}},
 			gqlWant: `DROP TAG IF EXISTS test`,
 		},
 	}

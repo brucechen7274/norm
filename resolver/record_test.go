@@ -9,7 +9,7 @@ import (
 
 func TestParseRecord(t *testing.T) {
 	tests := []struct {
-		record  interface{}
+		record  any
 		want    *RecordSchema
 		wangErr bool
 	}{

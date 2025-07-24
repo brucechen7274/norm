@@ -522,7 +522,7 @@ func FormatSimpleValue(sdkType string, value reflect.Value) (string, error) {
 }
 
 // GetValueIface get the nebula graph return value
-func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
+func GetValueIface(nebulaValue *nebula.ValueWrapper) (any, error) {
 	switch nebulaValue.GetType() {
 	case NebulaSdkTypeNull, NebulaSdkTypeEmpty:
 		return nil, nil
@@ -554,7 +554,7 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 		return nebulaValue.AsRelationship()
 	case NebulaSdkTypeList:
 		nList, _ := nebulaValue.AsList()
-		res := make([]interface{}, 0, len(nList))
+		res := make([]any, 0, len(nList))
 		for _, v := range nList {
 			vIface, err := GetValueIface(&v)
 			if err != nil {
@@ -565,7 +565,7 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 		return res, nil
 	case NebulaSdkTypeMap:
 		nMap, _ := nebulaValue.AsMap()
-		res := make(map[string]interface{}, len(nMap))
+		res := make(map[string]any, len(nMap))
 		for k, v := range nMap {
 			vIface, err := GetValueIface(&v)
 			if err != nil {
@@ -576,7 +576,7 @@ func GetValueIface(nebulaValue *nebula.ValueWrapper) (interface{}, error) {
 		return res, nil
 	case NebulaSdkTypeSet:
 		nList, _ := nebulaValue.AsDedupList()
-		res := make([]interface{}, 0, len(nList))
+		res := make([]any, 0, len(nList))
 		for _, v := range nList {
 			vIface, err := GetValueIface(&v)
 			if err != nil {

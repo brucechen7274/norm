@@ -5,7 +5,7 @@ import (
 )
 
 type DeleteVertex struct {
-	VID      interface{}
+	VID      any
 	WithEdge bool
 }
 

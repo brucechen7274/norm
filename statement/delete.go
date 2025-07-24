@@ -12,7 +12,7 @@ import "github.com/haysons/norm/clause"
 //
 // DELETE VERTEX $-.id
 // stmt.DeleteVertex(clause.Expr{Str: "$-.id"})
-func (stmt *Statement) DeleteVertex(vid interface{}, withEdge ...bool) *Statement {
+func (stmt *Statement) DeleteVertex(vid any, withEdge ...bool) *Statement {
 	var withEdgeOpt bool
 	if len(withEdge) > 0 {
 		withEdgeOpt = withEdge[0]
@@ -51,7 +51,7 @@ func (stmt *Statement) DeleteVertex(vid interface{}, withEdge ...bool) *Statemen
 //
 // DELETE EDGE serve "player100"->"team204", "player101"->"team204"@1
 // stmt.DeleteEdge("serve", []edgeServe{{SrcID: "player100", DstID: "team204"}, {SrcID: "player101", DstID: "team204", Rank: 1}})
-func (stmt *Statement) DeleteEdge(edgeTypeName string, edges interface{}) *Statement {
+func (stmt *Statement) DeleteEdge(edgeTypeName string, edges any) *Statement {
 	stmt.AddClause(&clause.DeleteEdge{
 		EdgeTypeName: edgeTypeName,
 		Edges:        edges,

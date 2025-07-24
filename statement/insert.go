@@ -61,14 +61,14 @@ import (
 // INSERT VERTEX t3(p1), t4(p2) VALUES "21":(321, "hello"),
 // stmt.InsertVertex(v1{VID: "21", T1: t3{P1: 321}, T2: t4{P2: "hello"}})
 // more usage reference: ./insert_test.go
-func (stmt *Statement) InsertVertex(vertexes interface{}, ifNotExist ...bool) *Statement {
-	var notExistOpt bool
-	if len(ifNotExist) > 0 {
-		notExistOpt = ifNotExist[0]
+func (stmt *Statement) InsertVertex(vertexes any, ifNotExists ...bool) *Statement {
+	var notExistsOpt bool
+	if len(ifNotExists) > 0 {
+		notExistsOpt = ifNotExists[0]
 	}
 	stmt.AddClause(&clause.InsertVertex{
-		IfNotExist: notExistOpt,
-		Vertexes:   reflect.ValueOf(vertexes),
+		IfNotExists: notExistsOpt,
+		Vertexes:    reflect.ValueOf(vertexes),
 	})
 	stmt.SetPartType(PartTypeInsertVertex)
 	return stmt
@@ -99,14 +99,14 @@ func (stmt *Statement) InsertVertex(vertexes interface{}, ifNotExist ...bool) *S
 //
 // INSERT EDGE IF NOT EXISTS e2(name, age) VALUES "14"->"15"@1:("n2", 13)
 // stmt.InsertEdge(e2{SrcID: "14", DstID: "15", Rank: 1, Name: "n2", Age: 13}, true)
-func (stmt *Statement) InsertEdge(edges interface{}, ifNotExist ...bool) *Statement {
-	var notExistOpt bool
-	if len(ifNotExist) > 0 {
-		notExistOpt = ifNotExist[0]
+func (stmt *Statement) InsertEdge(edges any, ifNotExists ...bool) *Statement {
+	var notExistsOpt bool
+	if len(ifNotExists) > 0 {
+		notExistsOpt = ifNotExists[0]
 	}
 	stmt.AddClause(&clause.InsertEdge{
-		IfNotExist: notExistOpt,
-		Edges:      reflect.ValueOf(edges),
+		IfNotExists: notExistsOpt,
+		Edges:       reflect.ValueOf(edges),
 	})
 	stmt.SetPartType(PartTypeInsertEdge)
 	return stmt

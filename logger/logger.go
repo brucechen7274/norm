@@ -31,10 +31,10 @@ type Interface interface {
 	// In the default logger, trace records are printed as debug logs.
 	Trace(ctx context.Context, record *TraceRecord)
 
-	Debug(ctx context.Context, msg string, data ...interface{})
-	Info(ctx context.Context, msg string, data ...interface{})
-	Warn(ctx context.Context, msg string, data ...interface{})
-	Error(ctx context.Context, msg string, data ...interface{})
+	Debug(ctx context.Context, msg string, data ...any)
+	Info(ctx context.Context, msg string, data ...any)
+	Warn(ctx context.Context, msg string, data ...any)
+	Error(ctx context.Context, msg string, data ...any)
 }
 
 type defaultLogger struct {
@@ -77,23 +77,23 @@ func (l *defaultLogger) LogMode(level Level) Interface {
 	return &newLogger
 }
 
-func (l *defaultLogger) Debug(ctx context.Context, msg string, data ...interface{}) {
+func (l *defaultLogger) Debug(ctx context.Context, msg string, data ...any) {
 	l.message(ctx, DebugLevel, l.debugStr+msg, data...)
 }
 
-func (l *defaultLogger) Info(ctx context.Context, msg string, data ...interface{}) {
+func (l *defaultLogger) Info(ctx context.Context, msg string, data ...any) {
 	l.message(ctx, InfoLevel, l.infoStr+msg, data...)
 }
 
-func (l *defaultLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
+func (l *defaultLogger) Warn(ctx context.Context, msg string, data ...any) {
 	l.message(ctx, WarnLevel, l.warnStr+msg, data...)
 }
 
-func (l *defaultLogger) Error(ctx context.Context, msg string, data ...interface{}) {
+func (l *defaultLogger) Error(ctx context.Context, msg string, data ...any) {
 	l.message(ctx, ErrorLevel, l.errStr+msg, data...)
 }
 
-func (l *defaultLogger) message(_ context.Context, level Level, msg string, data ...interface{}) {
+func (l *defaultLogger) message(_ context.Context, level Level, msg string, data ...any) {
 	if level < l.LogLevel {
 		return
 	}

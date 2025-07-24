@@ -46,7 +46,7 @@ func (db *DB) Exec() error {
 }
 
 // Find exec the statement and assign the returned result to the dest variable
-func (db *DB) Find(dest interface{}) error {
+func (db *DB) Find(dest any) error {
 	rawRes, err := db.RawResult()
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func (db *DB) Find(dest interface{}) error {
 }
 
 // FindCol parse one column of the result, it is used to easily get the value of a field
-func (db *DB) FindCol(col string, dest interface{}) error {
+func (db *DB) FindCol(col string, dest any) error {
 	rawRes, err := db.RawResult()
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (db *DB) FindCol(col string, dest interface{}) error {
 
 // Take get a single test result, if no limit is specified, limit 1 will be added automatically,
 // if the final return value is empty, will return  ErrRecordNotFound
-func (db *DB) Take(dest interface{}) error {
+func (db *DB) Take(dest any) error {
 	tx := db.getInstance()
 	lastPart := tx.Statement.LastPart()
 	if lastPart.GetType() != statement.PartTypeLimit {
@@ -85,7 +85,7 @@ func (db *DB) Take(dest interface{}) error {
 
 // TakeCol parse one column of the result, it is used to easily get the value of a field
 // if the final return value is empty, will return  ErrRecordNotFound
-func (db *DB) TakeCol(col string, dest interface{}) error {
+func (db *DB) TakeCol(col string, dest any) error {
 	tx := db.getInstance()
 	lastPart := tx.Statement.LastPart()
 	if lastPart.GetType() != statement.PartTypeLimit {
@@ -104,11 +104,11 @@ func (db *DB) TakeCol(col string, dest interface{}) error {
 }
 
 // Scan assign the results to the target variable
-func Scan(rawRes *nebula.ResultSet, dest interface{}) error {
+func Scan(rawRes *nebula.ResultSet, dest any) error {
 	return scan(rawRes, dest, false)
 }
 
-func scan(rawRes *nebula.ResultSet, dest interface{}, raiseNotFound bool) error {
+func scan(rawRes *nebula.ResultSet, dest any, raiseNotFound bool) error {
 	if !rawRes.IsSucceed() {
 		return fmt.Errorf("norm: result is not succeed, err code: %d, msg: %s", rawRes.GetErrorCode(), rawRes.GetErrorMsg())
 	}
@@ -120,28 +120,28 @@ func scan(rawRes *nebula.ResultSet, dest interface{}, raiseNotFound bool) error 
 		}
 	}
 	switch v := dest.(type) {
-	case *map[string]interface{}:
+	case *map[string]any:
 		if *v == nil {
-			*v = make(map[string]interface{})
+			*v = make(map[string]any)
 		}
 		record, err := rawRes.GetRowValuesByIndex(0)
 		if err != nil {
 			return err
 		}
 		return scanIntoMap(record, rawRes.GetColNames(), *v)
-	case map[string]interface{}:
+	case map[string]any:
 		record, err := rawRes.GetRowValuesByIndex(0)
 		if err != nil {
 			return err
 		}
 		return scanIntoMap(record, rawRes.GetColNames(), v)
-	case *[]map[string]interface{}:
+	case *[]map[string]any:
 		for i := 0; i < rawRes.GetRowSize(); i++ {
 			record, err := rawRes.GetRowValuesByIndex(i)
 			if err != nil {
 				return err
 			}
-			value := make(map[string]interface{}, len(rawRes.GetColNames()))
+			value := make(map[string]any, len(rawRes.GetColNames()))
 			if err = scanIntoMap(record, rawRes.GetColNames(), value); err != nil {
 				return err
 			}
@@ -184,7 +184,7 @@ func scan(rawRes *nebula.ResultSet, dest interface{}, raiseNotFound bool) error 
 }
 
 // scanIntoMap scan a row into map
-func scanIntoMap(record *nebula.Record, colNames []string, dest map[string]interface{}) error {
+func scanIntoMap(record *nebula.Record, colNames []string, dest map[string]any) error {
 	for _, colName := range colNames {
 		colValue, err := record.GetValueByColName(colName)
 		if err != nil {
@@ -199,11 +199,11 @@ func scanIntoMap(record *nebula.Record, colNames []string, dest map[string]inter
 }
 
 // Pluck assign one of the fields of the return value into dest
-func Pluck(rawRes *nebula.ResultSet, col string, dest interface{}) error {
+func Pluck(rawRes *nebula.ResultSet, col string, dest any) error {
 	return pluck(rawRes, col, dest, false)
 }
 
-func pluck(rawRes *nebula.ResultSet, col string, dest interface{}, raiseNotFound bool) error {
+func pluck(rawRes *nebula.ResultSet, col string, dest any, raiseNotFound bool) error {
 	if !rawRes.IsSucceed() {
 		return fmt.Errorf("norm: result is not succeed, err code: %d, msg: %s", rawRes.GetErrorCode(), rawRes.GetErrorMsg())
 	}

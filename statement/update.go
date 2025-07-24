@@ -27,15 +27,15 @@ import (
 // UPDATE VERTEX ON t2 "10" SET name = "hayson", age = 0
 // stmt.UpdateVertex("10", &t2{Name: "hayson"}, clause.WithPropNames([]string{"name", "age"}))
 //
-// you can also use map[string]interface{} to update, especially if you need to update a field as an expression, in which case
+// you can also use map[string]any to update, especially if you need to update a field as an expression, in which case
 // you have to manually specify the name of the tag that needs to be updated.
 //
 // UPDATE VERTEX ON player "player101" SET age = age + 2 WHEN name == "Tony Parker" YIELD name AS Name, age AS Age
-// stmt.UpdateVertex("player101", map[string]interface{}{"age": clause.Expr{Str: "age + 2"}}, clause.WithTagName("player")).
+// stmt.UpdateVertex("player101", map[string]any{"age": clause.Expr{Str: "age + 2"}}, clause.WithTagName("player")).
 // When("name == ?", "Tony Parker").Yield("name AS Name, age AS Age")
 //
 // other uses can be found in./update_test
-func (stmt *Statement) UpdateVertex(vid interface{}, tagUpdate interface{}, opts ...clause.Option) *Statement {
+func (stmt *Statement) UpdateVertex(vid any, tagUpdate any, opts ...clause.Option) *Statement {
 	updateOpts := new(clause.Options)
 	for _, opt := range opts {
 		opt(updateOpts)
@@ -52,7 +52,7 @@ func (stmt *Statement) UpdateVertex(vid interface{}, tagUpdate interface{}, opts
 
 // UpsertVertex generate upsert vertex clause
 // specific usage reference UpdateVertex
-func (stmt *Statement) UpsertVertex(vid interface{}, tagUpdate interface{}, opts ...clause.Option) *Statement {
+func (stmt *Statement) UpsertVertex(vid any, tagUpdate any, opts ...clause.Option) *Statement {
 	updateOpts := new(clause.Options)
 	for _, opt := range opts {
 		opt(updateOpts)
@@ -95,12 +95,12 @@ func (stmt *Statement) UpsertVertex(vid interface{}, tagUpdate interface{}, opts
 // UPDATE EDGE ON e2 "player100"->"team204"@1 SET name = ""
 // stmt.UpdateEdge(e2{SrcID: "player100", DstID: "team204", Rank: 1}, &e2{Age: 26}, clause.WithPropNames([]string{"name"}))
 //
-// it is also possible to specify the properties to be updated using map[string]interface{}
+// it is also possible to specify the properties to be updated using map[string]any
 //
 // UPDATE EDGE ON e2 "player100"->"team204" SET start_year = start_year + 1 WHEN end_year > 2010 YIELD start_year, end_year
-// stmt.UpdateEdge(e2{SrcID: "player100", DstID: "team204"}, map[string]interface{}{"start_year": clause.Expr{Str: "start_year + 1"}}).
+// stmt.UpdateEdge(e2{SrcID: "player100", DstID: "team204"}, map[string]any{"start_year": clause.Expr{Str: "start_year + 1"}}).
 // When("end_year > ?", 2010).Yield("start_year, end_year")
-func (stmt *Statement) UpdateEdge(edge interface{}, propsUpdate interface{}, opts ...clause.Option) *Statement {
+func (stmt *Statement) UpdateEdge(edge any, propsUpdate any, opts ...clause.Option) *Statement {
 	updateOpts := new(clause.Options)
 	for _, opt := range opts {
 		opt(updateOpts)
@@ -117,7 +117,7 @@ func (stmt *Statement) UpdateEdge(edge interface{}, propsUpdate interface{}, opt
 
 // UpsertEdge generate upsert edge clause
 // specific usage reference UpdateEdge
-func (stmt *Statement) UpsertEdge(edge interface{}, propsUpdate interface{}, opts ...clause.Option) *Statement {
+func (stmt *Statement) UpsertEdge(edge any, propsUpdate any, opts ...clause.Option) *Statement {
 	updateOpts := new(clause.Options)
 	for _, opt := range opts {
 		opt(updateOpts)
@@ -134,7 +134,7 @@ func (stmt *Statement) UpsertEdge(edge interface{}, propsUpdate interface{}, opt
 
 // When mainly used to generate when clause in update type statements
 // specific usage reference Where
-func (stmt *Statement) When(query string, args ...interface{}) *Statement {
+func (stmt *Statement) When(query string, args ...any) *Statement {
 	if query == "" {
 		return stmt
 	}

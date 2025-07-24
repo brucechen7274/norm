@@ -7,7 +7,7 @@ import (
 )
 
 type InsertVertex struct {
-	IfNotExist   bool
+	IfNotExists  bool
 	Vertexes     reflect.Value
 	vertexSchema *resolver.VertexSchema
 }
@@ -24,7 +24,7 @@ func (iv InsertVertex) MergeIn(clause *Clause) {
 
 func (iv InsertVertex) Build(nGQL Builder) error {
 	nGQL.WriteString("INSERT VERTEX ")
-	if iv.IfNotExist {
+	if iv.IfNotExists {
 		nGQL.WriteString("IF NOT EXISTS ")
 	}
 	iv.Vertexes = reflect.Indirect(iv.Vertexes)

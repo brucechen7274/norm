@@ -1,8 +1,8 @@
 package clause
 
 type DropTag struct {
-	IfExist bool
-	TagName string
+	IfExists bool
+	TagName  string
 }
 
 const DropTagName = "DROP_TAG"
@@ -17,7 +17,7 @@ func (dt DropTag) MergeIn(clause *Clause) {
 
 func (dt DropTag) Build(nGQL Builder) error {
 	nGQL.WriteString("DROP TAG ")
-	if dt.IfExist {
+	if dt.IfExists {
 		nGQL.WriteString("IF EXISTS ")
 	}
 	nGQL.WriteString(dt.TagName)

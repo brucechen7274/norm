@@ -15,17 +15,17 @@ func TestWhere(t *testing.T) {
 	}{
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Operator: clause.OperatorAnd, Expr: clause.Expr{Str: "v.player.name == ?", Vars: []interface{}{"Tim Duncan"}}}}},
-				clause.Where{Conditions: []clause.Condition{{Operator: clause.OperatorXor, Expr: clause.Expr{Str: "v.player.age < ? AND v.player.name == ?", Vars: []interface{}{30, "Yao Ming"}}}}},
-				clause.Where{Conditions: []clause.Condition{{Operator: "OR NOT", Expr: clause.Expr{Str: "v.player.name == ? OR v.player.name == ?", Vars: []interface{}{"Yao Ming", "Tim Duncan"}}}}},
+				clause.Where{Conditions: []clause.Condition{{Operator: clause.OperatorAnd, Expr: clause.Expr{Str: "v.player.name == ?", Vars: []any{"Tim Duncan"}}}}},
+				clause.Where{Conditions: []clause.Condition{{Operator: clause.OperatorXor, Expr: clause.Expr{Str: "v.player.age < ? AND v.player.name == ?", Vars: []any{30, "Yao Ming"}}}}},
+				clause.Where{Conditions: []clause.Condition{{Operator: "OR NOT", Expr: clause.Expr{Str: "v.player.name == ? OR v.player.name == ?", Vars: []any{"Yao Ming", "Tim Duncan"}}}}},
 			},
 			gqlWant: `WHERE v.player.name == "Tim Duncan" XOR (v.player.age < 30 AND v.player.name == "Yao Ming") OR NOT (v.player.name == "Yao Ming" OR v.player.name == "Tim Duncan")`,
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Operator: "AND", Expr: clause.Expr{Str: "properties(edge).degree > ?", Vars: []interface{}{90}}}}},
-				clause.Where{Conditions: []clause.Condition{{Operator: "OR", Expr: clause.Expr{Str: "properties($$).age != ?", Vars: []interface{}{33}}}}},
-				clause.Where{Conditions: []clause.Condition{{Operator: "AND", Expr: clause.Expr{Str: "properties($$).name != ?", Vars: []interface{}{"Tony Parker"}}}}},
+				clause.Where{Conditions: []clause.Condition{{Operator: "AND", Expr: clause.Expr{Str: "properties(edge).degree > ?", Vars: []any{90}}}}},
+				clause.Where{Conditions: []clause.Condition{{Operator: "OR", Expr: clause.Expr{Str: "properties($$).age != ?", Vars: []any{33}}}}},
+				clause.Where{Conditions: []clause.Condition{{Operator: "AND", Expr: clause.Expr{Str: "properties($$).name != ?", Vars: []any{"Tony Parker"}}}}},
 			},
 			gqlWant: `WHERE properties(edge).degree > 90 OR properties($$).age != 33 AND properties($$).name != "Tony Parker"`,
 		},
@@ -43,37 +43,37 @@ func TestWhere(t *testing.T) {
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.player.name STARTS WITH ?", Vars: []interface{}{"t"}}}}},
+				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.player.name STARTS WITH ?", Vars: []any{"t"}}}}},
 			},
 			gqlWant: `WHERE v.player.name STARTS WITH "t"`,
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "player.age IN ?", Vars: []interface{}{[]int{25, 28}}}}}},
+				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "player.age IN ?", Vars: []any{[]int{25, 28}}}}}},
 			},
 			gqlWant: `WHERE player.age IN [25, 28]`,
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "player.name IN ?", Vars: []interface{}{[]string{"Anne", "John"}}}}}},
+				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "player.name IN ?", Vars: []any{[]string{"Anne", "John"}}}}}},
 			},
 			gqlWant: `WHERE player.name IN ["Anne", "John"]`,
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.date1.p3 < ?", Vars: []interface{}{time.Date(1988, 3, 18, 0, 0, 0, 0, time.Local)}}}}},
+				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.date1.p3 < ?", Vars: []any{time.Date(1988, 3, 18, 0, 0, 0, 0, time.Local)}}}}},
 			},
 			gqlWant: `WHERE v.date1.p3 < datetime("1988-03-18T00:00:00")`,
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.date1.p3 < ?", Vars: []interface{}{clause.Expr{Str: `datetime("1988-03-18T00:00:00")`}}}}}},
+				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.date1.p3 < ?", Vars: []any{clause.Expr{Str: `datetime("1988-03-18T00:00:00")`}}}}}},
 			},
 			gqlWant: `WHERE v.date1.p3 < datetime("1988-03-18T00:00:00")`,
 		},
 		{
 			clauses: []clause.Interface{
-				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.date1.p3 < ?", Vars: []interface{}{&clause.Expr{Str: `datetime("1988-03-18T00:00:00")`}}}}}},
+				clause.Where{Conditions: []clause.Condition{{Expr: clause.Expr{Str: "v.date1.p3 < ?", Vars: []any{&clause.Expr{Str: `datetime("1988-03-18T00:00:00")`}}}}}},
 			},
 			gqlWant: `WHERE v.date1.p3 < datetime("1988-03-18T00:00:00")`,
 		},

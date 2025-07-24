@@ -11,8 +11,8 @@ import (
 
 type UpdateVertex struct {
 	IsUpsert  bool
-	VID       interface{}
-	TagUpdate interface{}
+	VID       any
+	TagUpdate any
 	Opts      Options
 }
 
@@ -78,10 +78,10 @@ func (uv UpdateVertex) Build(nGQL Builder) error {
 	return nil
 }
 
-func getPropsUpdateSet(propsUpdate interface{}, needUpdate map[string]bool) ([][2]string, error) {
+func getPropsUpdateSet(propsUpdate any, needUpdate map[string]bool) ([][2]string, error) {
 	propsUpdateSet := make([][2]string, 0)
 	switch prop := propsUpdate.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		for k, v := range prop {
 			if len(needUpdate) > 0 && !needUpdate[k] {
 				continue
@@ -155,9 +155,9 @@ func getPropsUpdateSet(propsUpdate interface{}, needUpdate map[string]bool) ([][
 		case reflect.Map:
 			propsType := propsValue.Type()
 			if propsType.Key().Kind() != reflect.String {
-				return nil, errors.New("update values must be map[string]interface{}, struct or struct pointer")
+				return nil, errors.New("update values must be map[string]any, struct or struct pointer")
 			}
-			updateMap := make(map[string]interface{})
+			updateMap := make(map[string]any)
 			mapIter := propsValue.MapRange()
 			for mapIter.Next() {
 				k := mapIter.Key().String()
@@ -166,7 +166,7 @@ func getPropsUpdateSet(propsUpdate interface{}, needUpdate map[string]bool) ([][
 			}
 			return getPropsUpdateSet(updateMap, needUpdate)
 		default:
-			return nil, errors.New("update values must be map[string]interface{}, struct or struct pointer")
+			return nil, errors.New("update values must be map[string]any, struct or struct pointer")
 		}
 	}
 	return propsUpdateSet, nil

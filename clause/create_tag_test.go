@@ -22,8 +22,8 @@ func TestCreateTag(t *testing.T) {
 						&resolver.Prop{Name: "age", DataType: "int"},
 					)
 					return clause.CreateTag{
-						IfNotExist: true,
-						Tag:        tag,
+						IfNotExists: true,
+						Tag:         tag,
 					}
 				}(),
 			},
@@ -34,8 +34,8 @@ func TestCreateTag(t *testing.T) {
 				func() clause.CreateTag {
 					tag := &resolver.VertexTag{TagName: "no_property"}
 					return clause.CreateTag{
-						IfNotExist: false,
-						Tag:        tag,
+						IfNotExists: false,
+						Tag:         tag,
 					}
 				}(),
 			},
@@ -50,8 +50,8 @@ func TestCreateTag(t *testing.T) {
 						&resolver.Prop{Name: "age", DataType: "int", Default: "20"},
 					)
 					return clause.CreateTag{
-						IfNotExist: true,
-						Tag:        tag,
+						IfNotExists: true,
+						Tag:         tag,
 					}
 				}(),
 			},
@@ -69,8 +69,8 @@ func TestCreateTag(t *testing.T) {
 						&resolver.Prop{Name: "create_time", DataType: "timestamp", TTL: "100"},
 					)
 					return clause.CreateTag{
-						IfNotExist: true,
-						Tag:        tag,
+						IfNotExists: true,
+						Tag:         tag,
 					}
 				}(),
 			},
@@ -86,8 +86,8 @@ func TestCreateTag(t *testing.T) {
 						&resolver.Prop{Name: "p3", DataType: "datetime"},
 					)
 					return clause.CreateTag{
-						IfNotExist: true,
-						Tag:        tag,
+						IfNotExists: true,
+						Tag:         tag,
 					}
 				}(),
 			},
@@ -103,8 +103,8 @@ func TestCreateTag(t *testing.T) {
 						&resolver.Prop{Name: "p3", DataType: "datetime", Default: `datetime("2017-03-04T22:30:40.003000[Asia/Shanghai]")`},
 					)
 					return clause.CreateTag{
-						IfNotExist: true,
-						Tag:        tag,
+						IfNotExists: true,
+						Tag:         tag,
 					}
 				}(),
 			},
@@ -119,8 +119,8 @@ func TestCreateTag(t *testing.T) {
 						&resolver.Prop{Name: "age", DataType: "int", TTL: "100"},
 					)
 					return clause.CreateTag{
-						IfNotExist: true,
-						Tag:        tag,
+						IfNotExists: true,
+						Tag:         tag,
 					}
 				}(),
 			},

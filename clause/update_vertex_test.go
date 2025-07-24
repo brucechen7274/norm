@@ -44,7 +44,7 @@ func TestUpdateVertex(t *testing.T) {
 	}
 }
 
-type playerUpdate map[string]interface{}
+type playerUpdate map[string]any
 
 func (m playerUpdate) VertexTagName() string {
 	return "player"

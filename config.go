@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Config  config
+// Config  for DB
 type Config struct {
 	// Username to connect to nebula graph server
 	Username string `json:"username" yaml:"username"`

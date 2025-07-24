@@ -7,9 +7,9 @@ import (
 )
 
 type InsertEdge struct {
-	IfNotExist bool
-	Edges      reflect.Value
-	edgeSchema *resolver.EdgeSchema
+	IfNotExists bool
+	Edges       reflect.Value
+	edgeSchema  *resolver.EdgeSchema
 }
 
 const InsertEdgeName = "INSERT_EDGE"
@@ -24,7 +24,7 @@ func (ie InsertEdge) MergeIn(clause *Clause) {
 
 func (ie InsertEdge) Build(nGQL Builder) error {
 	nGQL.WriteString("INSERT EDGE ")
-	if ie.IfNotExist {
+	if ie.IfNotExists {
 		nGQL.WriteString("IF NOT EXISTS ")
 	}
 	ie.Edges = reflect.Indirect(ie.Edges)

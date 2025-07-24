@@ -33,7 +33,7 @@ func TestUpdate(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().UpdateVertex("player101", map[string]interface{}{"age": clause.Expr{Str: "age + 2"}}, clause.WithTagName("player")).
+				return New().UpdateVertex("player101", map[string]any{"age": clause.Expr{Str: "age + 2"}}, clause.WithTagName("player")).
 					When("name == ?", "Tony Parker").Yield("name AS Name, age AS Age")
 			},
 			want: `UPDATE VERTEX ON player "player101" SET age = age + 2 WHEN name == "Tony Parker" YIELD name AS Name, age AS Age;`,
@@ -72,14 +72,14 @@ func TestUpdate(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().UpdateEdge(e2{SrcID: "player100", DstID: "team204"}, map[string]interface{}{"start_year": clause.Expr{Str: "start_year + 1"}}).
+				return New().UpdateEdge(e2{SrcID: "player100", DstID: "team204"}, map[string]any{"start_year": clause.Expr{Str: "start_year + 1"}}).
 					When("end_year > ?", 2010).Yield("start_year, end_year")
 			},
 			want: `UPDATE EDGE ON e2 "player100"->"team204" SET start_year = start_year + 1 WHEN end_year > 2010 YIELD start_year, end_year;`,
 		},
 		{
 			stmt: func() *Statement {
-				return New().UpsertEdge(e2{SrcID: "player668", DstID: "team200"}, map[string]interface{}{"start_year": 2000, "end_year": clause.Expr{Str: "end_year + 1"}}).Yield("start_year, end_year")
+				return New().UpsertEdge(e2{SrcID: "player668", DstID: "team200"}, map[string]any{"start_year": 2000, "end_year": clause.Expr{Str: "end_year + 1"}}).Yield("start_year, end_year")
 			},
 			want: `UPSERT EDGE ON e2 "player668"->"team200" SET end_year = end_year + 1, start_year = 2000 YIELD start_year, end_year;`,
 		},
@@ -99,7 +99,7 @@ func TestUpdate(t *testing.T) {
 	}
 }
 
-type playerUpdate map[string]interface{}
+type playerUpdate map[string]any
 
 func (m playerUpdate) VertexTagName() string {
 	return "player"

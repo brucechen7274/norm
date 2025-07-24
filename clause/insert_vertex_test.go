@@ -47,11 +47,11 @@ func TestInsertVertex(t *testing.T) {
 			gqlWant: `INSERT VERTEX t3(p1), t4(p2) VALUES "21":(321, "hello"), "22":(456, "world")`,
 		},
 		{
-			clauses: []clause.Interface{clause.InsertVertex{IfNotExist: true, Vertexes: reflect.ValueOf([]v3{v31, *v32})}},
+			clauses: []clause.Interface{clause.InsertVertex{IfNotExists: true, Vertexes: reflect.ValueOf([]v3{v31, *v32})}},
 			gqlWant: `INSERT VERTEX IF NOT EXISTS t3(p1), t4(p2) VALUES "21":(321, "hello"), "22":(456, "world")`,
 		},
 		{
-			clauses: []clause.Interface{clause.InsertVertex{IfNotExist: true}},
+			clauses: []clause.Interface{clause.InsertVertex{IfNotExists: true}},
 			errWant: clause.ErrInvalidClauseParams,
 		},
 	}

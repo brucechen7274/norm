@@ -5,7 +5,7 @@ import (
 )
 
 type From struct {
-	VID interface{}
+	VID any
 }
 
 const FromName = "FROM"
