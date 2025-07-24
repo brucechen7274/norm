@@ -259,7 +259,7 @@ func (t *VertexTag) GetProps() []*Prop {
 	return t.props
 }
 
-// SetProps 设置标签属性
+// SetProps set attributes of the tag
 func (t *VertexTag) SetProps(props ...*Prop) {
 	if t.propByName == nil {
 		t.propByName = make(map[string]*Prop)

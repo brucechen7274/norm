@@ -102,7 +102,7 @@ func TestAlterTag(t *testing.T) {
 	}{
 		{
 			stmt: func() *Statement {
-				return New().AlterVertexTag(&vm1{}, clause.AlterTagOperate{
+				return New().AlterVertexTag(&vm1{}, clause.AlterOperate{
 					AddProps: []string{"name", "age"},
 				})
 			},
@@ -110,7 +110,7 @@ func TestAlterTag(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().AlterVertexTag(&vm2{}, clause.AlterTagOperate{
+				return New().AlterVertexTag(&vm2{}, clause.AlterOperate{
 					DropProps: []string{"name", "age"},
 				})
 			},
@@ -118,7 +118,7 @@ func TestAlterTag(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().AlterVertexTag(&vm3{}, clause.AlterTagOperate{
+				return New().AlterVertexTag(&vm3{}, clause.AlterOperate{
 					ChangeProps: []string{"name", "age"},
 				})
 			},
@@ -126,7 +126,7 @@ func TestAlterTag(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().AlterVertexTag(&vm4{}, clause.AlterTagOperate{
+				return New().AlterVertexTag(&vm4{}, clause.AlterOperate{
 					AddProps:    []string{"name", "age"},
 					DropProps:   []string{"salary"},
 					ChangeProps: []string{"create_time"},
@@ -137,7 +137,7 @@ func TestAlterTag(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().AlterVertexTag(v1{}, clause.AlterTagOperate{
+				return New().AlterVertexTag(v1{}, clause.AlterOperate{
 					AddProps: []string{"p1"},
 				})
 			},
@@ -145,7 +145,7 @@ func TestAlterTag(t *testing.T) {
 		},
 		{
 			stmt: func() *Statement {
-				return New().AlterVertexTag(v1{}, clause.AlterTagOperate{
+				return New().AlterVertexTag(v1{}, clause.AlterOperate{
 					AddProps: []string{"p2"},
 				}, clause.WithTagName("t4"))
 			},

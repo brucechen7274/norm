@@ -107,8 +107,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		if _, ok = edge.propByName[propName]; ok {
 			continue
 		}
-		edge.props = append(edge.props, prop)
-		edge.propByName[propName] = prop
+		edge.SetProps(prop)
 	}
 	if edge.srcVIDFieldIndex == nil || edge.dstVIDFieldIndex == nil {
 		return nil, errors.New("norm: parse edge failed, edge must contains src_id field and dst_id field")
@@ -119,6 +118,11 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 // GetTypeName get edge type name
 func (e *EdgeSchema) GetTypeName() string {
 	return e.edgeTypeName
+}
+
+// SetTypeName set edge type name
+func (e *EdgeSchema) SetTypeName(edgeTypeName string) {
+	e.edgeTypeName = edgeTypeName
 }
 
 // GetSrcVID get the src_id of the edge
@@ -181,6 +185,17 @@ func (e *EdgeSchema) GetRank(edgeValue reflect.Value) int64 {
 // GetProps get a list of attributes for the current edge
 func (e *EdgeSchema) GetProps() []*Prop {
 	return e.props
+}
+
+// SetProps set attributes of the edge
+func (e *EdgeSchema) SetProps(props ...*Prop) {
+	if e.propByName == nil {
+		e.propByName = make(map[string]*Prop)
+	}
+	for _, prop := range props {
+		e.props = append(e.props, prop)
+		e.propByName[prop.Name] = prop
+	}
 }
 
 // Scan assign a value to a target struct

@@ -254,6 +254,10 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			vBool, _ := nebulaValue.AsBool()
 			destValue.SetBool(vBool)
 			return nil
+		case reflect.String:
+			vBool, _ := nebulaValue.AsBool()
+			destValue.SetString(strconv.FormatBool(vBool))
+			return nil
 		default:
 		}
 	case NebulaSdkTypeInt:
@@ -270,6 +274,10 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 			vInt, _ := nebulaValue.AsInt()
 			destValue.SetFloat(float64(vInt))
 			return nil
+		case reflect.String:
+			vInt, _ := nebulaValue.AsInt()
+			destValue.SetString(strconv.Itoa(int(vInt)))
+			return nil
 		default:
 		}
 	case NebulaSdkTypeFloat:
@@ -285,6 +293,10 @@ func ScanSimpleValue(nebulaValue *nebula.ValueWrapper, destValue reflect.Value) 
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			vFloat, _ := nebulaValue.AsFloat()
 			destValue.SetUint(uint64(vFloat))
+			return nil
+		case reflect.String:
+			vFloat, _ := nebulaValue.AsFloat()
+			destValue.SetString(strconv.FormatFloat(vFloat, 'g', -1, 64))
 			return nil
 		default:
 		}

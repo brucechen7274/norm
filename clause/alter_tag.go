@@ -9,10 +9,10 @@ import (
 
 type AlterTag struct {
 	Tag *resolver.VertexTag
-	AlterTagOperate
+	AlterOperate
 }
 
-type AlterTagOperate struct {
+type AlterOperate struct {
 	AddProps    []string
 	DropProps   []string
 	ChangeProps []string
@@ -54,6 +54,10 @@ func (at AlterTag) Build(nGQL Builder) error {
 	if len(addProps) == 0 && len(at.DropProps) == 0 && len(changeProps) == 0 && !at.UpdateTTL {
 		return fmt.Errorf("norm: %w, build alter tag clause failed, must has operate", ErrInvalidClauseParams)
 	}
+	return buildAlterProps(addProps, changeProps, at.DropProps, at.UpdateTTL, ttlCols, ttlDuration, nGQL)
+}
+
+func buildAlterProps(addProps, changeProps []*resolver.Prop, dropProps []string, updateTTL bool, ttlCols []string, ttlDuration string, nGQL Builder) error {
 	if len(addProps) > 0 {
 		nGQL.WriteString(" ADD ")
 		_, _, err := buildProps(addProps, nGQL)
@@ -61,21 +65,23 @@ func (at AlterTag) Build(nGQL Builder) error {
 			return err
 		}
 	}
-	if len(at.DropProps) > 0 {
+
+	if len(dropProps) > 0 {
 		if len(addProps) > 0 {
 			nGQL.WriteByte(',')
 		}
 		nGQL.WriteString(" DROP (")
-		for i, prop := range at.DropProps {
+		for i, prop := range dropProps {
 			nGQL.WriteString(prop)
-			if i != len(at.DropProps)-1 {
+			if i != len(dropProps)-1 {
 				nGQL.WriteString(", ")
 			}
 		}
 		nGQL.WriteByte(')')
 	}
+
 	if len(changeProps) > 0 {
-		if len(addProps) > 0 || len(at.DropProps) > 0 {
+		if len(addProps) > 0 || len(dropProps) > 0 {
 			nGQL.WriteByte(',')
 		}
 		nGQL.WriteString(" CHANGE ")
@@ -84,7 +90,8 @@ func (at AlterTag) Build(nGQL Builder) error {
 			return err
 		}
 	}
-	if at.UpdateTTL && len(ttlCols) == 1 && ttlDuration != "" {
+
+	if updateTTL && len(ttlCols) == 1 && ttlDuration != "" {
 		nGQL.WriteString(" TTL_DURATION = ")
 		nGQL.WriteString(ttlDuration)
 		nGQL.WriteString(", TTL_COL = ")

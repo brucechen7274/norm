@@ -72,7 +72,7 @@ func (m *Migrator) autoAlterVertexTags(tag *resolver.VertexTag) error {
 	for _, tagProp := range tagProps {
 		propsExist[tagProp.Field] = tagProp
 	}
-	alterOp := clause.AlterTagOperate{}
+	alterOp := clause.AlterOperate{}
 	for _, propNew := range tag.GetProps() {
 		// Add the property if it does not exist
 		propExist, ok := propsExist[propNew.Name]
@@ -184,7 +184,7 @@ func (m *Migrator) DropVertexTag(tagName string, ifExists ...bool) error {
 
 // AlterVertexTag modifies a tag of the given vertex using the specified operation.
 // see more information on the method of the same name in statement.Statement
-func (m *Migrator) AlterVertexTag(vertex any, op clause.AlterTagOperate, opts ...clause.Option) error {
+func (m *Migrator) AlterVertexTag(vertex any, op clause.AlterOperate, opts ...clause.Option) error {
 	tx := m.db.getInstance()
 	tx.Statement.AlterVertexTag(vertex, op, opts...)
 	return tx.Exec()

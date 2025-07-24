@@ -109,8 +109,8 @@ func (stmt *Statement) DropVertexTag(tagName string, ifExists ...bool) *Statemen
 // ALTER TAG player ADD (name string, age int)
 //
 // Usage:
-// stmt.AlterVertexTag(&player{}, clause.AlterTagOperate{AddProps: []string{"name", "age"}})
-func (stmt *Statement) AlterVertexTag(vertex any, op clause.AlterTagOperate, opts ...clause.Option) *Statement {
+// stmt.AlterVertexTag(&player{}, clause.AlterOperate{AddProps: []string{"name", "age"}})
+func (stmt *Statement) AlterVertexTag(vertex any, op clause.AlterOperate, opts ...clause.Option) *Statement {
 	alterOpts := new(clause.Options)
 	for _, opt := range opts {
 		opt(alterOpts)
@@ -132,7 +132,7 @@ func (stmt *Statement) AlterVertexTag(vertex any, op clause.AlterTagOperate, opt
 	return stmt
 }
 
-func (stmt *Statement) alterVertexTag(tags []*resolver.VertexTag, op clause.AlterTagOperate, tagName string) {
+func (stmt *Statement) alterVertexTag(tags []*resolver.VertexTag, op clause.AlterOperate, tagName string) {
 	var tag *resolver.VertexTag
 	if len(tags) > 1 && tagName != "" {
 		for _, t := range tags {
@@ -145,8 +145,8 @@ func (stmt *Statement) alterVertexTag(tags []*resolver.VertexTag, op clause.Alte
 		tag = tags[0]
 	}
 	stmt.AddClause(&clause.AlterTag{
-		Tag:             tag,
-		AlterTagOperate: op,
+		Tag:          tag,
+		AlterOperate: op,
 	})
 	stmt.SetPartType(PartTypeAlterTag)
 }
