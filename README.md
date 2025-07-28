@@ -97,6 +97,8 @@ func main() {
 }
 ```
 
+📚 See more usage patterns in the [example directory](./example).
+
 ## 🤝 Contributing
 
 We welcome contributions from the community!

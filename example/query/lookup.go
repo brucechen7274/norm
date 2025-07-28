@@ -130,5 +130,8 @@ func lookup() {
 		Pipe().
 		Yield("COUNT(*) AS Player_Number").
 		FindCol("Player_Number", &playerCnt)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Printf("playerCnt: %v\n", playerCnt)
 }
