@@ -24,128 +24,73 @@ go get github.com/haysons/norm
 - 📦 **基于结构体的映射**：查询结果可直接映射到 Go 结构体。
 - 🧠 **智能解析**：轻松支持嵌套类型 — 顶点（vertex）、边（edge）、列表（list）、映射（map）、集合（set）等。
 - 📚 **支持结构体内嵌**：最大化代码复用，同时保持代码清晰。
+- 🔄 **自动迁移节点与边结构**：根据结构体定义自动创建或变更对应的 tag / edge schema。
 - 🧪 **单元测试覆盖完善**：放心构建生产级应用。
 - 💡 **开发者优先设计**：减少样板代码，提高开发效率。
 
 ## ⚡ 快速开始
 
 ``` go
-// Player 节点
+package main
+
+import (
+	"github.com/haysons/norm"
+	"log"
+)
+
 type Player struct {
-    VID  string `norm:"vertex_id"`
-    Name string `norm:"prop:name"`
-    Age  int    `norm:"prop:age"`
+	VID  string `norm:"vertex_id"`
+	Name string `norm:"prop:name"`
+	Age  int    `norm:"prop:age"`
 }
 
 func (p Player) VertexID() string {
-    return p.VID
+	return p.VID
 }
 
 func (p Player) VertexTagName() string {
-    return "player"
-}
-
-// Team 节点
-type Team struct {
-    VID  string `norm:"vertex_id"`
-    Name string `norm:"prop:name"`
-}
-
-func (t Team) VertexID() string {
-    return t.VID
-}
-
-func (t Team) VertexTagName() string {
-    return "team"
-}
-
-// Serve 边
-type Serve struct {
-    SrcID     string `norm:"edge_src_id"`
-    DstID     string `norm:"edge_dst_id"`
-    Rank      int    `norm:"edge_rank"`
-    StartYear int64  `norm:"prop:start_year"`
-    EndYear   int64  `norm:"prop:end_year"`
-}
-
-func (s Serve) EdgeTypeName() string {
-    return "serve"
+	return "player"
 }
 
 func main() {
-    // 初始化db对象
-    conf := &norm.Config{
-        Username:    "root",
-        Password:    "nebula",
-        SpaceName:   "demo_basketballplayer",
-        Addresses:   []string{"127.0.0.1:9669"},
-    }
-    db, err := norm.Open(conf)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer db.Close()
-    
-    // 写入player节点
-    player := &Player{
-        VID:  "player1001",
-        Name: "Kobe Bryant",
-        Age:  33,
-    }
-    if err := db.InsertVertex(player).Exec(); err != nil {
-        log.Fatalf("insert player failed: %v", err)
-    }
-    
-    // 写入team节点
-    team := &Team{
-        VID:  "team1001",
-        Name: "Lakers",
-    }
-    if err := db.InsertVertex(team).Exec(); err != nil {
-        log.Fatalf("insert team failed: %v", err)
-    }
-    
-    // 写入serve边
-    serve := &Serve{
-        SrcID:     "player1001",
-        DstID:     "team1001",
-        StartYear: time.Date(1996, 1, 1, 0, 0, 0, 0, time.Local).Unix(),
-        EndYear:   time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local).Unix(),
-    }
-    if err := db.InsertEdge(serve).Exec(); err != nil {
-        log.Fatalf("insert serve failed: %v", err)
-    }
+	// init norm.DB
+	conf := &norm.Config{
+		Username:  "root",
+		Password:  "nebula",
+		SpaceName: "test",
+		Addresses: []string{"127.0.0.1:9669"},
+	}
+	db, err := norm.Open(conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
-    // 查询player节点
-    player = new(Player)
-    err = db.
-        Fetch("player", "player1001").
-        Yield("vertex as v").
-        FindCol("v", player)
-    if err != nil {
-        log.Fatalf("fetch player failed: %v", err)
-    }
-    log.Printf("player: %+v", player)
-    
-    // 统计player节点通过不同边关联到的节点的数量
-    type edgeCnt struct {
-        Edge string `norm:"col:e"`
-        Cnt  int    `norm:"col:cnt"`
-    }
-    edgesCnt := make([]*edgeCnt, 0)
-    err = db.Go().
-        From("player1001").
-        Over("*").
-        Yield("type(edge) as t").
-        GroupBy("$-.t").
-        Yield("$-.t as e, count(*) as cnt").
-        Find(&edgesCnt)
-    if err != nil {
-        log.Fatalf("get edge cnt failed: %v", err)
-    }
-    for _, c := range edgesCnt {
-        log.Printf("edge cnt: %+v\n", c)
-    }
+	// migrate vertex player tags
+	if err = db.Migrator().AutoMigrateVertexes(Player{}); err != nil {
+		log.Fatalf("auto migrate vertex palyer failed: %v", err)
+	}
+
+	// insert the player vertex
+	player := &Player{
+		VID:  "player1001",
+		Name: "Kobe Bryant",
+		Age:  33,
+	}
+	if err := db.InsertVertex(player).Exec(); err != nil {
+		log.Fatalf("insert vertex player failed: %v", err)
+	}
+
+	// find the player vertex
+	player = new(Player)
+	err = db.
+		Fetch("player", "player1001").
+		Yield("vertex as v").
+		FindCol("v", player)
+	if err != nil {
+		log.Fatalf("fetch vertex player failed: %v", err)
+	}
+	log.Printf("player: %+v", player)
 }
 ```
 

@@ -91,6 +91,65 @@ func (m *Migrator) autoAlterVertexTags(tag *resolver.VertexTag) error {
 	return m.AlterVertexTag(tag, alterOp)
 }
 
+// AutoMigrateEdges automatically migrates edge schemas.
+// If the specified edge does not exist in the current graph space, it will be created.
+// If it already exists, each property will be compared to determine whether updates are needed.
+// For safety, this method will not delete existing edges or edge properties.
+func (m *Migrator) AutoMigrateEdges(edges ...any) error {
+	for _, edge := range edges {
+		edgeSchema, err := resolver.ParseEdge(reflect.TypeOf(edge))
+		if err != nil {
+			return err
+		}
+		hasEdge, err := m.HasEdge(edgeSchema.GetTypeName())
+		if err != nil {
+			return err
+		}
+		if !hasEdge {
+			// Create the edge if it doesn't exist
+			err = m.CreateEdge(edgeSchema, true)
+		} else {
+			// Otherwise, apply ALTER operations to update the edge
+			err = m.autoAlterEdge(edgeSchema)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// autoAlterEdge automatically applies property changes to an existing edge.
+// It compares the current edge schema with the existing one in the space,
+// and constructs an ALTER operation for any new or changed properties.
+func (m *Migrator) autoAlterEdge(edge *resolver.EdgeSchema) error {
+	edgeProps, err := m.DescEdge(edge.GetTypeName())
+	if err != nil {
+		return err
+	}
+	propsExist := make(map[string]*PropDesc)
+	for _, edgeProp := range edgeProps {
+		propsExist[edgeProp.Field] = edgeProp
+	}
+	alterOp := clause.AlterOperate{}
+	for _, propNew := range edge.GetProps() {
+		// Add the property if it does not exist
+		propExist, ok := propsExist[propNew.Name]
+		if !ok {
+			alterOp.AddProps = append(alterOp.AddProps, propNew.Name)
+			continue
+		}
+		// Apply change if the property differs from existing definition
+		if m.isPropChanged(propExist, propNew) {
+			alterOp.ChangeProps = append(alterOp.ChangeProps, propNew.Name)
+		}
+	}
+	if len(alterOp.AddProps) == 0 && len(alterOp.ChangeProps) == 0 {
+		return nil
+	}
+	return m.AlterEdge(edge, alterOp)
+}
+
 // isPropChanged determines whether a property definition has changed
 // by comparing type, nullability, and default value.
 func (m *Migrator) isPropChanged(propExist *PropDesc, propNew *resolver.Prop) bool {
