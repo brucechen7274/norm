@@ -93,6 +93,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 		propDefault := GetFieldDefault(field)
 		comment := GetFieldComment(field)
 		ttl := GetFieldTTL(field)
+		index := GetFieldIndex(field, propName, dataType)
 		prop := &Prop{
 			Name:        propName,
 			StructField: field,
@@ -103,6 +104,7 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 			Default:     propDefault,
 			Comment:     comment,
 			TTL:         ttl,
+			Index:       index,
 		}
 		if _, ok = edge.propByName[propName]; ok {
 			continue

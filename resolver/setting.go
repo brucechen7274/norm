@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -20,6 +21,7 @@ const (
 	TagSettingDefault   = "default"     // declares a default value for the field
 	TagSettingComment   = "comment"     // declares a comment/description for the field
 	TagSettingTTL       = "ttl"         // marks the field as TTL (time-to-live) for expiration
+	TagSettingIndex     = "index"       // defines index configuration on the field
 	TagSettingIgnore    = "-"           // norm will ignore this field
 )
 
@@ -131,6 +133,53 @@ func GetFieldComment(field reflect.StructField) string {
 func GetFieldTTL(field reflect.StructField) string {
 	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
 	return setting[TagSettingTTL]
+}
+
+type FieldIndex struct {
+	Name     string
+	Prop     string
+	DataType string
+	Length   int
+	Priority int
+}
+
+// GetFieldIndex retrieves the index configuration from the given struct field tag.
+func GetFieldIndex(field reflect.StructField, propName, dataType string) *FieldIndex {
+	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
+	indexSetting, ok := setting[TagSettingIndex]
+	if !ok {
+		return nil
+	}
+
+	settingArr := strings.Split(indexSetting, ",")
+	indexName := settingArr[0]
+	if indexName == TagSettingIndex || indexName == "" {
+		indexName = "idx_" + propName
+	}
+	fieldIndex := &FieldIndex{
+		Name:     indexName,
+		Prop:     propName,
+		DataType: dataType,
+		Length:   0,
+		Priority: 10,
+	}
+	if len(settingArr) > 1 {
+		for k, v := range ParseTagSetting(strings.Join(settingArr[1:], ";")) {
+			if k == "priority" {
+				priority, err := strconv.Atoi(v)
+				if err == nil {
+					fieldIndex.Priority = priority
+				}
+			}
+			if k == "length" {
+				length, err := strconv.Atoi(v)
+				if err == nil {
+					fieldIndex.Length = length
+				}
+			}
+		}
+	}
+	return fieldIndex
 }
 
 func FieldIgnore(field reflect.StructField) bool {
