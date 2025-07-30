@@ -151,6 +151,98 @@ func (stmt *Statement) alterVertexTag(tags []*resolver.VertexTag, op clause.Alte
 	stmt.SetPartType(PartTypeAlterTag)
 }
 
+// CreateVertexTagsIndex 创建节点tag包含的全部属性
+func (stmt *Statement) CreateVertexTagsIndex(vertex any, ifNotExists ...bool) *Statement {
+	var notExistsOpt bool
+	if len(ifNotExists) > 0 {
+		notExistsOpt = ifNotExists[0]
+	}
+
+	switch v := vertex.(type) {
+	case *resolver.VertexSchema:
+		stmt.createVertexTagsIndex(v.GetTags(), notExistsOpt)
+	case *resolver.VertexTag:
+		stmt.createVertexTagsIndex([]*resolver.VertexTag{v}, notExistsOpt)
+	default:
+		vertexType := reflect.TypeOf(vertex)
+		vertexSchema, err := resolver.ParseVertex(vertexType)
+		if err != nil {
+			stmt.err = err
+			return stmt
+		}
+		stmt.createVertexTagsIndex(vertexSchema.GetTags(), notExistsOpt)
+	}
+	return stmt
+}
+
+func (stmt *Statement) createVertexTagsIndex(tags []*resolver.VertexTag, ifNotExists bool) {
+	firstPartBuilt := false
+	for _, tag := range tags {
+		stmt.addCreateIndexClause(clause.IndexTargetTag, tag.TagName, tag.GetProps(), ifNotExists, &firstPartBuilt)
+	}
+}
+
+func (stmt *Statement) addCreateIndexClause(targetType clause.IndexTarget, targetName string, props []*resolver.Prop, ifNotExists bool, firstPartBuilt *bool) {
+	indexMap := make(map[string][]*resolver.FieldIndex)
+	indexNames := make([]string, 0)
+	for _, prop := range props {
+		if prop.Index == nil {
+			continue
+		}
+		_, ok := indexMap[prop.Index.Name]
+		if !ok {
+			indexNames = append(indexNames, prop.Index.Name)
+		}
+		indexMap[prop.Index.Name] = append(indexMap[prop.Index.Name], prop.Index)
+	}
+	for _, indexName := range indexNames {
+		fields := indexMap[indexName]
+		if *firstPartBuilt {
+			stmt.AddPart(NewPart())
+		}
+		stmt.AddClause(&clause.CreateIndex{
+			TargetType:  targetType,
+			IfNotExists: ifNotExists,
+			IndexName:   indexName,
+			TargetName:  targetName,
+			Props:       fields,
+		})
+		stmt.SetPartType(PartTypeCreateIndex)
+		*firstPartBuilt = true
+	}
+}
+
+// RebuildVertexTagIndexes 重建节点tag索引
+func (stmt *Statement) RebuildVertexTagIndexes(indexNames ...string) *Statement {
+	if len(indexNames) == 0 {
+		return stmt
+	}
+	stmt.AddClause(&clause.RebuildIndex{
+		TargetType: clause.IndexTargetTag,
+		IndexNames: indexNames,
+	})
+	stmt.SetPartType(PartTypeRebuildIndex)
+	return stmt
+}
+
+// DropVertexTagIndex 删除节点tag索引
+func (stmt *Statement) DropVertexTagIndex(indexName string, ifExists ...bool) *Statement {
+	if indexName == "" {
+		return stmt
+	}
+	var existsOpt bool
+	if len(ifExists) > 0 {
+		existsOpt = ifExists[0]
+	}
+	stmt.AddClause(&clause.DropIndex{
+		TargetType: clause.IndexTargetTag,
+		IndexName:  indexName,
+		IfExists:   existsOpt,
+	})
+	stmt.SetPartType(PartTypeDropIndex)
+	return stmt
+}
+
 // CreateEdge creates an edge schema in the space.
 //
 //	type follow struct {
@@ -246,5 +338,60 @@ func (stmt *Statement) AlterEdge(edge any, op clause.AlterOperate) *Statement {
 		AlterOperate: op,
 	})
 	stmt.SetPartType(PartTypeAlterEdge)
+	return stmt
+}
+
+// CreateEdgeIndex 创建边所包含的索引
+func (stmt *Statement) CreateEdgeIndex(edge any, ifNotExists ...bool) *Statement {
+	var notExistsOpt bool
+	if len(ifNotExists) > 0 {
+		notExistsOpt = ifNotExists[0]
+	}
+	var edgeSchema *resolver.EdgeSchema
+	switch e := edge.(type) {
+	case *resolver.EdgeSchema:
+		edgeSchema = e
+	default:
+		edgeType := reflect.TypeOf(edge)
+		var err error
+		edgeSchema, err = resolver.ParseEdge(edgeType)
+		if err != nil {
+			stmt.err = err
+			return stmt
+		}
+	}
+	firstPartBuilt := false
+	stmt.addCreateIndexClause(clause.IndexTargetEdge, edgeSchema.GetTypeName(), edgeSchema.GetProps(), notExistsOpt, &firstPartBuilt)
+	return stmt
+}
+
+// RebuildEdgeIndexes 重建边索引
+func (stmt *Statement) RebuildEdgeIndexes(indexNames ...string) *Statement {
+	if len(indexNames) == 0 {
+		return stmt
+	}
+	stmt.AddClause(&clause.RebuildIndex{
+		TargetType: clause.IndexTargetEdge,
+		IndexNames: indexNames,
+	})
+	stmt.SetPartType(PartTypeRebuildIndex)
+	return stmt
+}
+
+// DropEdgeIndex 删除边索引
+func (stmt *Statement) DropEdgeIndex(indexName string, ifExists ...bool) *Statement {
+	if indexName == "" {
+		return stmt
+	}
+	var existsOpt bool
+	if len(ifExists) > 0 {
+		existsOpt = ifExists[0]
+	}
+	stmt.AddClause(&clause.DropIndex{
+		TargetType: clause.IndexTargetEdge,
+		IndexName:  indexName,
+		IfExists:   existsOpt,
+	})
+	stmt.SetPartType(PartTypeDropIndex)
 	return stmt
 }

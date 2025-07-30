@@ -17,7 +17,7 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType: clause.CreateIndexTargetTag,
+						TargetType: clause.IndexTargetTag,
 						IndexName:  "player_index",
 						TargetName: "player",
 					}
@@ -29,7 +29,7 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType: clause.CreateIndexTargetEdge,
+						TargetType: clause.IndexTargetEdge,
 						IndexName:  "follow_index",
 						TargetName: "follow",
 					}
@@ -41,7 +41,7 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.CreateIndexTargetTag,
+						TargetType:  clause.IndexTargetTag,
 						IfNotExists: true,
 						IndexName:   "var",
 						TargetName:  "var_string",
@@ -61,7 +61,7 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.CreateIndexTargetEdge,
+						TargetType:  clause.IndexTargetEdge,
 						IfNotExists: true,
 						IndexName:   "follow_index_0",
 						TargetName:  "follow",
@@ -80,7 +80,7 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.CreateIndexTargetTag,
+						TargetType:  clause.IndexTargetTag,
 						IfNotExists: true,
 						IndexName:   "player_index_1",
 						TargetName:  "player",
@@ -104,7 +104,7 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.CreateIndexTargetTag,
+						TargetType:  clause.IndexTargetTag,
 						IfNotExists: true,
 						IndexName:   "player_index_1",
 						TargetName:  "player",

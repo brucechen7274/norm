@@ -167,6 +167,120 @@ func TestAlterTag(t *testing.T) {
 	}
 }
 
+func TestCreateVertexTagsIndex(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().CreateVertexTagsIndex(&vm1{}, true)
+			},
+			want: `CREATE TAG INDEX IF NOT EXISTS idx_player_name ON player(name(5)); CREATE TAG INDEX IF NOT EXISTS idx_player_age ON player(age);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().CreateVertexTagsIndex(&vm3{})
+			},
+			want: `CREATE TAG INDEX idx_name_age ON player_with_default(name(5), age);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().CreateVertexTagsIndex(&vm4{}, true)
+			},
+			want: `CREATE TAG INDEX IF NOT EXISTS idx_woman_name ON woman(name(5)); CREATE TAG INDEX IF NOT EXISTS i_age ON woman(age); CREATE TAG INDEX IF NOT EXISTS idx_married_salary ON woman(salary, married);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().CreateVertexTagsIndex(&vm6{}, true)
+			},
+			want: `CREATE TAG INDEX IF NOT EXISTS idx_t3_p1 ON t3(p1); CREATE TAG INDEX IF NOT EXISTS idx_t4_p2 ON t4(p2(7));`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
+func TestRebuildVertexTagIndexes(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().RebuildVertexTagIndexes("single_person_index")
+			},
+			want: `REBUILD TAG INDEX single_person_index;`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().RebuildVertexTagIndexes("idx1", "idx2")
+			},
+			want: `REBUILD TAG INDEX idx1, idx2;`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
+func TestDropVertexTagIndex(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().DropVertexTagIndex("player_index_0")
+			},
+			want: `DROP TAG INDEX player_index_0;`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().DropVertexTagIndex("idx1", true)
+			},
+			want: `DROP TAG INDEX IF EXISTS idx1;`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
 func TestCreateEdge(t *testing.T) {
 	tests := []struct {
 		stmt    func() *Statement
@@ -303,10 +417,118 @@ func TestAlterEdge(t *testing.T) {
 	}
 }
 
+func TestCreateEdgeIndex(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().CreateEdgeIndex(&em1{}, true)
+			},
+			want: `CREATE EDGE INDEX IF NOT EXISTS idx_follow_degree ON follow(degree);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().CreateEdgeIndex(&em4{})
+			},
+			want: `CREATE EDGE INDEX idx_e1_p1 ON e1(p1(5)); CREATE EDGE INDEX idx_p2 ON e1(p2);`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().CreateEdgeIndex(&em5{}, true)
+			},
+			want: `CREATE EDGE INDEX IF NOT EXISTS idx_e1_p1 ON e1(p1(5)); CREATE EDGE INDEX IF NOT EXISTS idx_p3_p2 ON e1(p3(3), p2);`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
+func TestRebuildEdgeIndexes(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().RebuildEdgeIndexes("idx1")
+			},
+			want: `REBUILD EDGE INDEX idx1;`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().RebuildEdgeIndexes("idx1", "idx2")
+			},
+			want: `REBUILD EDGE INDEX idx1, idx2;`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
+func TestDropEdgeIndex(t *testing.T) {
+	tests := []struct {
+		stmt    func() *Statement
+		want    string
+		wantErr bool
+	}{
+		{
+			stmt: func() *Statement {
+				return New().DropEdgeIndex("follow_index_0")
+			},
+			want: `DROP EDGE INDEX follow_index_0;`,
+		},
+		{
+			stmt: func() *Statement {
+				return New().DropEdgeIndex("follow_index_0", true)
+			},
+			want: `DROP EDGE INDEX IF EXISTS follow_index_0;`,
+		},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("#_%d", i), func(t *testing.T) {
+			s := tt.stmt()
+			ngql, err := s.NGQL()
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, ngql)
+			}
+		})
+	}
+}
+
 type vm1 struct {
 	VID  string `norm:"vertex_id"`
-	Name string
-	Age  int
+	Name string `norm:"index:,length:5"`
+	Age  int    `norm:"index"`
 }
 
 func (t vm1) VertexID() string {
@@ -331,8 +553,8 @@ func (t vm2) VertexTagName() string {
 
 type vm3 struct {
 	VID  string `norm:"vertex_id"`
-	Name string `norm:"prop:name;type:string;default:''"`
-	Age  int    `norm:"prop:age;type:int;default:20"`
+	Name string `norm:"prop:name;type:string;default:'';index:idx_name_age,length:5"`
+	Age  int    `norm:"prop:age;type:int;default:20;index:idx_name_age"`
 }
 
 func (t vm3) VertexID() string {
@@ -344,11 +566,11 @@ func (t vm3) VertexTagName() string {
 }
 
 type vm4 struct {
-	VID        string `norm:"vertex_id"`
-	Name       string
-	Age        int
-	Married    bool
-	Salary     float64
+	VID        string    `norm:"vertex_id"`
+	Name       string    `norm:"index:,length:5"`
+	Age        int       `norm:"index:i_age"`
+	Married    bool      `norm:"index:idx_married_salary"`
+	Salary     float64   `norm:"index:idx_married_salary,priority:1"`
 	CreateTime time.Time `norm:"type:timestamp;ttl:100"`
 }
 
@@ -375,10 +597,20 @@ func (t *vm5) VertexTagName() string {
 	return "woman"
 }
 
+type vm6 struct {
+	VID string `norm:"vertex_id"`
+	T1  *t3
+	T2  t4
+}
+
+func (v *vm6) VertexID() string {
+	return v.VID
+}
+
 type em1 struct {
 	SrcID  string `norm:"edge_src_id"`
 	DstID  string `norm:"edge_dst_id"`
-	Degree int
+	Degree int    `norm:"index"`
 }
 
 func (e em1) EdgeTypeName() string {
@@ -407,11 +639,23 @@ func (e em3) EdgeTypeName() string {
 type em4 struct {
 	SrcID string `norm:"edge_src_id"`
 	DstID string `norm:"edge_dst_id"`
-	P1    string
-	P2    int    `norm:"ttl:100"`
+	P1    string `norm:"index:,length:5"`
+	P2    int    `norm:"ttl:100;index:idx_p2"`
 	P3    string `norm:"prop:p3;type:timestamp"`
 }
 
 func (e em4) EdgeTypeName() string {
+	return "e1"
+}
+
+type em5 struct {
+	SrcID string `norm:"edge_src_id"`
+	DstID string `norm:"edge_dst_id"`
+	P1    string `norm:"index:,length:5"`
+	P2    int    `norm:"ttl:100;index:idx_p3_p2,priority:5"`
+	P3    string `norm:"prop:p3;index:idx_p3_p2,priority:1,length:3"`
+}
+
+func (e em5) EdgeTypeName() string {
 	return "e1"
 }

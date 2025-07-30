@@ -145,7 +145,7 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 		propDefault := GetFieldDefault(structField)
 		comment := GetFieldComment(structField)
 		ttl := GetFieldTTL(structField)
-		index := GetFieldIndex(structField, propName, dataType)
+		index := GetFieldIndex(structField, tagName, propName, dataType)
 		// tag may exist in a multi-level structure, the index value of the field needs to be added to the index value of the parent field
 		if superIndex >= 0 {
 			structField.Index = append([]int{superIndex}, structField.Index...)

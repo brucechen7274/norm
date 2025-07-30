@@ -144,7 +144,7 @@ type FieldIndex struct {
 }
 
 // GetFieldIndex retrieves the index configuration from the given struct field tag.
-func GetFieldIndex(field reflect.StructField, propName, dataType string) *FieldIndex {
+func GetFieldIndex(field reflect.StructField, targetName, propName, dataType string) *FieldIndex {
 	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
 	indexSetting, ok := setting[TagSettingIndex]
 	if !ok {
@@ -154,7 +154,7 @@ func GetFieldIndex(field reflect.StructField, propName, dataType string) *FieldI
 	settingArr := strings.Split(indexSetting, ",")
 	indexName := settingArr[0]
 	if indexName == TagSettingIndex || indexName == "" {
-		indexName = "idx_" + propName
+		indexName = "idx_" + targetName + "_" + propName
 	}
 	fieldIndex := &FieldIndex{
 		Name:     indexName,

@@ -9,7 +9,7 @@ import (
 )
 
 type CreateIndex struct {
-	TargetType  int
+	TargetType  IndexTarget
 	IfNotExists bool
 	IndexName   string
 	TargetName  string
@@ -18,9 +18,11 @@ type CreateIndex struct {
 
 const CreateIndexName = "CREATE_INDEX"
 
+type IndexTarget int
+
 const (
-	CreateIndexTargetTag = iota + 1
-	CreateIndexTargetEdge
+	IndexTargetTag IndexTarget = iota + 1
+	IndexTargetEdge
 )
 
 func (ci CreateIndex) Name() string {
@@ -34,9 +36,9 @@ func (ci CreateIndex) MergeIn(clause *Clause) {
 func (ci CreateIndex) Build(nGQL Builder) error {
 	nGQL.WriteString("CREATE ")
 	switch ci.TargetType {
-	case CreateIndexTargetTag:
+	case IndexTargetTag:
 		nGQL.WriteString("TAG INDEX ")
-	case CreateIndexTargetEdge:
+	case IndexTargetEdge:
 		nGQL.WriteString("EDGE INDEX ")
 	default:
 		return fmt.Errorf("norm: %w, build create index clause failed, invalid target type %d", ErrInvalidClauseParams, ci.TargetType)
@@ -48,7 +50,7 @@ func (ci CreateIndex) Build(nGQL Builder) error {
 	nGQL.WriteString(" ON ")
 	nGQL.WriteString(ci.TargetName)
 	nGQL.WriteByte('(')
-	sort.Slice(ci.Props, func(i, j int) bool {
+	sort.SliceStable(ci.Props, func(i, j int) bool {
 		return ci.Props[i].Priority < ci.Props[j].Priority
 	})
 	for i, prop := range ci.Props {

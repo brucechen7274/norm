@@ -50,16 +50,16 @@ func TestGetFieldIndex(t *testing.T) {
 	}{
 		{field: reflect.StructField{Name: "Name"}, want: nil},
 		{field: reflect.StructField{Name: "Name", Tag: `norm:"prop:name"`}, want: nil},
-		{field: reflect.StructField{Name: "Name", Tag: `norm:"index"`}, want: &FieldIndex{Name: "idx_name", Prop: "name", Priority: 10}},
+		{field: reflect.StructField{Name: "Name", Tag: `norm:"index"`}, want: &FieldIndex{Name: "idx_player_name", Prop: "name", Priority: 10}},
 		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:idx_name"`}, want: &FieldIndex{Name: "idx_name", Prop: "name", Priority: 10}},
-		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:,priority:5"`}, want: &FieldIndex{Name: "idx_name", Prop: "name", Priority: 5}},
-		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:,length:5"`}, want: &FieldIndex{Name: "idx_name", Prop: "name", Length: 5, Priority: 10}},
-		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:idx_name,priority:5,length:10"`}, want: &FieldIndex{Name: "idx_name", Prop: "name", Priority: 5, Length: 10}},
+		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:,priority:5"`}, want: &FieldIndex{Name: "idx_player_name", Prop: "name", Priority: 5}},
+		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:,length:5"`}, want: &FieldIndex{Name: "idx_player_name", Prop: "name", Length: 5, Priority: 10}},
+		{field: reflect.StructField{Name: "Name", Tag: `norm:"index:idx_name,priority:5,length:3"`}, want: &FieldIndex{Name: "idx_name", Prop: "name", Priority: 5, Length: 3}},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case #%d", i), func(t *testing.T) {
 			propName := GetPropName(tt.field)
-			assert.Equal(t, tt.want, GetFieldIndex(tt.field, propName, ""))
+			assert.Equal(t, tt.want, GetFieldIndex(tt.field, "player", propName, ""))
 		})
 	}
 }

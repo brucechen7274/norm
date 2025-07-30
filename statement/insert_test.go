@@ -125,7 +125,7 @@ func (v *v1) VertexID() string {
 }
 
 type t3 struct {
-	P1 int
+	P1 int `norm:"index"`
 }
 
 func (t *t3) VertexTagName() string {
@@ -133,7 +133,7 @@ func (t *t3) VertexTagName() string {
 }
 
 type t4 struct {
-	P2 string
+	P2 string `norm:"index:,length:7"`
 }
 
 func (t *t4) VertexTagName() string {
