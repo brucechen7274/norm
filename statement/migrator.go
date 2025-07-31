@@ -151,7 +151,29 @@ func (stmt *Statement) alterVertexTag(tags []*resolver.VertexTag, op clause.Alte
 	stmt.SetPartType(PartTypeAlterTag)
 }
 
-// CreateVertexTagsIndex 创建节点tag包含的全部属性
+// CreateVertexTagsIndex creates indexes for all tags of the given vertex struct.
+// If 'ifNotExists' is provided and true, it adds the "IF NOT EXISTS" clause to avoid errors when indexes already exist.
+//
+// The vertex parameter can be:
+// - a *resolver.VertexSchema: create indexes on all tags in the schema,
+// - a *resolver.VertexTag: create index on the single tag,
+// - or any struct type, which will be parsed into a vertex schema.
+//
+// Example usage with struct vm1:
+//
+//	type vm1 struct {
+//		VID  string `norm:"vertex_id"`
+//		Name string `norm:"index:,length:5"` // index on 'Name' field with prefix length 5
+//		Age  int    `norm:"index"`          // index on 'Age' field
+//	}
+//
+//	func (t vm1) VertexID() string { return t.VID }
+//	func (t vm1) VertexTagName() string { return "player" }
+//
+//	stmt.CreateVertexTagsIndex(&vm1{}, true)
+//	// Generates:
+//	// CREATE TAG INDEX IF NOT EXISTS idx_player_name ON player(name(5));
+//	// CREATE TAG INDEX IF NOT EXISTS idx_player_age ON player(age);
 func (stmt *Statement) CreateVertexTagsIndex(vertex any, ifNotExists ...bool) *Statement {
 	var notExistsOpt bool
 	if len(ifNotExists) > 0 {
@@ -212,7 +234,20 @@ func (stmt *Statement) addCreateIndexClause(targetType clause.IndexTarget, targe
 	}
 }
 
-// RebuildVertexTagIndexes 重建节点tag索引
+// RebuildVertexTagIndexes rebuilds the specified vertex tag indexes.
+// When one or more index names are provided, it constructs the corresponding
+// REBUILD TAG INDEX statement to rebuild these indexes.
+// If no index name is specified, it returns immediately without any operation.
+//
+// Examples:
+//
+//	stmt.RebuildVertexTagIndexes("single_person_index")
+//
+// Generates nGQL: REBUILD TAG INDEX single_person_index;
+//
+//	stmt.RebuildVertexTagIndexes("idx1", "idx2")
+//
+// Generates nGQL: REBUILD TAG INDEX idx1, idx2;
 func (stmt *Statement) RebuildVertexTagIndexes(indexNames ...string) *Statement {
 	if len(indexNames) == 0 {
 		return stmt
@@ -225,7 +260,18 @@ func (stmt *Statement) RebuildVertexTagIndexes(indexNames ...string) *Statement 
 	return stmt
 }
 
-// DropVertexTagIndex 删除节点tag索引
+// DropVertexTagIndex drops a vertex tag index by its name.
+// If 'ifExists' is true, it adds the "IF EXISTS" clause to avoid errors if the index does not exist.
+//
+// Examples:
+//
+//	stmt.DropVertexTagIndex("player_index_0")
+//
+// Generates nGQL: DROP TAG INDEX player_index_0;
+//
+//	stmt.DropVertexTagIndex("idx1", true)
+//
+// Generates nGQL: DROP TAG INDEX IF EXISTS idx1;
 func (stmt *Statement) DropVertexTagIndex(indexName string, ifExists ...bool) *Statement {
 	if indexName == "" {
 		return stmt
@@ -341,7 +387,27 @@ func (stmt *Statement) AlterEdge(edge any, op clause.AlterOperate) *Statement {
 	return stmt
 }
 
-// CreateEdgeIndex 创建边所包含的索引
+// CreateEdgeIndex creates an index on the specified edge's properties.
+// If 'ifNotExists' is true, adds "IF NOT EXISTS" clause to avoid errors if the index already exists.
+//
+// The edge parameter can be either an *resolver.EdgeSchema or a struct representing the edge,
+// from which the edge schema will be parsed.
+//
+// Example usage with struct em1:
+//
+//	type em1 struct {
+//	    SrcID  string `norm:"edge_src_id"`
+//	    DstID  string `norm:"edge_dst_id"`
+//	    Degree int    `norm:"index"`
+//	}
+//
+//	func (e em1) EdgeTypeName() string {
+//	    return "follow"
+//	}
+//
+//	stmt.CreateEdgeIndex(&em1{}, true)
+//
+// Generates nGQL: CREATE EDGE INDEX IF NOT EXISTS idx_follow_degree ON follow(degree);
 func (stmt *Statement) CreateEdgeIndex(edge any, ifNotExists ...bool) *Statement {
 	var notExistsOpt bool
 	if len(ifNotExists) > 0 {
@@ -365,7 +431,16 @@ func (stmt *Statement) CreateEdgeIndex(edge any, ifNotExists ...bool) *Statement
 	return stmt
 }
 
-// RebuildEdgeIndexes 重建边索引
+// RebuildEdgeIndexes rebuilds one or more edge indexes by their names.
+// It generates a nGQL statement to rebuild the specified edge indexes.
+//
+// Example usage:
+//
+//	stmt.RebuildEdgeIndexes("idx1")
+//	// Generates: REBUILD EDGE INDEX idx1;
+//
+//	stmt.RebuildEdgeIndexes("idx1", "idx2")
+//	// Generates: REBUILD EDGE INDEX idx1, idx2;
 func (stmt *Statement) RebuildEdgeIndexes(indexNames ...string) *Statement {
 	if len(indexNames) == 0 {
 		return stmt
@@ -378,7 +453,16 @@ func (stmt *Statement) RebuildEdgeIndexes(indexNames ...string) *Statement {
 	return stmt
 }
 
-// DropEdgeIndex 删除边索引
+// DropEdgeIndex drops an edge index by name.
+// If ifExists is set to true, it adds the IF EXISTS clause to avoid errors if the index does not exist.
+//
+// Example usage:
+//
+//	stmt.DropEdgeIndex("follow_index_0")
+//	// Generates: DROP EDGE INDEX follow_index_0;
+//
+//	stmt.DropEdgeIndex("follow_index_0", true)
+//	// Generates: DROP EDGE INDEX IF EXISTS follow_index_0;
 func (stmt *Statement) DropEdgeIndex(indexName string, ifExists ...bool) *Statement {
 	if indexName == "" {
 		return stmt
