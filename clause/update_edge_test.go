@@ -22,7 +22,7 @@ func TestUpdateEdge(t *testing.T) {
 		errWant error
 	}{
 		{
-			clauses: []clause.Interface{clause.UpdateEdge{Edge: e11, PropsUpdate: map[string]interface{}{"start_year": clause.Expr{Str: "start_year + 1"}}}},
+			clauses: []clause.Interface{clause.UpdateEdge{Edge: e11, PropsUpdate: map[string]any{"start_year": clause.Expr{Str: "start_year + 1"}}}},
 			gqlWant: `UPDATE EDGE ON e1 "player100"->"team204" SET start_year = start_year + 1`,
 		},
 		{
@@ -30,7 +30,7 @@ func TestUpdateEdge(t *testing.T) {
 			gqlWant: `UPDATE EDGE ON e1 "player100"->"team204" SET start_year = start_year + 1`,
 		},
 		{
-			clauses: []clause.Interface{clause.UpdateEdge{Edge: `e1 "player100" -> "team204"`, PropsUpdate: map[string]interface{}{"start_year": clause.Expr{Str: "start_year + 1"}}}},
+			clauses: []clause.Interface{clause.UpdateEdge{Edge: `e1 "player100" -> "team204"`, PropsUpdate: map[string]any{"start_year": clause.Expr{Str: "start_year + 1"}}}},
 			gqlWant: `UPDATE EDGE ON e1 "player100" -> "team204" SET start_year = start_year + 1`,
 		},
 		{
@@ -38,7 +38,7 @@ func TestUpdateEdge(t *testing.T) {
 			gqlWant: `UPDATE EDGE ON e2 "player100"->"team204"@2 SET name = "hayson", age = 26`,
 		},
 		{
-			clauses: []clause.Interface{clause.UpdateEdge{Edge: e21, PropsUpdate: map[string]interface{}{"name": "hayson", "age": clause.Expr{Str: "age + 1"}}}},
+			clauses: []clause.Interface{clause.UpdateEdge{Edge: e21, PropsUpdate: map[string]any{"name": "hayson", "age": clause.Expr{Str: "age + 1"}}}},
 			gqlWant: `UPDATE EDGE ON e2 "player100"->"team204"@2 SET age = age + 1, name = "hayson"`,
 		},
 		{
