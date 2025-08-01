@@ -17,9 +17,11 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType: clause.IndexTargetTag,
-						IndexName:  "player_index",
-						TargetName: "player",
+						Index: &resolver.Index{
+							Name:   "player_index",
+							Type:   resolver.IndexTypeTag,
+							Target: "player",
+						},
 					}
 				}(),
 			},
@@ -29,9 +31,11 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType: clause.IndexTargetEdge,
-						IndexName:  "follow_index",
-						TargetName: "follow",
+						Index: &resolver.Index{
+							Name:   "follow_index",
+							Type:   resolver.IndexTypeEdge,
+							Target: "follow",
+						},
 					}
 				}(),
 			},
@@ -41,15 +45,17 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.IndexTargetTag,
 						IfNotExists: true,
-						IndexName:   "var",
-						TargetName:  "var_string",
-						Props: []*resolver.FieldIndex{
-							{
-								Prop:     "p1",
-								DataType: "string",
-								Length:   10,
+						Index: &resolver.Index{
+							Name:   "var",
+							Type:   resolver.IndexTypeTag,
+							Target: "var_string",
+							Fields: []*resolver.IndexField{
+								{
+									Prop:     "p1",
+									DataType: "string",
+									Length:   10,
+								},
 							},
 						},
 					}
@@ -61,14 +67,16 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.IndexTargetEdge,
 						IfNotExists: true,
-						IndexName:   "follow_index_0",
-						TargetName:  "follow",
-						Props: []*resolver.FieldIndex{
-							{
-								Prop:     "degree",
-								DataType: "int",
+						Index: &resolver.Index{
+							Name:   "follow_index_0",
+							Type:   resolver.IndexTypeEdge,
+							Target: "follow",
+							Fields: []*resolver.IndexField{
+								{
+									Prop:     "degree",
+									DataType: "int",
+								},
 							},
 						},
 					}
@@ -80,19 +88,21 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.IndexTargetTag,
 						IfNotExists: true,
-						IndexName:   "player_index_1",
-						TargetName:  "player",
-						Props: []*resolver.FieldIndex{
-							{
-								Prop:     "name",
-								DataType: "string",
-								Length:   10,
-							},
-							{
-								Prop:     "age",
-								DataType: "int",
+						Index: &resolver.Index{
+							Name:   "player_index_1",
+							Type:   resolver.IndexTypeTag,
+							Target: "player",
+							Fields: []*resolver.IndexField{
+								{
+									Prop:     "name",
+									DataType: "string",
+									Length:   10,
+								},
+								{
+									Prop:     "age",
+									DataType: "int",
+								},
 							},
 						},
 					}
@@ -104,14 +114,16 @@ func TestCreateIndex(t *testing.T) {
 			clauses: []clause.Interface{
 				func() clause.CreateIndex {
 					return clause.CreateIndex{
-						TargetType:  clause.IndexTargetTag,
 						IfNotExists: true,
-						IndexName:   "player_index_1",
-						TargetName:  "player",
-						Props: []*resolver.FieldIndex{
-							{
-								Prop:     "name",
-								DataType: "string",
+						Index: &resolver.Index{
+							Name:   "player_index_1",
+							Type:   resolver.IndexTypeTag,
+							Target: "player",
+							Fields: []*resolver.IndexField{
+								{
+									Prop:     "name",
+									DataType: "string",
+								},
 							},
 						},
 					}

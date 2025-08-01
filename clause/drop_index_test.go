@@ -3,6 +3,7 @@ package clause_test
 import (
 	"fmt"
 	"github.com/haysons/norm/clause"
+	"github.com/haysons/norm/resolver"
 	"testing"
 )
 
@@ -13,19 +14,19 @@ func TestDropIndex(t *testing.T) {
 		errWant error
 	}{
 		{
-			clauses: []clause.Interface{clause.DropIndex{TargetType: clause.IndexTargetTag, IndexName: "player_index_0"}},
+			clauses: []clause.Interface{clause.DropIndex{IndexType: resolver.IndexTypeTag, IndexName: "player_index_0"}},
 			gqlWant: `DROP TAG INDEX player_index_0`,
 		},
 		{
-			clauses: []clause.Interface{clause.DropIndex{TargetType: clause.IndexTargetTag, IfExists: true, IndexName: "player_index_0"}},
+			clauses: []clause.Interface{clause.DropIndex{IndexType: resolver.IndexTypeTag, IfExists: true, IndexName: "player_index_0"}},
 			gqlWant: `DROP TAG INDEX IF EXISTS player_index_0`,
 		},
 		{
-			clauses: []clause.Interface{clause.DropIndex{TargetType: clause.IndexTargetEdge, IndexName: "follow_index"}},
+			clauses: []clause.Interface{clause.DropIndex{IndexType: resolver.IndexTypeEdge, IndexName: "follow_index"}},
 			gqlWant: `DROP EDGE INDEX follow_index`,
 		},
 		{
-			clauses: []clause.Interface{clause.DropIndex{TargetType: clause.IndexTargetEdge, IfExists: true, IndexName: "follow_index"}},
+			clauses: []clause.Interface{clause.DropIndex{IndexType: resolver.IndexTypeEdge, IfExists: true, IndexName: "follow_index"}},
 			gqlWant: `DROP EDGE INDEX IF EXISTS follow_index`,
 		},
 	}

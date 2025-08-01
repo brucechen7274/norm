@@ -185,6 +185,10 @@ func (stmt *Statement) CreateVertexTagsIndex(vertex any, ifNotExists ...bool) *S
 		stmt.createVertexTagsIndex(v.GetTags(), notExistsOpt)
 	case *resolver.VertexTag:
 		stmt.createVertexTagsIndex([]*resolver.VertexTag{v}, notExistsOpt)
+	case []*resolver.Index:
+		stmt.buildCreateIndexClauses(v, notExistsOpt)
+	case *resolver.Index:
+		stmt.buildCreateIndexClauses([]*resolver.Index{v}, notExistsOpt)
 	default:
 		vertexType := reflect.TypeOf(vertex)
 		vertexSchema, err := resolver.ParseVertex(vertexType)
@@ -198,39 +202,27 @@ func (stmt *Statement) CreateVertexTagsIndex(vertex any, ifNotExists ...bool) *S
 }
 
 func (stmt *Statement) createVertexTagsIndex(tags []*resolver.VertexTag, ifNotExists bool) {
-	firstPartBuilt := false
+	indexes := make([]*resolver.Index, 0)
 	for _, tag := range tags {
-		stmt.addCreateIndexClause(clause.IndexTargetTag, tag.TagName, tag.GetProps(), ifNotExists, &firstPartBuilt)
+		for _, idx := range tag.GetIndexes() {
+			indexes = append(indexes, idx)
+		}
 	}
+	stmt.buildCreateIndexClauses(indexes, ifNotExists)
 }
 
-func (stmt *Statement) addCreateIndexClause(targetType clause.IndexTarget, targetName string, props []*resolver.Prop, ifNotExists bool, firstPartBuilt *bool) {
-	indexMap := make(map[string][]*resolver.FieldIndex)
-	indexNames := make([]string, 0)
-	for _, prop := range props {
-		if prop.Index == nil {
-			continue
-		}
-		_, ok := indexMap[prop.Index.Name]
-		if !ok {
-			indexNames = append(indexNames, prop.Index.Name)
-		}
-		indexMap[prop.Index.Name] = append(indexMap[prop.Index.Name], prop.Index)
-	}
-	for _, indexName := range indexNames {
-		fields := indexMap[indexName]
-		if *firstPartBuilt {
+func (stmt *Statement) buildCreateIndexClauses(indexes []*resolver.Index, ifNotExists bool) {
+	firstPartBuilt := false
+	for _, idx := range indexes {
+		if firstPartBuilt {
 			stmt.AddPart(NewPart())
 		}
 		stmt.AddClause(&clause.CreateIndex{
-			TargetType:  targetType,
 			IfNotExists: ifNotExists,
-			IndexName:   indexName,
-			TargetName:  targetName,
-			Props:       fields,
+			Index:       idx,
 		})
 		stmt.SetPartType(PartTypeCreateIndex)
-		*firstPartBuilt = true
+		firstPartBuilt = true
 	}
 }
 
@@ -253,7 +245,7 @@ func (stmt *Statement) RebuildVertexTagIndexes(indexNames ...string) *Statement 
 		return stmt
 	}
 	stmt.AddClause(&clause.RebuildIndex{
-		TargetType: clause.IndexTargetTag,
+		IndexType:  resolver.IndexTypeTag,
 		IndexNames: indexNames,
 	})
 	stmt.SetPartType(PartTypeRebuildIndex)
@@ -281,9 +273,9 @@ func (stmt *Statement) DropVertexTagIndex(indexName string, ifExists ...bool) *S
 		existsOpt = ifExists[0]
 	}
 	stmt.AddClause(&clause.DropIndex{
-		TargetType: clause.IndexTargetTag,
-		IndexName:  indexName,
-		IfExists:   existsOpt,
+		IndexType: resolver.IndexTypeTag,
+		IndexName: indexName,
+		IfExists:  existsOpt,
 	})
 	stmt.SetPartType(PartTypeDropIndex)
 	return stmt
@@ -413,21 +405,23 @@ func (stmt *Statement) CreateEdgeIndex(edge any, ifNotExists ...bool) *Statement
 	if len(ifNotExists) > 0 {
 		notExistsOpt = ifNotExists[0]
 	}
-	var edgeSchema *resolver.EdgeSchema
 	switch e := edge.(type) {
 	case *resolver.EdgeSchema:
-		edgeSchema = e
+		stmt.buildCreateIndexClauses(e.GetIndexes(), notExistsOpt)
+	case []*resolver.Index:
+		stmt.buildCreateIndexClauses(e, notExistsOpt)
+	case *resolver.Index:
+		stmt.buildCreateIndexClauses([]*resolver.Index{e}, notExistsOpt)
 	default:
 		edgeType := reflect.TypeOf(edge)
 		var err error
-		edgeSchema, err = resolver.ParseEdge(edgeType)
+		edgeSchema, err := resolver.ParseEdge(edgeType)
 		if err != nil {
 			stmt.err = err
 			return stmt
 		}
+		stmt.buildCreateIndexClauses(edgeSchema.GetIndexes(), notExistsOpt)
 	}
-	firstPartBuilt := false
-	stmt.addCreateIndexClause(clause.IndexTargetEdge, edgeSchema.GetTypeName(), edgeSchema.GetProps(), notExistsOpt, &firstPartBuilt)
 	return stmt
 }
 
@@ -446,7 +440,7 @@ func (stmt *Statement) RebuildEdgeIndexes(indexNames ...string) *Statement {
 		return stmt
 	}
 	stmt.AddClause(&clause.RebuildIndex{
-		TargetType: clause.IndexTargetEdge,
+		IndexType:  resolver.IndexTypeEdge,
 		IndexNames: indexNames,
 	})
 	stmt.SetPartType(PartTypeRebuildIndex)
@@ -472,9 +466,9 @@ func (stmt *Statement) DropEdgeIndex(indexName string, ifExists ...bool) *Statem
 		existsOpt = ifExists[0]
 	}
 	stmt.AddClause(&clause.DropIndex{
-		TargetType: clause.IndexTargetEdge,
-		IndexName:  indexName,
-		IfExists:   existsOpt,
+		IndexType: resolver.IndexTypeEdge,
+		IndexName: indexName,
+		IfExists:  existsOpt,
 	})
 	stmt.SetPartType(PartTypeDropIndex)
 	return stmt

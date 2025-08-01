@@ -1,11 +1,14 @@
 package clause
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/haysons/norm/resolver"
+)
 
 type DropIndex struct {
-	TargetType IndexTarget
-	IfExists   bool
-	IndexName  string
+	IndexType resolver.IndexType
+	IfExists  bool
+	IndexName string
 }
 
 const DropIndexName = "DROP_INDEX"
@@ -20,13 +23,13 @@ func (di DropIndex) MergeIn(clause *Clause) {
 
 func (di DropIndex) Build(nGQL Builder) error {
 	nGQL.WriteString("DROP ")
-	switch di.TargetType {
-	case IndexTargetTag:
+	switch di.IndexType {
+	case resolver.IndexTypeTag:
 		nGQL.WriteString("TAG INDEX ")
-	case IndexTargetEdge:
+	case resolver.IndexTypeEdge:
 		nGQL.WriteString("EDGE INDEX ")
 	default:
-		return fmt.Errorf("norm: %w, build drop index clause failed, invalid target type %d", ErrInvalidClauseParams, di.TargetType)
+		return fmt.Errorf("norm: %w, build drop index clause failed, invalid target type %d", ErrInvalidClauseParams, di.IndexType)
 	}
 	if di.IfExists {
 		nGQL.WriteString("IF EXISTS ")

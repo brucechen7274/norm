@@ -1,9 +1,12 @@
 package clause
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/haysons/norm/resolver"
+)
 
 type RebuildIndex struct {
-	TargetType IndexTarget
+	IndexType  resolver.IndexType
 	IndexNames []string
 }
 
@@ -19,13 +22,13 @@ func (ri RebuildIndex) MergeIn(clause *Clause) {
 
 func (ri RebuildIndex) Build(nGQL Builder) error {
 	nGQL.WriteString("REBUILD ")
-	switch ri.TargetType {
-	case IndexTargetTag:
+	switch ri.IndexType {
+	case resolver.IndexTypeTag:
 		nGQL.WriteString("TAG INDEX ")
-	case IndexTargetEdge:
+	case resolver.IndexTypeEdge:
 		nGQL.WriteString("EDGE INDEX ")
 	default:
-		return fmt.Errorf("norm: %w, build rebuild index clause failed, invalid target type %d", ErrInvalidClauseParams, ri.TargetType)
+		return fmt.Errorf("norm: %w, build rebuild index clause failed, invalid target type %d", ErrInvalidClauseParams, ri.IndexType)
 	}
 	if len(ri.IndexNames) == 0 {
 		return fmt.Errorf("norm: %w, build rebuild index clause failed, index names empty", ErrInvalidClauseParams)
