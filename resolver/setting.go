@@ -135,7 +135,7 @@ func GetFieldTTL(field reflect.StructField) string {
 	return setting[TagSettingTTL]
 }
 
-type FieldIndex struct {
+type IndexField struct {
 	Name     string
 	Prop     string
 	DataType string
@@ -144,7 +144,7 @@ type FieldIndex struct {
 }
 
 // GetFieldIndex retrieves the index configuration from the given struct field tag.
-func GetFieldIndex(field reflect.StructField, targetName, propName, dataType string) *FieldIndex {
+func GetFieldIndex(field reflect.StructField, targetName, propName, dataType string) *IndexField {
 	setting := ParseTagSetting(field.Tag.Get(TagSettingKey))
 	indexSetting, ok := setting[TagSettingIndex]
 	if !ok {
@@ -156,7 +156,7 @@ func GetFieldIndex(field reflect.StructField, targetName, propName, dataType str
 	if indexName == TagSettingIndex || indexName == "" {
 		indexName = "idx_" + targetName + "_" + propName
 	}
-	fieldIndex := &FieldIndex{
+	fieldIndex := &IndexField{
 		Name:     indexName,
 		Prop:     propName,
 		DataType: dataType,

@@ -31,9 +31,9 @@ func main() {
 
 type Woman struct {
 	VID     string `norm:"vertex_id"`
-	Name    string
-	Age     int
-	Married bool
+	Name    string `norm:"index:,length:5"`
+	Age     int    `norm:"index:idx_woman_age_married,priority:1"`
+	Married bool   `norm:"index:idx_woman_age_married,priority:2"`
 	Salary  float64
 }
 
@@ -79,6 +79,13 @@ func migrateTags() {
 		log.Printf("woman prop: %+v\n", womanProp)
 	}
 
+	if err = migrator.DropVertexTagIndex("idx_woman_name", true); err != nil {
+		log.Fatal(err)
+	}
+	if err = migrator.DropVertexTagIndex("idx_woman_age_married", true); err != nil {
+		log.Fatal(err)
+	}
+
 	migrator = norm.NewMigrator(db.Debug())
 	if err = migrator.AutoMigrateVertexes(WomanUpdate{}); err != nil {
 		log.Fatal(err)
@@ -99,7 +106,7 @@ func migrateTags() {
 type Follow struct {
 	SrcID string `norm:"edge_src_id"`
 	DstID string `norm:"edge_dst_id"`
-	P1    int
+	P1    int    `norm:"index"`
 	P2    bool
 }
 
@@ -135,6 +142,10 @@ func migrateEdges() {
 	}
 	for _, prop := range props {
 		log.Printf("edge prop: %+v\n", prop)
+	}
+
+	if err = migrator.DropEdgeIndex("idx_follow_p1", true); err != nil {
+		log.Fatal(err)
 	}
 
 	migrator = norm.NewMigrator(db.Debug())

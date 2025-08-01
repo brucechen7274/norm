@@ -3,6 +3,7 @@ package clause_test
 import (
 	"fmt"
 	"github.com/haysons/norm/clause"
+	"github.com/haysons/norm/resolver"
 	"testing"
 )
 
@@ -13,23 +14,23 @@ func TestRebuildIndex(t *testing.T) {
 		errWant error
 	}{
 		{
-			clauses: []clause.Interface{clause.RebuildIndex{TargetType: clause.IndexTargetTag, IndexNames: []string{"single_person_index"}}},
+			clauses: []clause.Interface{clause.RebuildIndex{IndexType: resolver.IndexTypeTag, IndexNames: []string{"single_person_index"}}},
 			gqlWant: `REBUILD TAG INDEX single_person_index`,
 		},
 		{
-			clauses: []clause.Interface{clause.RebuildIndex{TargetType: clause.IndexTargetTag, IndexNames: []string{"idx1", "idx2"}}},
+			clauses: []clause.Interface{clause.RebuildIndex{IndexType: resolver.IndexTypeTag, IndexNames: []string{"idx1", "idx2"}}},
 			gqlWant: `REBUILD TAG INDEX idx1, idx2`,
 		},
 		{
-			clauses: []clause.Interface{clause.RebuildIndex{TargetType: clause.IndexTargetEdge, IndexNames: []string{"idx1"}}},
+			clauses: []clause.Interface{clause.RebuildIndex{IndexType: resolver.IndexTypeEdge, IndexNames: []string{"idx1"}}},
 			gqlWant: `REBUILD EDGE INDEX idx1`,
 		},
 		{
-			clauses: []clause.Interface{clause.RebuildIndex{TargetType: clause.IndexTargetEdge, IndexNames: []string{"idx1", "idx2"}}},
+			clauses: []clause.Interface{clause.RebuildIndex{IndexType: resolver.IndexTypeEdge, IndexNames: []string{"idx1", "idx2"}}},
 			gqlWant: `REBUILD EDGE INDEX idx1, idx2`,
 		},
 		{
-			clauses: []clause.Interface{clause.RebuildIndex{TargetType: clause.IndexTargetEdge}},
+			clauses: []clause.Interface{clause.RebuildIndex{IndexType: resolver.IndexTypeEdge}},
 			errWant: clause.ErrInvalidClauseParams,
 		},
 	}

@@ -160,12 +160,12 @@ func (v *VertexSchema) parseTag(destType reflect.Type, superIndex int) (bool, er
 			Default:     propDefault,
 			Comment:     comment,
 			TTL:         ttl,
-			Index:       index,
 		}
 		if _, ok := v.tagByName[tagName].propByName[propName]; ok {
 			continue
 		}
 		v.tagByName[tagName].SetProps(prop)
+		v.tagByName[tagName].SetIndexFields(index)
 	}
 	return true, nil
 }
@@ -239,9 +239,11 @@ func (v *VertexSchema) Scan(node *nebula.Node, destValue reflect.Value) error {
 }
 
 type VertexTag struct {
-	TagName    string
-	props      []*Prop
-	propByName map[string]*Prop // key: prop name
+	TagName     string
+	props       []*Prop
+	propByName  map[string]*Prop // key: prop name
+	indexNames  []string
+	indexFields map[string][]*IndexField
 }
 
 type Prop struct {
@@ -254,7 +256,6 @@ type Prop struct {
 	Default     string
 	Comment     string
 	TTL         string
-	Index       *FieldIndex
 }
 
 // GetProps get all attributes of the tag
@@ -270,5 +271,48 @@ func (t *VertexTag) SetProps(props ...*Prop) {
 	for _, prop := range props {
 		t.props = append(t.props, prop)
 		t.propByName[prop.Name] = prop
+	}
+}
+
+type IndexType int
+
+const (
+	IndexTypeTag IndexType = iota + 1
+	IndexTypeEdge
+)
+
+type Index struct {
+	Name   string
+	Type   IndexType
+	Target string
+	Fields []*IndexField
+}
+
+func (t *VertexTag) GetIndexes() []*Index {
+	indexes := make([]*Index, 0, len(t.indexNames))
+	for _, indexName := range t.indexNames {
+		indexes = append(indexes, &Index{
+			Name:   indexName,
+			Type:   IndexTypeTag,
+			Target: t.TagName,
+			Fields: t.indexFields[indexName],
+		})
+	}
+	return indexes
+}
+
+func (t *VertexTag) SetIndexFields(fields ...*IndexField) {
+	if t.indexFields == nil {
+		t.indexFields = make(map[string][]*IndexField)
+	}
+	for _, field := range fields {
+		if field == nil {
+			continue
+		}
+		_, ok := t.indexFields[field.Name]
+		if !ok {
+			t.indexNames = append(t.indexNames, field.Name)
+		}
+		t.indexFields[field.Name] = append(t.indexFields[field.Name], field)
 	}
 }

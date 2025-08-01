@@ -22,6 +22,8 @@ type EdgeSchema struct {
 	rankFieldIndex   []int
 	props            []*Prop
 	propByName       map[string]*Prop
+	indexNames       []string
+	indexFields      map[string][]*IndexField
 }
 
 // ParseEdge parse edge struct
@@ -104,12 +106,12 @@ func ParseEdge(destType reflect.Type) (*EdgeSchema, error) {
 			Default:     propDefault,
 			Comment:     comment,
 			TTL:         ttl,
-			Index:       index,
 		}
 		if _, ok = edge.propByName[propName]; ok {
 			continue
 		}
 		edge.SetProps(prop)
+		edge.SetIndexFields(index)
 	}
 	if edge.srcVIDFieldIndex == nil || edge.dstVIDFieldIndex == nil {
 		return nil, errors.New("norm: parse edge failed, edge must contains src_id field and dst_id field")
@@ -197,6 +199,35 @@ func (e *EdgeSchema) SetProps(props ...*Prop) {
 	for _, prop := range props {
 		e.props = append(e.props, prop)
 		e.propByName[prop.Name] = prop
+	}
+}
+
+func (e *EdgeSchema) GetIndexes() []*Index {
+	indexes := make([]*Index, 0, len(e.indexNames))
+	for _, indexName := range e.indexNames {
+		indexes = append(indexes, &Index{
+			Name:   indexName,
+			Type:   IndexTypeEdge,
+			Target: e.GetTypeName(),
+			Fields: e.indexFields[indexName],
+		})
+	}
+	return indexes
+}
+
+func (e *EdgeSchema) SetIndexFields(fields ...*IndexField) {
+	if e.indexFields == nil {
+		e.indexFields = make(map[string][]*IndexField)
+	}
+	for _, field := range fields {
+		if field == nil {
+			continue
+		}
+		_, ok := e.indexFields[field.Name]
+		if !ok {
+			e.indexNames = append(e.indexNames, field.Name)
+		}
+		e.indexFields[field.Name] = append(e.indexFields[field.Name], field)
 	}
 }
 

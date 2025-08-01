@@ -26,6 +26,15 @@ func NewMigrator(db *DB) *Migrator {
 // If the tag exists, each property will be checked for changes.
 // New properties or changed types, null constraints, or default values will trigger ALTER operations.
 // For safety, this method does not delete any existing tags or their properties.
+//
+// In addition, if index definitions are declared in the vertex struct and the corresponding
+// indexes do not exist in the current graph space, they will be created.
+//
+// Note: Index creation is asynchronous in NebulaGraph, so newly created indexes cannot
+// be immediately rebuilt within this method. It is recommended to call RebuildVertexTagIndexes
+// manually after migration to ensure indexes are properly built.
+//
+// For safety reasons, existing indexes will not be dropped.
 func (m *Migrator) AutoMigrateVertexes(vertexes ...any) error {
 	for _, vertex := range vertexes {
 		vertexSchema, err := resolver.ParseVertex(reflect.TypeOf(vertex))
@@ -55,6 +64,9 @@ func (m *Migrator) autoMigrateVertex(vertex *resolver.VertexSchema) error {
 			err = m.autoAlterVertexTags(tag)
 		}
 		if err != nil {
+			return err
+		}
+		if err = m.autoCreateTagIndexes(tag); err != nil {
 			return err
 		}
 	}
@@ -91,10 +103,36 @@ func (m *Migrator) autoAlterVertexTags(tag *resolver.VertexTag) error {
 	return m.AlterVertexTag(tag, alterOp)
 }
 
+func (m *Migrator) autoCreateTagIndexes(tag *resolver.VertexTag) error {
+	indexes := tag.GetIndexes()
+	for _, index := range indexes {
+		hasIndex, err := m.HasVertexTagIndex(index.Name)
+		if err != nil {
+			return err
+		}
+		if hasIndex {
+			continue
+		}
+		if err = m.CreateVertexTagsIndex(index, true); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // AutoMigrateEdges automatically migrates edge schemas.
 // If the specified edge does not exist in the current graph space, it will be created.
 // If it already exists, each property will be compared to determine whether updates are needed.
 // For safety, this method will not delete existing edges or edge properties.
+//
+// In addition, if index definitions are declared in the edge struct and the corresponding
+// indexes do not exist in the current graph space, they will be created.
+//
+// Note: Index creation is asynchronous in NebulaGraph, so newly created indexes cannot
+// be immediately rebuilt within this method. It is recommended to call RebuildEdgeIndexes
+// manually after migration to ensure indexes are properly built.
+//
+// For safety reasons, existing edges or their properties and indexes will not be dropped.
 func (m *Migrator) AutoMigrateEdges(edges ...any) error {
 	for _, edge := range edges {
 		edgeSchema, err := resolver.ParseEdge(reflect.TypeOf(edge))
@@ -113,6 +151,9 @@ func (m *Migrator) AutoMigrateEdges(edges ...any) error {
 			err = m.autoAlterEdge(edgeSchema)
 		}
 		if err != nil {
+			return err
+		}
+		if err = m.autoCreateEdgeIndexes(edgeSchema); err != nil {
 			return err
 		}
 	}
@@ -148,6 +189,23 @@ func (m *Migrator) autoAlterEdge(edge *resolver.EdgeSchema) error {
 		return nil
 	}
 	return m.AlterEdge(edge, alterOp)
+}
+
+func (m *Migrator) autoCreateEdgeIndexes(edge *resolver.EdgeSchema) error {
+	indexes := edge.GetIndexes()
+	for _, index := range indexes {
+		hasIndex, err := m.HasEdgeIndex(index.Name)
+		if err != nil {
+			return err
+		}
+		if hasIndex {
+			continue
+		}
+		if err = m.CreateEdgeIndex(index, true); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // isPropChanged determines whether a property definition has changed
@@ -297,5 +355,85 @@ func (m *Migrator) DropEdge(edgeTypeName string, ifExists ...bool) error {
 func (m *Migrator) AlterEdge(edge any, op clause.AlterOperate) error {
 	tx := m.db.getInstance()
 	tx.Statement.AlterEdge(edge, op)
+	return tx.Exec()
+}
+
+// HasVertexTagIndex checks whether a tag index with the given name exists.
+func (m *Migrator) HasVertexTagIndex(indexName string) (bool, error) {
+	indexNames := make([]string, 0)
+	err := m.db.Raw("SHOW TAG INDEXES").
+		FindCol("Index Name", &indexNames)
+	if err != nil {
+		return false, err
+	}
+	for _, name := range indexNames {
+		if name == indexName {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// CreateVertexTagsIndex creates indexes for all tags of the given vertex struct.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) CreateVertexTagsIndex(vertex any, ifNotExists ...bool) error {
+	tx := m.db.getInstance()
+	tx.Statement.CreateVertexTagsIndex(vertex, ifNotExists...)
+	return tx.Exec()
+}
+
+// RebuildVertexTagIndexes rebuilds the specified vertex tag indexes.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) RebuildVertexTagIndexes(indexNames ...string) error {
+	tx := m.db.getInstance()
+	tx.Statement.RebuildVertexTagIndexes(indexNames...)
+	return tx.Exec()
+}
+
+// DropVertexTagIndex drops a vertex tag index by its name.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) DropVertexTagIndex(indexName string, ifExists ...bool) error {
+	tx := m.db.getInstance()
+	tx.Statement.DropVertexTagIndex(indexName, ifExists...)
+	return tx.Exec()
+}
+
+// HasEdgeIndex checks whether an edge index with the given name exists.
+func (m *Migrator) HasEdgeIndex(indexName string) (bool, error) {
+	indexNames := make([]string, 0)
+	err := m.db.Raw("SHOW EDGE INDEXES").
+		FindCol("Index Name", &indexNames)
+	if err != nil {
+		return false, err
+	}
+	for _, name := range indexNames {
+		if name == indexName {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// CreateEdgeIndex creates an index on the specified edge's properties.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) CreateEdgeIndex(edge any, ifNotExists ...bool) error {
+	tx := m.db.getInstance()
+	tx.Statement.CreateEdgeIndex(edge, ifNotExists...)
+	return tx.Exec()
+}
+
+// RebuildEdgeIndexes rebuilds one or more edge indexes by their names.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) RebuildEdgeIndexes(indexNames ...string) error {
+	tx := m.db.getInstance()
+	tx.Statement.RebuildEdgeIndexes(indexNames...)
+	return tx.Exec()
+}
+
+// DropEdgeIndex drops an edge index by name.
+// see more information on the method of the same name in statement.Statement
+func (m *Migrator) DropEdgeIndex(indexName string, ifExists ...bool) error {
+	tx := m.db.getInstance()
+	tx.Statement.DropEdgeIndex(indexName, ifExists...)
 	return tx.Exec()
 }
