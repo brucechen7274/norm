@@ -3,12 +3,14 @@ package resolver
 import (
 	"errors"
 	"fmt"
-	"github.com/haysons/norm/internal/utils"
-	nebula "github.com/vesoft-inc/nebula-go/v3"
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/haysons/norm/internal/utils"
+	nebula "github.com/vesoft-inc/nebula-go/v3"
 )
 
 const (
@@ -34,17 +36,13 @@ var (
 
 // Resolver responsible for parsing and converting data types in nebula graph and defined data types in golang
 type Resolver struct {
-	vertexSchema map[string]*VertexSchema
-	edgeSchema   map[string]*EdgeSchema
-	recordSchema map[string]*RecordSchema
+	vertexSchema sync.Map
+	edgeSchema   sync.Map
+	recordSchema sync.Map
 }
 
 func NewResolver() *Resolver {
-	return &Resolver{
-		vertexSchema: make(map[string]*VertexSchema),
-		edgeSchema:   make(map[string]*EdgeSchema),
-		recordSchema: make(map[string]*RecordSchema),
-	}
+	return &Resolver{}
 }
 
 // ScanValue scan nebula graph value into dest value.
@@ -181,40 +179,55 @@ func (r *Resolver) ScanRecord(record *nebula.Record, colNames []string, destValu
 
 func (r *Resolver) getRecordSchema(destType reflect.Type) (*RecordSchema, error) {
 	key := r.getSchemaKey(destType)
-	if s, ok := r.recordSchema[key]; ok {
-		return s, nil
+	if s, ok := r.recordSchema.Load(key); ok {
+		return s.(*RecordSchema), nil
 	}
+
 	recordSchema, err := ParseRecord(destType)
 	if err != nil {
 		return nil, err
 	}
-	r.recordSchema[key] = recordSchema
+	
+	actual, loaded := r.recordSchema.LoadOrStore(key, recordSchema)
+	if loaded {
+		return actual.(*RecordSchema), nil
+	}
 	return recordSchema, nil
 }
 
 func (r *Resolver) getVertexSchema(destType reflect.Type) (*VertexSchema, error) {
 	key := r.getSchemaKey(destType)
-	if s, ok := r.vertexSchema[key]; ok {
-		return s, nil
+	if s, ok := r.vertexSchema.Load(key); ok {
+		return s.(*VertexSchema), nil
 	}
+
 	vertexSchema, err := ParseVertex(destType)
 	if err != nil {
 		return nil, err
 	}
-	r.vertexSchema[key] = vertexSchema
+	
+	actual, loaded := r.vertexSchema.LoadOrStore(key, vertexSchema)
+	if loaded {
+		return actual.(*VertexSchema), nil
+	}
 	return vertexSchema, nil
 }
 
 func (r *Resolver) getEdgeSchema(destType reflect.Type) (*EdgeSchema, error) {
 	key := r.getSchemaKey(destType)
-	if e, ok := r.edgeSchema[key]; ok {
-		return e, nil
+	if e, ok := r.edgeSchema.Load(key); ok {
+		return e.(*EdgeSchema), nil
 	}
+
 	edgeSchema, err := ParseEdge(destType)
 	if err != nil {
 		return nil, err
 	}
-	r.edgeSchema[key] = edgeSchema
+	
+	actual, loaded := r.edgeSchema.LoadOrStore(key, edgeSchema)
+	if loaded {
+		return actual.(*EdgeSchema), nil
+	}
 	return edgeSchema, nil
 }
 
